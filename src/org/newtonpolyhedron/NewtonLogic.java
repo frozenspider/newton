@@ -138,7 +138,6 @@ public class NewtonLogic {
 				d = scannerF.next();
 			}
 			dim = Integer.parseInt(d);
-			// System.out.println(dim);
 			final BigFraction[] x = new BigFraction[dim];
 			Arrays.fill(x, BigFraction.ZERO);
 			int j = 0;
@@ -210,7 +209,6 @@ public class NewtonLogic {
 				if (st.charAt(0) == '@') {
 					break;
 				}
-				// System.out.print(st+" ");
 				x[j++] = frFormat.parse(st);
 				if (j == dim) {
 					j = 0;
@@ -245,7 +243,6 @@ public class NewtonLogic {
 				if (st.charAt(0) == '@') {
 					break;
 				}
-				// System.out.print(st+" ");
 				x[j++] = frFormat.parse(st);
 				if (j == dim) {
 					j = 0;
@@ -354,7 +351,6 @@ public class NewtonLogic {
 				d = scannerF.next();
 			}
 			final int dim = Integer.parseInt(d);
-			// System.out.println(dim);
 			final long[] xInt = new long[dim];
 			final Comp[] x = format.createArrayOfZeros(dim);
 			int j = 0;

@@ -26,7 +26,7 @@ public class MatrizMinorGCDSolverImpl implements MatrizMinorGCDSolver {
 			}
 			dets.add(det.getNumerator());
 		}
-		System.out.println(dets);
+		
 		BigInteger gcd = dets.get(0);
 		for (int i = 1; i < dets.size(); ++i) {
 			gcd = gcd(gcd, dets.get(i));
