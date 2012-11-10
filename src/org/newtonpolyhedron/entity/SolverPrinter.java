@@ -2,6 +2,8 @@ package org.newtonpolyhedron.entity;
 
 import java.io.PrintWriter;
 
+import org.apache.commons.lang3.StringUtils;
+
 public abstract class SolverPrinter <T> {
 	
 	private final T				solver;
@@ -22,7 +24,9 @@ public abstract class SolverPrinter <T> {
 	// Print helpers
 	//
 	public static String title(String title) {
-		return "\n\n\n=== === " + title + " === ===\n";
+		String bordered = "======= " + title + " =======";
+		String line = StringUtils.repeat("=", bordered.length());
+		return "\n\n\n" + line + "\n" + bordered + "\n" + line;
 	}
 	
 	public static String header(String header) {
