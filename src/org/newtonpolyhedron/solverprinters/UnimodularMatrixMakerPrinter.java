@@ -24,8 +24,12 @@ public class UnimodularMatrixMakerPrinter extends SolverPrinter <UnimodularMatri
 	protected void solveFor(final UnimodularMatrixMaker solver, final PrintWriter output)
 			throws Exception {
 		final FieldMatrix <BigFraction> alpha = solver.getUnimodularFrom(baseMatrix);
-		output.println();
-		output.println("Alpha-matrix: ");
+		output.println(title("Unimodular \"Alpha\" matrix"));
+		output.println(subheader("Base matrix:"));
+		output.println(MatrixUtils.toString(baseMatrix));
+		output.println(subheader("Alpha-matrix:"));
 		output.println(MatrixUtils.toString(alpha));
+		output.println(subheader("Inverse alpha-matrix:"));
+		output.println(MatrixUtils.toString(MatrixUtils.inverse(alpha)));
 	}
 }
