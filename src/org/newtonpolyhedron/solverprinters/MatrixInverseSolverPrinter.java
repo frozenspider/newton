@@ -24,11 +24,9 @@ public class MatrixInverseSolverPrinter extends SolverPrinter <MatrixInverseSolv
 	protected void solveFor(final MatrixInverseSolver solver, final PrintWriter output)
 			throws Exception {
 		final FieldMatrix <BigFraction> inv = solver.getInverse(baseMatrix);
-		output.println();
-		output.println("Base matrix: ");
+		output.println(subheader("Base matrix:"));
 		output.println(MatrixUtils.toString(baseMatrix));
-		output.println();
-		output.println("Matrix inverse: ");
+		output.println(subheader("Matrix inverse:"));
 		output.println(MatrixUtils.toString(inv));
 	}
 }

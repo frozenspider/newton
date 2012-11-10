@@ -4,8 +4,6 @@ import java.io.PrintWriter;
 
 import org.apache.commons.math3.fraction.BigFraction;
 import org.apache.commons.math3.linear.FieldMatrix;
-import org.fs.utils.collection.table.ArrayListTable;
-import org.fs.utils.collection.table.Table;
 import org.newtonpolyhedron.entity.SolverPrinter;
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker;
 import org.newtonpolyhedron.utils.MatrixUtils;

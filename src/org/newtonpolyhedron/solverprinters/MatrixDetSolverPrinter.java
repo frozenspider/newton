@@ -30,8 +30,7 @@ public class MatrixDetSolverPrinter extends SolverPrinter <MatrixDetSolver> {
 	protected void solveFor(final MatrixDetSolver solver, final PrintWriter output)
 			throws Exception {
 		final BigFraction det = solver.getDet(baseMatrix, skipRow, skipCol);
-		output.println();
-		output.println("Base matrix: ");
+		output.println(subheader("Base matrix:"));
 		output.println(MatrixUtils.toString(baseMatrix));
 		output.println("Matrix determinant: " + det);
 	}

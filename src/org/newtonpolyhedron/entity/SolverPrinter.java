@@ -2,7 +2,7 @@ package org.newtonpolyhedron.entity;
 
 import java.io.PrintWriter;
 
-public abstract class SolverPrinter<T> {
+public abstract class SolverPrinter <T> {
 	
 	private final T				solver;
 	private final PrintWriter	output;
@@ -17,4 +17,19 @@ public abstract class SolverPrinter<T> {
 	}
 	
 	protected abstract void solveFor(T solver, PrintWriter output) throws Exception;
+	
+	//
+	// Print helpers
+	//
+	public static String title(String title) {
+		return "\n\n\n=== === " + title + " === ===\n";
+	}
+	
+	public static String header(String header) {
+		return "\n=== " + header + " ===";
+	}
+	
+	public static String subheader(String subheader) {
+		return "\n" + subheader + "";
+	}
 }

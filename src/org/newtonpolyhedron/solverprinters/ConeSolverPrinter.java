@@ -27,10 +27,10 @@ public class ConeSolverPrinter extends SolverPrinter <ConeSolver> {
 	
 	@Override
 	protected void solveFor(final ConeSolver solver, final PrintWriter output) throws Exception {
-		output.println("\n\n\n === Begin === \n");
+		output.println(title("Cone computing"));
 		final int rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(inequations));
 		output.println("Matrix rank = " + rank);
-		output.println("=== Original inequalities: ===");
+		output.println(header("Original inequalities:"));
 		for (int i = 0; i < inequations.size(); i++) {
 			output.println(format(" c{0} = {1}", i + 1, inequations.get(i)));
 		}
@@ -42,7 +42,7 @@ public class ConeSolverPrinter extends SolverPrinter <ConeSolver> {
 	private static void coneFinalSolutionOutput(
 			final List <IntVector> testing,
 			final PrintWriter output) {
-		output.println("\n=== FINAL SOLUTIONS: ===");
+		output.println(header("FINAL SOLUTIONS:"));
 		for (int i = 0; i < testing.size(); i++) {
 			final String str = testing.get(i).toString();
 			final int len = str.length();
@@ -57,7 +57,7 @@ public class ConeSolverPrinter extends SolverPrinter <ConeSolver> {
 				output.println();
 			}
 		}
-		output.println("\n=== ANSWERS: ===");
+		output.println(header("ANSWERS:"));
 		for (final IntVector p : testing) {
 			output.println(p);
 		}
