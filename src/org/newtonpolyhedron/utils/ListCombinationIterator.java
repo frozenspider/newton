@@ -21,7 +21,7 @@ import org.fs.utils.ArrayUtils;
  * @author FS
  * @param <T>
  */
-public class ListCombinationIterator<T> implements Iterator <List <T>> {
+public class ListCombinationIterator <T> implements Iterator <List <T>> {
 	
 	private final List <T>	list;
 	private final int		width;

@@ -34,10 +34,10 @@ public class PolyIntersectionSolverPrinter extends SolverPrinter <PolyIntersecti
 	@Override
 	protected void solveFor(final PolyIntersectionSolver solver, final PrintWriter output)
 			throws Exception {
-		output.println("\n\n\n --- === Begin === ---\n");
-		output.println("=== Original points: ===");
+		output.println(title("Polyhedron intersection"));
+		output.println(header("Original points:"));
 		for (int i = 0; i < polyhedrons.size(); ++i) {
-			output.println("\n Poly " + i);
+			output.println(subheader("Poly " + i));
 			final List <FractionVector> points = polyhedrons.get(i);
 			for (int j = 0; j < points.size(); j++) {
 				output.println(format(" Q{0} = {1}", j, points.get(j)));
@@ -45,27 +45,24 @@ public class PolyIntersectionSolverPrinter extends SolverPrinter <PolyIntersecti
 		}
 		
 		final Map <IntVector, List <List <Integer>>> ptsForVectors = solver.solve(polyhedrons, dim);
-		outputResult(ptsForVectors, output);
+		
+		final KeyTable <Integer, IntVector, Set <Integer>> vectorPointTable = reverseTableMeaning(ptsForVectors);
+		output.println(vectorPointTable);
 	}
 	
-	private void outputResult(
-			final Map <IntVector, List <List <Integer>>> ptsForVectors,
-			final PrintWriter output) {
-		final KeyTable <Integer, IntVector, Set <Integer>> vectorPointTable = new ArrayListKeyTable <Integer, IntVector, Set <Integer>>();
-		for (final Entry <IntVector, List <List <Integer>>> resultEntry : ptsForVectors.entrySet()) {
-			final IntVector vector = resultEntry.getKey();
-			for (final List <Integer> indices : resultEntry.getValue()) {
+	private KeyTable <Integer, IntVector, Set <Integer>> reverseTableMeaning(
+			final Map <IntVector, List <List <Integer>>> ptsForVectors) {
+		final KeyTable <Integer, IntVector, Set <Integer>> vectPtTable = new ArrayListKeyTable <Integer, IntVector, Set <Integer>>();
+		for (final Entry <IntVector, List <List <Integer>>> entry : ptsForVectors.entrySet()) {
+			final IntVector vector = entry.getKey();
+			for (final List <Integer> indices : entry.getValue()) {
 				for (int i = 0; i < indices.size(); ++i) {
-					Set <Integer> pointSet = vectorPointTable.get(i, vector);
-					if (pointSet == null) {
-						pointSet = new SortedArrayList <Integer>();
-						vectorPointTable.put(i, vector, pointSet);
-					}
-					pointSet.add(indices.get(i));
+					final Set <Integer> pts = vectPtTable.get(i, vector,
+							new SortedArrayList <Integer>());
+					pts.add(indices.get(i));
 				}
 			}
 		}
-		output.println(vectorPointTable);
-		output.println();
+		return vectPtTable;
 	}
 }

@@ -26,10 +26,6 @@ import org.newtonpolyhedron.ex.UnknownModeException;
 import org.newtonpolyhedron.ex.WrongFormatException;
 import org.newtonpolyhedron.solve.cone.ConeSolver;
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl;
-import org.newtonpolyhedron.solve.matrixdet.MatrixDetSolver;
-import org.newtonpolyhedron.solve.matrixdet.MatrixDetSolverImpl;
-import org.newtonpolyhedron.solve.matrixinv.MatrixInverseSolver;
-import org.newtonpolyhedron.solve.matrixinv.MatrixInverseSolverImpl;
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrizMinorGCDSolver;
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrizMinorGCDSolverImpl;
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker;
@@ -142,7 +138,6 @@ public class NewtonLogic {
 				d = scannerF.next();
 			}
 			dim = Integer.parseInt(d);
-			// System.out.println(dim);
 			final BigFraction[] x = new BigFraction[dim];
 			Arrays.fill(x, BigFraction.ZERO);
 			int j = 0;
@@ -214,7 +209,6 @@ public class NewtonLogic {
 				if (st.charAt(0) == '@') {
 					break;
 				}
-				// System.out.print(st+" ");
 				x[j++] = frFormat.parse(st);
 				if (j == dim) {
 					j = 0;
@@ -225,8 +219,7 @@ public class NewtonLogic {
 			inputF.close();
 		}
 		final FieldMatrix <BigFraction> arrayMatrix = MatrixUtils.create(listMatrix.toArray(new BigFraction[0][0]));
-		final MatrixDetSolver matrixDetSolver = new MatrixDetSolverImpl();
-		return new MatrixDetSolverPrinter(matrixDetSolver, arrayMatrix, skipRow, skipCol, writer);
+		return new MatrixDetSolverPrinter(arrayMatrix, skipRow, skipCol, writer);
 	}
 	
 	private SolverPrinter <?> launchMatrixInverse(final File file, final PrintWriter writer)
@@ -250,7 +243,6 @@ public class NewtonLogic {
 				if (st.charAt(0) == '@') {
 					break;
 				}
-				// System.out.print(st+" ");
 				x[j++] = frFormat.parse(st);
 				if (j == dim) {
 					j = 0;
@@ -261,8 +253,7 @@ public class NewtonLogic {
 			inputF.close();
 		}
 		final FieldMatrix <BigFraction> arrayMatrix = MatrixUtils.create(listMatrix.toArray(new BigFraction[0][0]));
-		final MatrixInverseSolver matrixInvSolver = new MatrixInverseSolverImpl();
-		return new MatrixInverseSolverPrinter(matrixInvSolver, arrayMatrix, writer);
+		return new MatrixInverseSolverPrinter(arrayMatrix, writer);
 	}
 	
 	private SolverPrinter <?> launchMatrixUniAlpha(final File file, final PrintWriter writer)
@@ -360,7 +351,6 @@ public class NewtonLogic {
 				d = scannerF.next();
 			}
 			final int dim = Integer.parseInt(d);
-			// System.out.println(dim);
 			final long[] xInt = new long[dim];
 			final Comp[] x = format.createArrayOfZeros(dim);
 			int j = 0;

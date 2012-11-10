@@ -449,7 +449,7 @@ public class MatrixUtils {
 		StringBuilder result = new StringBuilder();
 		for (int row = 0; row < matrix.getRowDimension(); ++row) {
 			for (int col = 0; col < matrix.getColumnDimension(); ++col) {
-				result.append(String.format("%1$#" + colsWidth[col]+"s ",
+				result.append(String.format("%1$#" + colsWidth[col] + "s ",
 						matrix.getEntry(row, col).toString()));
 			}
 			result.append('\n');

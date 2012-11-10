@@ -39,9 +39,6 @@ import org.newtonpolyhedron.utils.PointUtils;
 
 public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	
-	private final Frame[]				illustrFrames	= {null, null, null};
-	private final int					frequency		= 85;
-	
 	private final SurfaceBuilder		surfaceBuilder;
 	private final List <FractionVector>	points;
 	private final List <IntVector>		commonLimits;
@@ -68,13 +65,16 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	@Override
 	protected void solveFor(final PolyhedronSolver solver, final PrintWriter output)
 			throws Exception {
-		output.println("\n\n\n --- === Begin === ---\n");
-		output.println("=== Original points: ===");
+		
+		output.println(title("Polyhedron computing"));
+		
+		output.println(header("Original points:"));
 		final int dim = points.get(0).getDim();
 		for (int i = 0; i < points.size(); i++) {
 			output.println(format(" Q{0} = {1}", i, points.get(i)));
 		}
-		output.println("=== Common limits: ===");
+		
+		output.println(header("Common limits:"));
 		if (commonLimits != null && commonLimits.size() > 0) {
 			for (int i = 0; i < commonLimits.size(); i++) {
 				output.println(format(" L{0} = {1}", i, commonLimits.get(i)));
@@ -91,7 +91,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 				lookupTable, dim);
 		
 		for (final Entry <Integer, IndexedSet <Surface>> entry : surfacesMap.entrySet()) {
-			output.println("\nSurface Dimension: " + entry.getKey());
+			output.println(subheader("Surface Dimension:" + entry.getKey()));
 			int idx = 0;
 			for (final Surface surface : entry.getValue()) {
 				output.println(format("  {0})\t{1}", idx++, surface.toString()));
@@ -99,40 +99,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		}
 		
 		if (dim <= 3 && illustrate) {
-			final IndexedSet <Surface> oneDimSurfaces = surfacesMap.get(1);
-			
-			final List <Point3d> points3d = new ArrayList <Point3d>(points.size());
-			for (final FractionVector p : points) {
-				points3d.add(PointUtils.toPoint3d(p));
-			}
-			illustrFrames[0] = PointsLineApp.doDrawFrame(points3d, null, PointsLineApp.ALL_VS_ALL,
-					0, 150, 512, 512, dim == 2);
-			final List <Point3d> borderEdgesAlt = new ArrayList <Point3d>();
-			for (final Surface border : oneDimSurfaces) {
-				for (final int borderPtIdx : border.getPointIdxList()) {
-					borderEdgesAlt.add(PointUtils.toPoint3d(points.get(borderPtIdx)));
-				}
-				
-			}
-			illustrFrames[2] = PointsLineApp.doDrawFrame(borderEdgesAlt, null,
-					PointsLineApp.TRIANGLES, 512, 150, 512, 512, dim == 2);
-			
-			try {
-				while (!Thread.interrupted()) {
-					// final Graphics g=strategy.getDrawGraphics();
-					// strategy.show();
-					// textarea.setText(String.format("%d",i));
-					Thread.sleep(frequency);
-				}
-			} catch(final InterruptedException ex) {
-				// NOOP
-			} finally {
-				for (final Frame frame : illustrFrames) {
-					if (frame != null) {
-						frame.dispose();
-					}
-				}
-			}
+			illustrate(dim, points, surfacesMap, 85);
 		}
 	}
 	
@@ -156,12 +123,48 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 			}
 			++rowIdx;
 		}
-		final String str = strTable.toString();
 		// Skip "+-----+----+" lines
-		final String[] lines = str.split("\n");
+		final String[] lines = strTable.toString().split("\n");
 		for (final String line : lines) {
 			if (!line.startsWith("+-")) {
 				output.println(line);
+			}
+		}
+	}
+	
+	private static void illustrate(
+			final int dim,
+			final List <FractionVector> points,
+			final Map <Integer, IndexedSet <Surface>> surfacesMap,
+			final int frequency) {
+		final List <Point3d> points3d = new ArrayList <Point3d>(points.size());
+		for (final FractionVector p : points) {
+			points3d.add(PointUtils.toPoint3d(p));
+		}
+		
+		final List <Frame> illustrFrames = new ArrayList <Frame>();
+		illustrFrames.add(PointsLineApp.doDrawFrame(points3d, null, PointsLineApp.ALL_VS_ALL, 0,
+				150, 512, 512, dim == 2));
+		final List <Point3d> borderEdgesAlt = new ArrayList <Point3d>();
+		final IndexedSet <Surface> oneDimSurfaces = surfacesMap.get(1);
+		for (final Surface border : oneDimSurfaces) {
+			for (final int borderPtIdx : border.getPointIdxList()) {
+				borderEdgesAlt.add(PointUtils.toPoint3d(points.get(borderPtIdx)));
+			}
+			
+		}
+		illustrFrames.add(PointsLineApp.doDrawFrame(borderEdgesAlt, null, PointsLineApp.TRIANGLES,
+				512, 150, 512, 512, dim == 2));
+		
+		try {
+			while (!Thread.interrupted()) {
+				Thread.sleep(frequency);
+			}
+		} catch(final InterruptedException ex) {
+			// NOOP
+		} finally {
+			for (final Frame frame : illustrFrames) {
+				frame.dispose();
 			}
 		}
 	}
