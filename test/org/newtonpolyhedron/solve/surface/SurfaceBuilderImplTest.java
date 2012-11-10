@@ -3,7 +3,11 @@ package org.newtonpolyhedron.solve.surface;
 import static java.util.Arrays.*;
 import static org.junit.Assert.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.fs.utils.collection.CollectionUtils;
 import org.fs.utils.collection.list.SortedArrayList;

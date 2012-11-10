@@ -8,8 +8,6 @@ import java.util.List;
 
 import org.junit.Test;
 import org.newtonpolyhedron.entity.vector.IntVector;
-import org.newtonpolyhedron.solve.cone.ConeSolver;
-import org.newtonpolyhedron.solve.cone.ConeSolverImpl;
 import org.newtonpolyhedron.utils.NullPrintWriter;
 
 public class ConeSolverImplTest {

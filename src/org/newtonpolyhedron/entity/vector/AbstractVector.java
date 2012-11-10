@@ -2,7 +2,7 @@ package org.newtonpolyhedron.entity.vector;
 
 import java.util.Arrays;
 
-public abstract class AbstractVector<T extends Comparable <T>,SELF extends AbstractVector <T, SELF>>
+public abstract class AbstractVector <T extends Comparable <T>,SELF extends AbstractVector <T, SELF>>
 		implements Comparable <SELF> {
 	
 	protected final T	components[];

@@ -6,7 +6,6 @@ import static org.newtonpolyhedron.utils.MatrixUtils.*;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.apache.commons.math3.linear.FieldMatrix;
 import org.junit.Test;
-import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl;
 
 public class UnimodularMatrixMakerImplTest {
 	
