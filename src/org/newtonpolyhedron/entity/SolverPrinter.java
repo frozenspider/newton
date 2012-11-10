@@ -2,7 +2,7 @@ package org.newtonpolyhedron.entity;
 
 import java.io.PrintWriter;
 
-import org.apache.commons.lang3.StringUtils;
+import org.newtonpolyhedron.utils.StringUtils;
 
 public abstract class SolverPrinter <T> {
 	
@@ -23,6 +23,7 @@ public abstract class SolverPrinter <T> {
 	//
 	// Print helpers
 	//
+	@SuppressWarnings("static-access")
 	public static String title(String title) {
 		String bordered = "======= " + title + " =======";
 		String line = StringUtils.repeat("=", bordered.length());
