@@ -1,4 +1,4 @@
-package org.newtonpolyhedron;
+package org.newtonpolyhedron.ui.render3d;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,9 +13,6 @@ import javax.vecmath.Color3f;
 import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 
-import org.newtonpolyhedron.entity.vector.FractionVector;
-import org.newtonpolyhedron.utils.PointUtils;
-
 import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -23,22 +20,17 @@ import com.sun.j3d.utils.universe.SimpleUniverse;
 public class PointsLineApp extends JApplet {
 	
 	public static final int	ALL_VS_ALL	= 0;
-	public static final int	PRISMS		= 2;
 	public static final int	TRIANGLES	= 1;
 	private final boolean	is2d;
 	
 	// Create a simple scene and attach it to the virtual universe
-	public PointsLineApp(
-			final List <Point3d> p,
-			final FractionVector center,
-			final int mode,
-			final boolean is2d) {
+	public PointsLineApp(final List <Point3d> p, final int mode, final boolean is2d) {
 		this.is2d = is2d;
 		final GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 		final Canvas3D canvas3D = new Canvas3D(config);
 		setLayout(new BorderLayout());
 		add("Center", canvas3D);
-		final BranchGroup scene = createSceneGraph(p, center, mode);
+		final BranchGroup scene = createSceneGraph(p, mode);
 		// SimpleUniverse is a Convenience Utility class
 		final SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
 		// This will move the ViewPlatform back a bit so the objects in the scene can be viewed.
@@ -54,15 +46,12 @@ public class PointsLineApp extends JApplet {
 		// the geometry is created in method yoyoGeometry
 		// the appearance is created in method yoyoAppearance
 		//
-		public PointDrawer(final List <Point3d> p, final FractionVector center, final int mode) {
+		public PointDrawer(final List <Point3d> p, final int mode) {
 			this.setGeometry(axisLines());
 			switch (mode) {
 				case ALL_VS_ALL:
 					this.addGeometry(linesAllVsAll(p, null));
 					break;
-				case PRISMS:
-					this.addGeometry(prisms(p, PointUtils.toPoint3d(center)));
-					//$FALL-THROUGH$ // Should it be here?
 				case TRIANGLES:
 					this.addGeometry(triangles(p, Color.BLUE));
 					break;
@@ -143,8 +132,7 @@ public class PointsLineApp extends JApplet {
 			for (int i = 1; i < ps; i++) {
 				sz += i;
 			}
-			LineArray la;
-			la = new LineArray(sz * 2, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
+			LineArray la = new LineArray(sz * 2, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
 			if (highlighColor != null) {
 				final Color3f[] colors = new Color3f[sz * 2];
 				for (int i = 0; i < sz * 2; i++) {
@@ -164,29 +152,13 @@ public class PointsLineApp extends JApplet {
 		}
 		
 		private Geometry triangles(final List <Point3d> p, final Color color) {
-			LineArray la;
-			la = new LineArray(p.size(), GeometryArray.COORDINATES | GeometryArray.COLOR_3);
+			LineArray la = new LineArray(p.size(), GeometryArray.COORDINATES
+					| GeometryArray.COLOR_3);
 			final Color3f[] colors = new Color3f[p.size()];
 			final Color3f color3f = new Color3f(color);
 			for (int i = 0; i < p.size();) {
 				colors[i] = color3f;
 				la.setCoordinate(i, p.get(i++));
-			}
-			la.setColors(0, colors);
-			return la;
-		}
-		
-		private Geometry prisms(final List <Point3d> p, final Point3d center) {
-			LineArray la;
-			la = new LineArray(p.size() * 2, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
-			final Color3f[] colors = new Color3f[(p.size() - 1) * 2];
-			final Color3f c = new Color3f(0.3f, 0.9f, 0.3f);
-			int j = 0;
-			for (int i = 0; i < p.size() - 1; i++) {
-				colors[j] = c;
-				la.setCoordinate(j++, p.get(i));
-				colors[j] = c;
-				la.setCoordinate(j++, center);
 			}
 			la.setColors(0, colors);
 			return la;
@@ -261,10 +233,7 @@ public class PointsLineApp extends JApplet {
 	//
 	// create scene graph branch group
 	//
-	public BranchGroup createSceneGraph(
-			final List <Point3d> p,
-			final FractionVector center,
-			final int mode) {
+	public BranchGroup createSceneGraph(final List <Point3d> p, final int mode) {
 		final BranchGroup objRoot = new BranchGroup();
 		/*
 		 * Create the transform group node and initialize it to the identity. Enable the
@@ -290,7 +259,7 @@ public class PointsLineApp extends JApplet {
 		objRoot.addChild(objScale);
 		objScale.addChild(objRotate);
 		objRotate.addChild(objSpin);
-		objSpin.addChild(new PointDrawer(p, center, mode));
+		objSpin.addChild(new PointDrawer(p, mode));
 		/*
 		 * Create a new Behavior object that will perform the desired operation on the specified
 		 * transform object and add it into the scene graph.
@@ -336,7 +305,6 @@ public class PointsLineApp extends JApplet {
 	
 	public static Frame doDrawFrame(
 			final List <Point3d> p,
-			final FractionVector center,
 			final int mode,
 			final int x,
 			final int y,
@@ -344,7 +312,7 @@ public class PointsLineApp extends JApplet {
 			final int h,
 			final boolean l_d_2d) {
 		// Frame frame = new MainFrame(new PointsLineApp(p,center,mode,l_d_2d), w, h);
-		final PointsLineApp a = new PointsLineApp(p, center, mode, l_d_2d);
+		final PointsLineApp a = new PointsLineApp(p, mode, l_d_2d);
 		final MainFrame frame = new MainFrame(a, w, h);
 		frame.setLocation(x, y);
 		return frame;
@@ -449,8 +417,7 @@ public class PointsLineApp extends JApplet {
 		// double t = -(L*x[0] + M*y[0] + N*z[0])/(L*L + M*M + N*N);
 		// Point3d pMid = new Point3d(L*t + x[0], M*t + y[0], N*t + z[0]);
 		// points.add(pMid);
-		final Frame frame = new MainFrame(new PointsLineApp(points, null, TRIANGLES, l_d_2d), 512,
-				512);
+		final Frame frame = new MainFrame(new PointsLineApp(points, TRIANGLES, l_d_2d), 512, 512);
 		frame.setVisible(true);
 	} // end of main method of YoyoLineApp
 } // end of class YoyoLineApp
