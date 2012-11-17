@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fs.utils.ObjectUtils;
 
 
@@ -36,6 +37,7 @@ public class Surface implements Comparable <Surface> {
 				: new ArrayList <Integer>(upperDimSurfacesIdxList);
 	}
 	
+	/** @return number of points in surface */
 	public int size() {
 		return pointIdxList.size();
 	}
@@ -80,19 +82,11 @@ public class Surface implements Comparable <Surface> {
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append('{');
-		for (final Integer pointIdx : pointIdxList) {
-			result.append(' ');
-			result.append(pointIdx);
-			result.append(',');
-		}
-		result.append(" }");
+		result.append(StringUtils.join(pointIdxList, ", "));
+		result.append("}");
 		if (!upperDimSurfacesIdxList.isEmpty()) {
-			result.append("  / ");
-			for (final Integer borderIdx : upperDimSurfacesIdxList) {
-				result.append(' ');
-				result.append(borderIdx);
-				result.append(',');
-			}
+			result.append(" / ");
+			result.append(StringUtils.join(upperDimSurfacesIdxList, ", "));
 		}
 		return result.toString();
 	}
