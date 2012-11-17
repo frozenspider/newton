@@ -19,12 +19,16 @@ import static java.text.MessageFormat.*;
 import java.awt.Frame;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.vecmath.Point3d;
 
+import org.apache.commons.math3.analysis.FunctionUtils;
+import org.fs.utils.collection.CollectionUtils;
 import org.fs.utils.collection.set.IndexedSet;
 import org.fs.utils.collection.table.ArrayListKeyTable;
 import org.fs.utils.collection.table.KeyTable;
@@ -35,6 +39,7 @@ import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver;
 import org.newtonpolyhedron.solve.surface.SurfaceBuilder;
+import org.newtonpolyhedron.utils.ArithUtils;
 import org.newtonpolyhedron.utils.PointUtils;
 
 public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
@@ -146,12 +151,9 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		illustrFrames.add(PointsLineApp.doDrawFrame(points3d, null, PointsLineApp.ALL_VS_ALL, 0,
 				150, 512, 512, dim == 2));
 		final List <Point3d> borderEdgesAlt = new ArrayList <Point3d>();
-		final IndexedSet <Surface> oneDimSurfaces = surfacesMap.get(1);
-		for (final Surface border : oneDimSurfaces) {
-			for (final int borderPtIdx : border.getPointIdxList()) {
-				borderEdgesAlt.add(PointUtils.toPoint3d(points.get(borderPtIdx)));
-			}
-			
+		final List <Surface> lines = collectLineCorners(surfacesMap.get(1), points);
+		for (final Surface line : lines) {
+			borderEdgesAlt.addAll(CollectionUtils.getAll(points3d, line.getPointIdxList()));
 		}
 		illustrFrames.add(PointsLineApp.doDrawFrame(borderEdgesAlt, null, PointsLineApp.TRIANGLES,
 				512, 150, 512, 512, dim == 2));
@@ -167,5 +169,42 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 				frame.dispose();
 			}
 		}
+	}
+	
+	private static List <Surface> collectLineCorners(
+			Collection <Surface> surfaces,
+			List <FractionVector> points) {
+		List <Surface> result = new ArrayList <Surface>(surfaces.size());
+		for (Surface surface : surfaces) {
+			if (surface.size() == 2) {
+				result.add(surface);
+			} else {
+				result.add(getLineCorners(surface, points));
+			}
+		}
+		return result;
+	}
+	
+	private static Surface getLineCorners(Surface surface, List <FractionVector> points) {
+		List <Integer> surfaceIndices = surface.getPointIdxList();
+		for (int t = 0; t < points.get(0).getDim(); ++t) {
+			int lesser = surfaceIndices.get(0);
+			int greater = surfaceIndices.get(0);
+			
+			for (int idx : surfaceIndices) {
+				if (ArithUtils.less(points.get(idx).get(t), points.get(lesser).get(t))) {
+					lesser = idx;
+				}
+				if (ArithUtils.greater(points.get(idx).get(t), points.get(greater).get(t))) {
+					greater = idx;
+				}
+			}
+			if (lesser != greater)
+				return new Surface(Arrays.asList(lesser, greater),
+						surface.getUpperDimSurfacesIdxList());
+		}
+		// If this is the case - all points are same
+		return new Surface(Arrays.asList(surfaceIndices.get(0)),
+				surface.getUpperDimSurfacesIdxList());
 	}
 }
