@@ -168,6 +168,7 @@ public class ConeSolverImpl implements ConeSolver {
 		
 		final BigInteger lActive = l.get(currActiveIdx);
 		final IntVector basisActive = tempBasis.get(currActiveIdx);
+		final IntVector basisActive2 = basis.get(currActiveIdx);
 		
 		// ADD NEW BASIS LINE
 		for (int i = 0; i < tempBasis.size(); i++) {
@@ -180,7 +181,7 @@ public class ConeSolverImpl implements ConeSolver {
 			// New basis element
 			// newBasisVec = basis[i] * l[cai] - basis[cai] * l[i]
 			final IntVector newBasisElement = basisCurr.multiply(lActive).subtract(
-					basisActive.multiply(lCurr)).getReduced();
+					basisActive/* Should be basisActive2 ? */.multiply(lCurr)).getReduced();
 			
 			newBasis.add(newBasisElement);
 		}
