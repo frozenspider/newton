@@ -23,7 +23,16 @@ public class PolyRenderer extends JApplet {
 	public static final int	TRIANGLES	= 1;
 	private final boolean	is2d;
 	
-	/** Create a simple scene and attach it to the virtual universe */
+	/**
+	 * Create a simple scene and attach it to the virtual universe
+	 * 
+	 * @param pts
+	 *            points to draw
+	 * @param mode
+	 *            drawing mode
+	 * @param is2d
+	 *            whether or not this image should be 2d
+	 */
 	public PolyRenderer(final List <Point3d> pts, final int mode, final boolean is2d) {
 		this.is2d = is2d;
 		final GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
@@ -32,33 +41,33 @@ public class PolyRenderer extends JApplet {
 		add("Center", canvas3D);
 		final BranchGroup scene = createSceneGraph(pts, mode);
 		// SimpleUniverse is a Convenience Utility class
-		final SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
+		final SimpleUniverse universe = new SimpleUniverse(canvas3D);
 		// This will move the ViewPlatform back a bit so the objects in the scene can be viewed.
-		simpleU.getViewingPlatform().setNominalViewingTransform();
-		simpleU.addBranchGraph(scene);
+		universe.getViewingPlatform().setNominalViewingTransform();
+		universe.addBranchGraph(scene);
 	}
 	
 	public class PointDrawer extends Shape3D {
 		
-		public PointDrawer(final List <Point3d> p, final int mode) {
-			this.setGeometry(axisLines());
+		public PointDrawer(final List <Point3d> pts, final int mode) {
+			this.setGeometry(createAxisLines(PolyRenderer.this.is2d));
 			switch (mode) {
 				case ALL_VS_ALL:
-					this.addGeometry(linesAllVsAll(p, null));
+					this.addGeometry(createLinesAllVsAll(pts, null));
 					break;
 				case TRIANGLES:
-					this.addGeometry(triangles(p, Color.BLUE));
+					this.addGeometry(createTriangles(pts, Color.BLUE));
 					break;
 			}
-			this.setAppearance(pointsAppearance());
+			this.setAppearance(createPointsAppearance());
 		}
 		
-		private Geometry axisLines() {
-			LineArray axisX;
+		private Geometry createAxisLines(final boolean is2d) {
 			final float len = 6.5f;
 			final float dif = 0.2f;
+			final GeometryArray axisX = new LineArray(30, GeometryArray.COORDINATES
+					| GeometryArray.COLOR_3);
 			int i = 0;
-			axisX = new LineArray(30, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
 			axisX.setCoordinate(i++, new Point3f(0.0f, 0.0f, 0.0f));
 			axisX.setCoordinate(i++, new Point3f(len, 0.0f, 0.0f));
 			axisX.setCoordinate(i++, new Point3f(len, 0.0f, 0.0f));
@@ -93,7 +102,7 @@ public class PolyRenderer extends JApplet {
 				axisX.setCoordinate(i++, new Point3f(0.0f, 0.0f, len));
 				axisX.setCoordinate(i++, new Point3f(0.0f, -dif, len - dif));
 			}
-			Color3f[] colors;
+			final Color3f[] colors;
 			final float clbr = 0.7f;
 			if (!is2d) {
 				colors = new Color3f[30];
@@ -119,46 +128,44 @@ public class PolyRenderer extends JApplet {
 			return axisX;
 		}
 		
-		private Geometry linesAllVsAll(final List <Point3d> p, final Color highlighColor) {
-			final int ps = p.size();
-			int sz = 0;
-			for (int i = 1; i < ps; i++) {
-				sz += i;
-			}
-			LineArray la = new LineArray(sz * 2, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
+		private Geometry createLinesAllVsAll(final List <Point3d> pts, final Color highlighColor) {
+			final int ptsCount = pts.size();
+			// Sum(1 to n)
+			final int sum = ptsCount * (ptsCount - 1) / 2;
+			final GeometryArray lineArr = new LineArray(sum * 2, GeometryArray.COORDINATES
+					| GeometryArray.COLOR_3);
 			if (highlighColor != null) {
-				final Color3f[] colors = new Color3f[sz * 2];
-				for (int i = 0; i < sz * 2; i++) {
+				final Color3f[] colors = new Color3f[sum * 2];
+				for (int i = 0; i < sum * 2; i++) {
 					colors[i] = new Color3f(highlighColor);
 				}
-				la.setColors(0, colors);
+				lineArr.setColors(0, colors);
 			}
-			sz = 0;
-			for (int i = 0; i < ps - 1; i++) {
-				final Point3d pT = p.get(i);
-				for (int j = i + 1; j < ps; j++) {
-					la.setCoordinate(sz++, pT);
-					la.setCoordinate(sz++, p.get(j));
+			int sz = 0;
+			for (int i = 0; i < ptsCount - 1; i++) {
+				for (int j = i + 1; j < ptsCount; j++) {
+					lineArr.setCoordinate(sz++, pts.get(i));
+					lineArr.setCoordinate(sz++, pts.get(j));
 				}
 			}
-			return la;
+			return lineArr;
 		}
 		
-		private Geometry triangles(final List <Point3d> p, final Color color) {
-			LineArray la = new LineArray(p.size(), GeometryArray.COORDINATES
+		private Geometry createTriangles(final List <Point3d> pts, final Color color) {
+			final GeometryArray lineArr = new LineArray(pts.size(), GeometryArray.COORDINATES
 					| GeometryArray.COLOR_3);
-			final Color3f[] colors = new Color3f[p.size()];
+			final Color3f[] colors = new Color3f[pts.size()];
 			final Color3f color3f = new Color3f(color);
-			for (int i = 0; i < p.size();) {
+			for (int i = 0; i < pts.size(); i++) {
 				colors[i] = color3f;
-				la.setCoordinate(i, p.get(i++));
+				lineArr.setCoordinate(i, pts.get(i));
 			}
-			la.setColors(0, colors);
-			return la;
+			lineArr.setColors(0, colors);
+			return lineArr;
 		}
 		
 		/** Create appearance */
-		private Appearance pointsAppearance() {
+		private Appearance createPointsAppearance() {
 			final Appearance appearance = new Appearance();
 			final PolygonAttributes polyAttrib = new PolygonAttributes();
 			polyAttrib.setPolygonMode(PolygonAttributes.POLYGON_LINE);
@@ -168,7 +175,7 @@ public class PolyRenderer extends JApplet {
 	}
 	
 	/** Create scene graph branch group */
-	private BranchGroup createSceneGraph(final List <Point3d> p, final int mode) {
+	private BranchGroup createSceneGraph(final List <Point3d> pts, final int mode) {
 		final BranchGroup objRoot = new BranchGroup();
 		/*-
 		 * Create the transform group node and initialize it to the identity.
@@ -177,7 +184,7 @@ public class PolyRenderer extends JApplet {
 		 */
 		final Transform3D rotate = new Transform3D();
 		final Transform3D tempRotate = new Transform3D();
-		if (!is2d) {
+		if (!this.is2d) {
 			rotate.rotX(Math.PI * 1.75d);
 			tempRotate.rotZ(Math.PI * 1.15d);
 			rotate.mul(tempRotate);
@@ -194,7 +201,7 @@ public class PolyRenderer extends JApplet {
 		objRoot.addChild(objScale);
 		objScale.addChild(objRotate);
 		objRotate.addChild(objSpin);
-		objSpin.addChild(new PointDrawer(p, mode));
+		objSpin.addChild(new PointDrawer(pts, mode));
 		/*
 		 * Create a new Behavior object that will perform the desired operation on the specified
 		 * transform object and add it into the scene graph.
@@ -210,7 +217,7 @@ public class PolyRenderer extends JApplet {
 		final Background bg_white = new Background(new Color3f(0.9f, 0.9f, 0.9f));
 		bg_white.setApplicationBounds(bounds);
 		objRoot.addChild(bg_white);
-		if (!is2d) {
+		if (!this.is2d) {
 			objSpin.addChild(rotator);
 		}
 		// Let Java 3D perform optimizations on this scene graph.
@@ -219,17 +226,17 @@ public class PolyRenderer extends JApplet {
 	}
 	
 	public static Frame doDrawFrame(
-			final List <Point3d> p,
+			final List <Point3d> pts,
 			final int mode,
-			final int x,
-			final int y,
-			final int w,
-			final int h,
+			final int positionX,
+			final int positionY,
+			final int width,
+			final int height,
 			final boolean l_d_2d) {
 		// Frame frame = new MainFrame(new PointsLineApp(p,center,mode,l_d_2d), w, h);
-		final PolyRenderer a = new PolyRenderer(p, mode, l_d_2d);
-		final MainFrame frame = new MainFrame(a, w, h);
-		frame.setLocation(x, y);
+		final PolyRenderer a = new PolyRenderer(pts, mode, l_d_2d);
+		final MainFrame frame = new MainFrame(a, width, height);
+		frame.setLocation(positionX, positionY);
 		return frame;
 	}
 	
