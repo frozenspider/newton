@@ -37,7 +37,7 @@ import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver;
 import org.newtonpolyhedron.solve.surface.SurfaceBuilder;
-import org.newtonpolyhedron.ui.render3d.PointsLineApp;
+import org.newtonpolyhedron.ui.render3d.PolyRenderer;
 import org.newtonpolyhedron.utils.ArithUtils;
 import org.newtonpolyhedron.utils.PointUtils;
 
@@ -147,14 +147,14 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		}
 		
 		final List <Frame> illustrFrames = new ArrayList <Frame>();
-		illustrFrames.add(PointsLineApp.doDrawFrame(points3d, PointsLineApp.ALL_VS_ALL, 0, 150,
+		illustrFrames.add(PolyRenderer.doDrawFrame(points3d, PolyRenderer.ALL_VS_ALL, 0, 150,
 				512, 512, dim == 2));
 		final List <Point3d> borderEdgesAlt = new ArrayList <Point3d>();
 		final List <Surface> lines = collectLineCorners(surfacesMap.get(1), points);
 		for (final Surface line : lines) {
 			borderEdgesAlt.addAll(CollectionUtils.getAll(points3d, line.getPointIdxList()));
 		}
-		illustrFrames.add(PointsLineApp.doDrawFrame(borderEdgesAlt, PointsLineApp.TRIANGLES, 512,
+		illustrFrames.add(PolyRenderer.doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512,
 				150, 512, 512, dim == 2));
 		
 		try {

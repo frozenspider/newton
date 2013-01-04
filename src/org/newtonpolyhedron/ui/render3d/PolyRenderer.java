@@ -17,14 +17,14 @@ import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
 @SuppressWarnings("serial")
-public class PointsLineApp extends JApplet {
+public class PolyRenderer extends JApplet {
 	
 	public static final int	ALL_VS_ALL	= 0;
 	public static final int	TRIANGLES	= 1;
 	private final boolean	is2d;
 	
 	// Create a simple scene and attach it to the virtual universe
-	public PointsLineApp(final List <Point3d> p, final int mode, final boolean is2d) {
+	public PolyRenderer(final List <Point3d> p, final int mode, final boolean is2d) {
 		this.is2d = is2d;
 		final GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 		final Canvas3D canvas3D = new Canvas3D(config);
@@ -312,14 +312,14 @@ public class PointsLineApp extends JApplet {
 			final int h,
 			final boolean l_d_2d) {
 		// Frame frame = new MainFrame(new PointsLineApp(p,center,mode,l_d_2d), w, h);
-		final PointsLineApp a = new PointsLineApp(p, mode, l_d_2d);
+		final PolyRenderer a = new PolyRenderer(p, mode, l_d_2d);
 		final MainFrame frame = new MainFrame(a, w, h);
 		frame.setLocation(x, y);
 		return frame;
 	}
 	
 	public static void main(final String[] args) {
-		final ArrayList <Point3d> points = new ArrayList <Point3d>();
+		final List <Point3d> points = new ArrayList <Point3d>();
 		// points.add(new Point3d(0.0, 0.0, 0.0));
 		// points.add(new Point3d(0.0, 0.0, 3.0));
 		// points.add(new Point3d(2.0, 0.0, 0.0));
@@ -417,7 +417,7 @@ public class PointsLineApp extends JApplet {
 		// double t = -(L*x[0] + M*y[0] + N*z[0])/(L*L + M*M + N*N);
 		// Point3d pMid = new Point3d(L*t + x[0], M*t + y[0], N*t + z[0]);
 		// points.add(pMid);
-		final Frame frame = new MainFrame(new PointsLineApp(points, TRIANGLES, l_d_2d), 512, 512);
+		final Frame frame = new MainFrame(new PolyRenderer(points, TRIANGLES, l_d_2d), 512, 512);
 		frame.setVisible(true);
-	} // end of main method of YoyoLineApp
-} // end of class YoyoLineApp
+	}
+}
