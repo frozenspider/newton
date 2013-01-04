@@ -47,6 +47,56 @@ public class PolyRenderer extends JApplet {
 		universe.addBranchGraph(scene);
 	}
 	
+	/** Create scene graph branch group */
+	private BranchGroup createSceneGraph(final List <Point3d> pts, final int mode) {
+		final BranchGroup objRoot = new BranchGroup();
+		/*-
+		 * Create the transform group node and initialize it to the identity.
+		 * Enable the TRANSFORM_WRITE capability so that our behavior code can modify it at runtime.
+		 * Add it to the root of the subgraph.
+		 */
+		final Transform3D rotate = new Transform3D();
+		final Transform3D tempRotate = new Transform3D();
+		if (!this.is2d) {
+			rotate.rotX(Math.PI * 1.75d);
+			tempRotate.rotZ(Math.PI * 1.15d);
+			rotate.mul(tempRotate);
+		}
+		final TransformGroup objRotate = new TransformGroup(rotate);
+		final TransformGroup objSpin = new TransformGroup();
+		objSpin.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		final Transform3D scale = new Transform3D();
+		scale.setScale(0.1d);
+		final TransformGroup objScale = new TransformGroup(scale);
+		// Text2D temt_text
+		// = new Text2D("Testing text", new Color3f(1.0f, 1.0f, 0.0f), "Courier New",18,0);
+		// objRoot.addChild(temt_text);
+		objRoot.addChild(objScale);
+		objScale.addChild(objRotate);
+		objRotate.addChild(objSpin);
+		objSpin.addChild(new PointDrawer(pts, mode));
+		/*
+		 * Create a new Behavior object that will perform the desired operation on the specified
+		 * transform object and add it into the scene graph.
+		 */
+		final Transform3D zAxis = new Transform3D();
+		zAxis.rotX(Math.PI / 2.0d);
+		final Alpha rotationAlpha = new Alpha(-1, 20000);
+		final RotationInterpolator rotator = new RotationInterpolator(rotationAlpha, objSpin,
+				zAxis, 0.0f, (float) Math.PI * 2.0f);
+		final BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
+		rotator.setSchedulingBounds(bounds);
+		
+		final Background bg_white = new Background(new Color3f(0.9f, 0.9f, 0.9f));
+		bg_white.setApplicationBounds(bounds);
+		objRoot.addChild(bg_white);
+		if (!this.is2d) {
+			objSpin.addChild(rotator);
+		}
+		// Let Java 3D perform optimizations on this scene graph.
+		objRoot.compile();
+		return objRoot;
+	}
 	public class PointDrawer extends Shape3D {
 		
 		public PointDrawer(final List <Point3d> pts, final int mode) {
@@ -172,57 +222,6 @@ public class PolyRenderer extends JApplet {
 			appearance.setPolygonAttributes(polyAttrib);
 			return appearance;
 		}
-	}
-	
-	/** Create scene graph branch group */
-	private BranchGroup createSceneGraph(final List <Point3d> pts, final int mode) {
-		final BranchGroup objRoot = new BranchGroup();
-		/*-
-		 * Create the transform group node and initialize it to the identity.
-		 * Enable the TRANSFORM_WRITE capability so that our behavior code can modify it at runtime.
-		 * Add it to the root of the subgraph.
-		 */
-		final Transform3D rotate = new Transform3D();
-		final Transform3D tempRotate = new Transform3D();
-		if (!this.is2d) {
-			rotate.rotX(Math.PI * 1.75d);
-			tempRotate.rotZ(Math.PI * 1.15d);
-			rotate.mul(tempRotate);
-		}
-		final TransformGroup objRotate = new TransformGroup(rotate);
-		final TransformGroup objSpin = new TransformGroup();
-		objSpin.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-		final Transform3D scale = new Transform3D();
-		scale.setScale(0.1d);
-		final TransformGroup objScale = new TransformGroup(scale);
-		// Text2D temt_text
-		// = new Text2D("Testing text", new Color3f(1.0f, 1.0f, 0.0f), "Courier New",18,0);
-		// objRoot.addChild(temt_text);
-		objRoot.addChild(objScale);
-		objScale.addChild(objRotate);
-		objRotate.addChild(objSpin);
-		objSpin.addChild(new PointDrawer(pts, mode));
-		/*
-		 * Create a new Behavior object that will perform the desired operation on the specified
-		 * transform object and add it into the scene graph.
-		 */
-		final Transform3D zAxis = new Transform3D();
-		zAxis.rotX(Math.PI / 2.0d);
-		final Alpha rotationAlpha = new Alpha(-1, 20000);
-		final RotationInterpolator rotator = new RotationInterpolator(rotationAlpha, objSpin,
-				zAxis, 0.0f, (float) Math.PI * 2.0f);
-		final BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
-		rotator.setSchedulingBounds(bounds);
-		
-		final Background bg_white = new Background(new Color3f(0.9f, 0.9f, 0.9f));
-		bg_white.setApplicationBounds(bounds);
-		objRoot.addChild(bg_white);
-		if (!this.is2d) {
-			objSpin.addChild(rotator);
-		}
-		// Let Java 3D perform optimizations on this scene graph.
-		objRoot.compile();
-		return objRoot;
 	}
 	
 	public static Frame doDrawFrame(
