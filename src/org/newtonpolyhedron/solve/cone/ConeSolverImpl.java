@@ -27,7 +27,6 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import org.fs.utils.structure.wrap.Pair;
-import org.newtonpolyhedron.entity.vector.AbstractVector;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.utils.MatrixUtils;
 

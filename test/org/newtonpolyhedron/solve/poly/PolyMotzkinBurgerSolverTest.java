@@ -453,8 +453,8 @@ public class PolyMotzkinBurgerSolverTest {
 		
 		KeyTable <IntVector, Integer, Boolean> lookupTable = doSolve(pointList, null, null);
 		
-		fail("Implement me!");
 		System.out.println(lookupTable);
+		fail("Implement me!");
 	}
 	
 	//
