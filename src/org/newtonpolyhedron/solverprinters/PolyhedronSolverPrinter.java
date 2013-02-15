@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -96,12 +97,14 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		final Map <Integer, IndexedSet <Surface>> surfacesMap = surfaceBuilder.getSurfaces(
 				lookupTable, dim);
 		
+		List <Surface> upperDimSurfaces = Collections.emptyList();
 		for (final Entry <Integer, IndexedSet <Surface>> entry : surfacesMap.entrySet()) {
 			output.println(subheader("Surface Dimension:" + entry.getKey()));
 			int idx = 0;
 			for (final Surface surface : entry.getValue()) {
-				output.println(format("  {0})\t{1}", idx++, surface.toString()));
+				output.println(format("  {0})\t{1}", idx++, surface.makeString(upperDimSurfaces)));
 			}
+			upperDimSurfaces = new ArrayList <Surface>(entry.getValue());
 		}
 		
 		if (dim <= 3 && illustrate) {

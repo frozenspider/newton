@@ -138,13 +138,13 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 		for (final Iterator <Surface> resultIter = surfaces.iterator(); resultIter.hasNext();) {
 			final Surface currentSurface = resultIter.next();
 			
-			final List <Integer> superiorIndices = surfaceListConatiningSuperior(
-					upperLevelSurfaces, currentSurface);
+			final List <Surface> superior = surfaceListConatiningSuperior(upperLevelSurfaces,
+					currentSurface);
 			
-			if (targetDimension == 0 && superiorIndices.size() < polyhedronDimension - 1) {
+			if (targetDimension == 0 && superior.size() < polyhedronDimension - 1) {
 				resultIter.remove();
 			} else {
-				currentSurface.addUpperDimSurfaceIndices(superiorIndices);
+				currentSurface.addUpperDimSurfaces(superior);
 			}
 		}
 	}
@@ -191,17 +191,16 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 	 * @return list of superior surface indices
 	 * @see #surfaceListConatinsSuperior(List, Surface)
 	 */
-	private static List <Integer> surfaceListConatiningSuperior(
+	private static List <Surface> surfaceListConatiningSuperior(
 			final IndexedSet <Surface> upperLevelSurfaces,
 			final Surface surface) {
-		final List <Integer> surfaceIndicesList = new ArrayList <Integer>();
+		final List <Surface> surfacesList = new ArrayList <Surface>();
 		final List <Integer> checkedSurfacePointsList = surface.getPointIdxList();
-		for (int i = 0; i < upperLevelSurfaces.size(); ++i) {
-			final Surface listedSurface = upperLevelSurfaces.get(i);
+		for (final Surface listedSurface : upperLevelSurfaces) {
 			if (listedSurface.getPointIdxList().containsAll(checkedSurfacePointsList)) {
-				surfaceIndicesList.add(i);
+				surfacesList.add(listedSurface);
 			}
 		}
-		return surfaceIndicesList;
+		return surfacesList;
 	}
 }

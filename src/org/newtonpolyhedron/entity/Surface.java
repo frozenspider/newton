@@ -13,10 +13,7 @@ public class Surface implements Comparable <Surface> {
 	
 	/** Indices of a points, forming the border. Never <code>null</code>. */
 	private final List <Integer>	pointIdxList;
-	/**
-	 * Indices of a upper dimension surfaces, for which this border is common. Never
-	 * <code>null</code>.
-	 */
+	/** Upper dimension surfaces, for which this border is common. Never <code>null</code>. */
 	private final List <Surface>	upperDimSurfaces;
 	
 	/**
@@ -80,7 +77,7 @@ public class Surface implements Comparable <Surface> {
 		return result.toString();
 	}
 	
-	public String makeString(List <Surface> upperDimSurfaces) {
+	public String makeString(List <Surface> allUpperDimSurfaces) {
 		final StringBuilder result = new StringBuilder();
 		result.append('{');
 		result.append(StringUtils.join(pointIdxList, ", "));
@@ -89,7 +86,7 @@ public class Surface implements Comparable <Surface> {
 			result.append(" / ");
 			List <Integer> upperDimSurfacesIdxList = new ArrayList <Integer>();
 			for (Surface surface : upperDimSurfaces) {
-				int idx = upperDimSurfaces.indexOf(surface);
+				int idx = allUpperDimSurfaces.indexOf(surface);
 				if (idx < 0) {
 					throw new RuntimeException("Upper dimension surface is missing"
 							+ " from its all upper dimension surfaces list");
