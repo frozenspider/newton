@@ -47,10 +47,7 @@ public class PolyRenderer extends JApplet {
 	}
 	
 	/** Create scene graph branch group */
-	private BranchGroup createSceneGraph(
-			final List <Point3d> pts,
-			final int mode,
-			final boolean is2d) {
+	private BranchGroup createSceneGraph(final List <Point3d> pts, final int mode, final boolean is2d) {
 		final BranchGroup objRoot = new BranchGroup();
 		// Create the transform group node and initialize it to the identity.
 		// Enable the TRANSFORM_WRITE capability so that our behavior code can modify it at runtime.
@@ -88,8 +85,8 @@ public class PolyRenderer extends JApplet {
 		bgWhite.setApplicationBounds(bounds);
 		objRoot.addChild(bgWhite);
 		if (!is2d) {
-			final RotationInterpolator rotator = new RotationInterpolator(rotationAlpha, objSpin,
-					zAxis, 0.0f, (float) Math.PI * 2.0f);
+			final RotationInterpolator rotator = new RotationInterpolator(rotationAlpha, objSpin, zAxis, 0.0f,
+					(float) Math.PI * 2.0f);
 			rotator.setSchedulingBounds(bounds);
 			objSpin.addChild(rotator);
 		}
@@ -161,8 +158,7 @@ public class PolyRenderer extends JApplet {
 				axisX.add(new Point3f(0.0f, 0.0f, len));
 				axisX.add(new Point3f(0.0f, -dif, len - dif));
 			}
-			final GeometryArray axisGeom = new LineArray(30, GeometryArray.COORDINATES
-					| GeometryArray.COLOR_3);
+			final GeometryArray axisGeom = new LineArray(30, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
 			for (int i = 0; i < axisX.size(); i++) {
 				axisGeom.setCoordinate(i, axisX.get(i));
 			}
@@ -194,8 +190,7 @@ public class PolyRenderer extends JApplet {
 			final int ptsCount = pts.size();
 			// Sum(1 to n)
 			final int sum = ptsCount * (ptsCount - 1) / 2;
-			final GeometryArray lineArr = new LineArray(sum * 2, GeometryArray.COORDINATES
-					| GeometryArray.COLOR_3);
+			final GeometryArray lineArr = new LineArray(sum * 2, GeometryArray.COORDINATES | GeometryArray.COLOR_3);
 			if (color != null) {
 				final Color3f[] colors = new Color3f[sum * 2];
 				Arrays.fill(colors, new Color3f(color));
@@ -212,8 +207,7 @@ public class PolyRenderer extends JApplet {
 		}
 		
 		private Geometry createTriangles(final List <Point3d> pts, final Color color) {
-			final GeometryArray lineArr = new LineArray(pts.size(), GeometryArray.COORDINATES
-					| GeometryArray.COLOR_3);
+			final GeometryArray lineArr = new LineArray(pts.size(), GeometryArray.COORDINATES | GeometryArray.COLOR_3);
 			for (int i = 0; i < pts.size(); i++) {
 				lineArr.setCoordinate(i, pts.get(i));
 			}

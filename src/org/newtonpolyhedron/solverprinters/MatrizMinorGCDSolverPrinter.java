@@ -23,8 +23,7 @@ public class MatrizMinorGCDSolverPrinter extends SolverPrinter <MatrizMinorGCDSo
 	}
 	
 	@Override
-	protected void solveFor(final MatrizMinorGCDSolver solver, final PrintWriter output)
-			throws Exception {
+	protected void solveFor(final MatrizMinorGCDSolver solver, final PrintWriter output) throws Exception {
 		final Pair <Integer, List <BigInteger>> result = solver.getLastRowGcd(baseMatrix);
 		output.println(subheader("Last row minors:"));
 		output.println(result.getRight());

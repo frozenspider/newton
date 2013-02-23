@@ -33,8 +33,7 @@ public class MatrixUtils {
 		return create(dim, dim);
 	}
 	
-	public static FieldMatrix <BigFraction> fromInt(final int[][] matrix)
-			throws FractionConversionException {
+	public static FieldMatrix <BigFraction> fromInt(final int[][] matrix) throws FractionConversionException {
 		if (matrix.length == 0) throw new IllegalArgumentException("Zero-sized matrix");
 		final BigFraction[][] content = new BigFraction[matrix.length][matrix[0].length];
 		for (int i = 0; i < matrix.length; i++) {
@@ -98,8 +97,7 @@ public class MatrixUtils {
 	
 	public static int getRank(final FieldMatrix <BigFraction> matrix) {
 		if (matrix.getRowDimension() == 0) throw new IllegalArgumentException("0-row matrix");
-		if (matrix.getColumnDimension() == 0)
-			throw new IllegalArgumentException("0-column matrix");
+		if (matrix.getColumnDimension() == 0) throw new IllegalArgumentException("0-column matrix");
 		
 		{
 			// Zero matrix check
@@ -126,10 +124,8 @@ public class MatrixUtils {
 		return rank;
 	}
 	
-	public static BigFraction getDet(
-			final FieldMatrix <BigFraction> matrix,
-			final int skipRow,
-			final int skipCol) throws ArithmeticException {
+	public static BigFraction getDet(final FieldMatrix <BigFraction> matrix, final int skipRow, final int skipCol)
+			throws ArithmeticException {
 		final int rowDim = matrix.getRowDimension();
 		final int colDim = matrix.getColumnDimension();
 		if (skipCol >= colDim) throw new ArithmeticException("skipCol >= dim");
@@ -234,8 +230,7 @@ public class MatrixUtils {
 			final FieldVector <BigFraction> currRow = matrix.getRowVector(currIdx);
 			for (int i = currIdx + 1; i < rowDim; i++) {
 				FieldVector <BigFraction> otherRow = matrix.getRowVector(i);
-				final BigFraction coeff = otherRow.getEntry(currIdx).divide(
-						currRow.getEntry(currIdx));
+				final BigFraction coeff = otherRow.getEntry(currIdx).divide(currRow.getEntry(currIdx));
 				
 				otherRow = otherRow.subtract(currRow.mapMultiply(coeff));
 				
@@ -406,20 +401,14 @@ public class MatrixUtils {
 		matrix.setRowVector(dstRowIdx, dstRowSub);
 	}
 	
-	private static void swapCols(
-			final FieldMatrix <BigFraction> matrix,
-			final int idx1,
-			final int idx2) {
+	private static void swapCols(final FieldMatrix <BigFraction> matrix, final int idx1, final int idx2) {
 		final FieldVector <BigFraction> col1 = matrix.getColumnVector(idx1);
 		final FieldVector <BigFraction> col2 = matrix.getColumnVector(idx2);
 		matrix.setColumnVector(idx1, col2);
 		matrix.setColumnVector(idx2, col1);
 	}
 	
-	private static void swapRows(
-			final FieldMatrix <BigFraction> matrix,
-			final int idx1,
-			final int idx2) {
+	private static void swapRows(final FieldMatrix <BigFraction> matrix, final int idx1, final int idx2) {
 		final FieldVector <BigFraction> row1 = matrix.getRowVector(idx1);
 		final FieldVector <BigFraction> row2 = matrix.getRowVector(idx2);
 		matrix.setRowVector(idx1, row2);
@@ -442,15 +431,13 @@ public class MatrixUtils {
 		int[] colsWidth = new int[matrix.getColumnDimension()];
 		for (int row = 0; row < matrix.getRowDimension(); ++row) {
 			for (int col = 0; col < matrix.getColumnDimension(); ++col) {
-				colsWidth[col] = Math.max(colsWidth[col],
-						String.valueOf(matrix.getEntry(row, col)).length());
+				colsWidth[col] = Math.max(colsWidth[col], String.valueOf(matrix.getEntry(row, col)).length());
 			}
 		}
 		StringBuilder result = new StringBuilder();
 		for (int row = 0; row < matrix.getRowDimension(); ++row) {
 			for (int col = 0; col < matrix.getColumnDimension(); ++col) {
-				result.append(String.format("%1$#" + colsWidth[col] + "s ",
-						matrix.getEntry(row, col).toString()));
+				result.append(String.format("%1$#" + colsWidth[col] + "s ", matrix.getEntry(row, col).toString()));
 			}
 			result.append('\n');
 		}

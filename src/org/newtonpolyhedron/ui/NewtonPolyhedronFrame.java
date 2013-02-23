@@ -104,8 +104,7 @@ public class NewtonPolyhedronFrame extends JFrame {
 		@Override
 		public void actionPerformed(final ActionEvent e) {
 			final JFileChooser chooser = new JFileChooser();
-			chooser.setCurrentDirectory(new File(tfPathToInput.getText().length() == 0 ? "."
-					: tfPathToInput.getText()));
+			chooser.setCurrentDirectory(new File(tfPathToInput.getText().length() == 0 ? "." : tfPathToInput.getText()));
 			final int returnVal = chooser.showOpenDialog(NewtonPolyhedronFrame.this);
 			if (returnVal == JFileChooser.APPROVE_OPTION) {
 				tfPathToInput.setText(chooser.getSelectedFile().getAbsolutePath());

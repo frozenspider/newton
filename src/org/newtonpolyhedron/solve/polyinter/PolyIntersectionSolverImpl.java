@@ -26,14 +26,11 @@ public class PolyIntersectionSolverImpl implements PolyIntersectionSolver {
 	}
 	
 	@Override
-	public Map <IntVector, List <List <Integer>>> solve(
-			final List <List <FractionVector>> polyhedrons,
-			final int dim) throws Exception {
-		if (dim < 3)
-			throw new IllegalArgumentException("No intersections are possible below 3-dimension");
+	public Map <IntVector, List <List <Integer>>> solve(final List <List <FractionVector>> polyhedrons, final int dim)
+			throws Exception {
+		if (dim < 3) throw new IllegalArgumentException("No intersections are possible below 3-dimension");
 		if (polyhedrons.size() < dim - 1)
-			throw new IllegalArgumentException(
-					"Not enough polyhedrons for intersecting at dimension " + dim);
+			throw new IllegalArgumentException("Not enough polyhedrons for intersecting at dimension " + dim);
 		final List <Integer> polyPtsCount = new ArrayList <Integer>();
 		for (final List <FractionVector> poly : polyhedrons) {
 			polyPtsCount.add(poly.size());
@@ -55,8 +52,7 @@ public class PolyIntersectionSolverImpl implements PolyIntersectionSolver {
 			}
 			// -- Construct a system
 			
-			final List <IntVector> solution = coneSolver.solve(commonEqSys, null, dim,
-					NullPrintWriter.instance);
+			final List <IntVector> solution = coneSolver.solve(commonEqSys, null, dim, NullPrintWriter.instance);
 			
 			removeNonIntersectingSolutions(solution, eqSystems);
 			

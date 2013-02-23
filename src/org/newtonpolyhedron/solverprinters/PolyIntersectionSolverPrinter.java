@@ -32,8 +32,7 @@ public class PolyIntersectionSolverPrinter extends SolverPrinter <PolyIntersecti
 	}
 	
 	@Override
-	protected void solveFor(final PolyIntersectionSolver solver, final PrintWriter output)
-			throws Exception {
+	protected void solveFor(final PolyIntersectionSolver solver, final PrintWriter output) throws Exception {
 		output.println(title("Polyhedron intersection"));
 		output.println(header("Original points:"));
 		for (int i = 0; i < polyhedrons.size(); ++i) {
@@ -57,8 +56,7 @@ public class PolyIntersectionSolverPrinter extends SolverPrinter <PolyIntersecti
 			final IntVector vector = entry.getKey();
 			for (final List <Integer> indices : entry.getValue()) {
 				for (int i = 0; i < indices.size(); ++i) {
-					final Set <Integer> pts = vectPtTable.get(i, vector,
-							new SortedArrayList <Integer>());
+					final Set <Integer> pts = vectPtTable.get(i, vector, new SortedArrayList <Integer>());
 					pts.add(indices.get(i));
 				}
 			}

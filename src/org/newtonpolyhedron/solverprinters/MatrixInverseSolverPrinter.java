@@ -11,9 +11,7 @@ public class MatrixInverseSolverPrinter extends SolverPrinter <Void> {
 	
 	private final FieldMatrix <BigFraction>	baseMatrix;
 	
-	public MatrixInverseSolverPrinter(
-			final FieldMatrix <BigFraction> baseMatrix,
-			final PrintWriter output) {
+	public MatrixInverseSolverPrinter(final FieldMatrix <BigFraction> baseMatrix, final PrintWriter output) {
 		super(null, output);
 		this.baseMatrix = baseMatrix;
 	}

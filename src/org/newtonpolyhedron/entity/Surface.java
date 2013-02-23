@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.fs.utils.ObjectUtils;
 
-
 public class Surface implements Comparable <Surface> {
 	
 	/** Indices of a points, forming the border. Never <code>null</code>. */
@@ -24,14 +23,11 @@ public class Surface implements Comparable <Surface> {
 	 * @param upperDimSurfacesIdxList
 	 *            upper dimension surfaces containing this one
 	 */
-	public Surface(
-			final Collection <Integer> pointIdxList,
-			final Collection <Surface> upperDimSurfacesIdxList) {
-		this.pointIdxList = pointIdxList == null ? new ArrayList <Integer>(1)
-				: new ArrayList <Integer>(pointIdxList);
+	public Surface(final Collection <Integer> pointIdxList, final Collection <Surface> upperDimSurfacesIdxList) {
+		this.pointIdxList = pointIdxList == null ? new ArrayList <Integer>(1) : new ArrayList <Integer>(pointIdxList);
 		Collections.sort(this.pointIdxList);
-		this.upperDimSurfaces = upperDimSurfacesIdxList == null ? new ArrayList <Surface>(1)
-				: new ArrayList <Surface>(upperDimSurfacesIdxList);
+		this.upperDimSurfaces = upperDimSurfacesIdxList == null ? new ArrayList <Surface>(1) : new ArrayList <Surface>(
+				upperDimSurfacesIdxList);
 	}
 	
 	/** @return number of points in surface */

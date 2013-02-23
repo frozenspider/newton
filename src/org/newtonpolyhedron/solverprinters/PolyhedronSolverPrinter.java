@@ -70,8 +70,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	}
 	
 	@Override
-	protected void solveFor(final PolyhedronSolver solver, final PrintWriter output)
-			throws Exception {
+	protected void solveFor(final PolyhedronSolver solver, final PrintWriter output) throws Exception {
 		
 		output.println(title("Polyhedron computing"));
 		
@@ -90,12 +89,10 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 			output.println(" (none)");
 		}
 		
-		final KeyTable <IntVector, Integer, Boolean> lookupTable = solver.solve(points,
-				commonLimits, basis, output);
+		final KeyTable <IntVector, Integer, Boolean> lookupTable = solver.solve(points, commonLimits, basis, output);
 		printLookupTable(lookupTable, output);
 		
-		final Map <Integer, IndexedSet <Surface>> surfacesMap = surfaceBuilder.getSurfaces(
-				lookupTable, dim);
+		final Map <Integer, IndexedSet <Surface>> surfacesMap = surfaceBuilder.getSurfaces(lookupTable, dim);
 		
 		List <Surface> upperDimSurfaces = Collections.emptyList();
 		for (final Entry <Integer, IndexedSet <Surface>> entry : surfacesMap.entrySet()) {
@@ -158,8 +155,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		for (final Surface line : lines) {
 			borderEdgesAlt.addAll(CollectionUtils.getAll(points3d, line.getPointIdxList()));
 		}
-		illustrFrames.add(doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512,
-				dim == 2));
+		illustrFrames.add(doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2));
 		
 		try {
 			while (!Thread.interrupted()) {
@@ -188,9 +184,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		return frame;
 	}
 	
-	private static List <Surface> collectLineCorners(
-			Collection <Surface> surfaces,
-			List <FractionVector> points) {
+	private static List <Surface> collectLineCorners(Collection <Surface> surfaces, List <FractionVector> points) {
 		List <Surface> result = new ArrayList <Surface>(surfaces.size());
 		for (Surface surface : surfaces) {
 			if (surface.size() == 2) {
@@ -217,11 +211,9 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 				}
 			}
 			if (lesserPtIdx != greaterPtIdx)
-				return new Surface(Arrays.asList(lesserPtIdx, greaterPtIdx),
-						surface.getUpperDimSurfacesList());
+				return new Surface(Arrays.asList(lesserPtIdx, greaterPtIdx), surface.getUpperDimSurfacesList());
 		}
 		// If this is the case - all points are same
-		return new Surface(Arrays.asList(surfacePtsIndices.get(0)),
-				surface.getUpperDimSurfacesList());
+		return new Surface(Arrays.asList(surfacePtsIndices.get(0)), surface.getUpperDimSurfacesList());
 	}
 }

@@ -83,8 +83,7 @@ public class ConeSolverImpl implements ConeSolver {
 		for (int i = 1; i < eqSysMutable.size(); i++) {
 			final IntVector currEq = eqSysMutable.get(i);
 			if (nonZeroValsExists(basis, currEq)) {
-				final Pair <List <IntVector>, List <IntVector>> pair = solveEqSystem_withBasis(
-						currEq, basis, fundSol);
+				final Pair <List <IntVector>, List <IntVector>> pair = solveEqSystem_withBasis(currEq, basis, fundSol);
 				basis = pair.getFirst();
 				fundSol = pair.getSecond();
 			} else {
@@ -119,9 +118,7 @@ public class ConeSolverImpl implements ConeSolver {
 		return fundSol;
 	}
 	
-	private static List <IntVector> getInitialBasis(
-			final int dim,
-			final List <IntVector> wishfulBasis) {
+	private static List <IntVector> getInitialBasis(final int dim, final List <IntVector> wishfulBasis) {
 		final List <IntVector> basis = new ArrayList <IntVector>();
 		if (wishfulBasis == null || wishfulBasis.isEmpty()) { // TODO: remove isEmpty check?
 			for (int currDim = 0; currDim < dim; currDim++) {
@@ -179,8 +176,12 @@ public class ConeSolverImpl implements ConeSolver {
 			
 			// New basis element
 			// newBasisVec = basis[i] * l[cai] - basis[cai] * l[i]
-			final IntVector newBasisElement = basisCurr.multiply(lActive).subtract(
-					basisActive/* Should be basisActive2 ? */.multiply(lCurr)).getReduced();
+			final IntVector newBasisElement = basisCurr.multiply(lActive).subtract(basisActive/*
+																							 * Should
+																							 * be
+																							 * basisActive2
+																							 * ?
+																							 */.multiply(lCurr)).getReduced();
 			
 			newBasis.add(newBasisElement);
 		}
@@ -196,8 +197,7 @@ public class ConeSolverImpl implements ConeSolver {
 			
 			// New fundSol element
 			// basis[cai] * lVn - fundSol[i] * l[cai];
-			final IntVector newFundSol = basisActive.multiply(lVn).subtract(
-					fundSolCurr.multiply(lActive)).getReduced();
+			final IntVector newFundSol = basisActive.multiply(lVn).subtract(fundSolCurr.multiply(lActive)).getReduced();
 			newFundSols.add(newFundSol);
 		}
 		
@@ -318,8 +318,7 @@ public class ConeSolverImpl implements ConeSolver {
 					final BigInteger lNegative = currEq.dotProduct(cNegative);
 					final BigInteger lPositive = currEq.dotProduct(cPositive);
 					
-					final IntVector combinedSol = cNegative.multiply(lPositive).subtract(
-							cPositive.multiply(lNegative)).getReduced();
+					final IntVector combinedSol = cNegative.multiply(lPositive).subtract(cPositive.multiply(lNegative)).getReduced();
 					
 					final ValidationResult validation = valudateSolution(combinedSol, eqSysPart);
 					if (validation == ValidationResult.CONFORMS_POS) {
@@ -339,9 +338,7 @@ public class ConeSolverImpl implements ConeSolver {
 		return wrap(newFundSol);
 	}
 	
-	private static ValidationResult valudateSolution(
-			final IntVector cVec,
-			final List <IntVector> eqSysPart) {
+	private static ValidationResult valudateSolution(final IntVector cVec, final List <IntVector> eqSysPart) {
 		
 		// We don't need to skip leading [0,0,0] vector
 		

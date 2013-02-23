@@ -9,8 +9,6 @@ import org.newtonpolyhedron.entity.vector.IntVector;
 
 public interface SurfaceBuilder {
 	
-	public Map <Integer, IndexedSet <Surface>> getSurfaces(
-			KeyTable <IntVector, Integer, Boolean> lookupTable,
-			int dim);
+	public Map <Integer, IndexedSet <Surface>> getSurfaces(KeyTable <IntVector, Integer, Boolean> lookupTable, int dim);
 	
 }
