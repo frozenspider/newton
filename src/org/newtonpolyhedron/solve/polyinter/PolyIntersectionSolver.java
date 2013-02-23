@@ -18,7 +18,6 @@ public interface PolyIntersectionSolver {
 	 * @return { vector : [ point indices list per polyhedron ] }
 	 * @throws Exception
 	 */
-	public Map <IntVector, List <List <Integer>>> solve(
-			List <List <FractionVector>> polyhedrons,
-			int dim) throws Exception;
+	public Map <IntVector, List <List <Integer>>> solve(List <List <FractionVector>> polyhedrons, int dim)
+			throws Exception;
 }

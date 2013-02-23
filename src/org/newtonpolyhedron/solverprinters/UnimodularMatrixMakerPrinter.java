@@ -22,8 +22,7 @@ public class UnimodularMatrixMakerPrinter extends SolverPrinter <UnimodularMatri
 	}
 	
 	@Override
-	protected void solveFor(final UnimodularMatrixMaker solver, final PrintWriter output)
-			throws Exception {
+	protected void solveFor(final UnimodularMatrixMaker solver, final PrintWriter output) throws Exception {
 		final FieldMatrix <BigFraction> alpha = solver.getUnimodularFrom(baseMatrix);
 		output.println(title("Unimodular \"Alpha\" matrix"));
 		StringBuilder text1 = new StringBuilder();

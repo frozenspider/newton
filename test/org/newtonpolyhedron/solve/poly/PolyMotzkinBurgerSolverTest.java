@@ -2,6 +2,7 @@ package org.newtonpolyhedron.solve.poly;
 
 import static org.junit.Assert.*;
 
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -442,6 +443,20 @@ public class PolyMotzkinBurgerSolverTest {
 		assertEquals(expectedLookupTable, lookupTable);
 	}
 	
+	@Test
+	public void degenerateFlatFourPtsTriangleIn3d() throws Exception {
+		List <FractionVector> pointList = new ArrayList <FractionVector>();
+		pointList.add(new FractionVector(3, 0, 0));
+		pointList.add(new FractionVector(0, 3, 0));
+		pointList.add(new FractionVector(0, 0, 3));
+		pointList.add(new FractionVector(1, 1, 1));
+		
+		KeyTable <IntVector, Integer, Boolean> lookupTable = doSolve(pointList, null, null);
+		
+		System.out.println(lookupTable);
+		fail("Implement me!");
+	}
+	
 	//
 	// Supportive
 	//
@@ -471,6 +486,7 @@ public class PolyMotzkinBurgerSolverTest {
 			List <FractionVector> pointList,
 			List <IntVector> commonLimits,
 			List <IntVector> wishfulBasis) throws Exception {
-		return solver.solve(pointList, commonLimits, wishfulBasis, NullPrintWriter.instance);
+		
+		return solver.solve(pointList, commonLimits, wishfulBasis, /*NullPrintWriter.instance*/new PrintWriter(System.out, true));
 	}
 }

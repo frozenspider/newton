@@ -39,9 +39,7 @@ public class ConeSolverPrinter extends SolverPrinter <ConeSolver> {
 		coneFinalSolutionOutput(solved, output);
 	}
 	
-	private static void coneFinalSolutionOutput(
-			final List <IntVector> testing,
-			final PrintWriter output) {
+	private static void coneFinalSolutionOutput(final List <IntVector> testing, final PrintWriter output) {
 		output.println(header("FINAL SOLUTIONS:"));
 		for (int i = 0; i < testing.size(); i++) {
 			final String str = testing.get(i).toString();

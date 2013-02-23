@@ -44,8 +44,7 @@ public class PolyMotzkinBurgerSolver implements PolyhedronSolver {
 				pointless.addAll(commonLimits);
 			}
 			
-			final List <IntVector> tempSols = coneSolver.solve(pointless, wishfulBasis, dim,
-					NullPrintWriter.instance);
+			final List <IntVector> tempSols = coneSolver.solve(pointless, wishfulBasis, dim, NullPrintWriter.instance);
 			
 			for (final IntVector tempSol : tempSols) {
 				boolean alreadyThere = false;
@@ -70,9 +69,7 @@ public class PolyMotzkinBurgerSolver implements PolyhedronSolver {
 		return lookupTable;
 	}
 	
-	private void fillTableIdxKeys(
-			final KeyTable <IntVector, Integer, Boolean> lookupTable,
-			final int upTo) {
+	private void fillTableIdxKeys(final KeyTable <IntVector, Integer, Boolean> lookupTable, final int upTo) {
 		for (int i = 0; i < upTo; ++i) {
 			lookupTable.put(null, i, null);
 		}

@@ -19,7 +19,6 @@ import static org.newtonpolyhedron.utils.ArithUtils.*;
 
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.fs.utils.structure.wrap.Pair;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.utils.MatrixUtils;
 
@@ -39,9 +39,8 @@ public class ConeSolverImpl implements ConeSolver {
 			final List <IntVector> inequations,
 			final List <IntVector> basis,
 			final int dim,
-			final PrintWriter output) throws InterruptedException {
-		final List <IntVector> fundamentalSolution = coneSolve(new ArrayList <IntVector>(
-				inequations), basis, dim, output);
+			final PrintWriter output) {
+		final List <IntVector> fundamentalSolution = coneSolve(inequations, basis, dim, output);
 		final int rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(inequations));
 		removeZeroProductSolutions(inequations, fundamentalSolution, rank);
 		return fundamentalSolution;
@@ -67,36 +66,36 @@ public class ConeSolverImpl implements ConeSolver {
 	}
 	
 	private static List <IntVector> coneSolve(
-			final List <IntVector> eqSysMutable,
+			final List <IntVector> eqSys,
 			final List <IntVector> wishfulBasis,
 			final int dim,
-			final PrintWriter output) throws InterruptedException {
+			final PrintWriter output) {
+		final List <IntVector> eqSysMutable = new ArrayList <IntVector>(eqSys);
 		{
 			final IntVector zeroPoint = IntVector.empty(dim);
 			if (!eqSysMutable.get(0).equals(zeroPoint)) {
 				eqSysMutable.add(0, zeroPoint);
 			}
 		}
-		final List <IntVector> basis = getInitialBasis(dim, wishfulBasis);
-		final List <IntVector> fundSol = new ArrayList <IntVector>();
+		List <IntVector> basis = getInitialBasis(dim, wishfulBasis);
+		List <IntVector> fundSol = new ArrayList <IntVector>();
 		
 		for (int i = 1; i < eqSysMutable.size(); i++) {
 			final IntVector currEq = eqSysMutable.get(i);
 			if (nonZeroValsExists(basis, currEq)) {
-				solveEqSystem_withBasis(currEq, basis, fundSol);
+				final Pair <List <IntVector>, List <IntVector>> pair = solveEqSystem_withBasis(currEq, basis, fundSol);
+				basis = pair.getFirst();
+				fundSol = pair.getSecond();
 			} else {
 				final List <IntVector> eqSysPart = eqSysMutable.subList(0, i);
-				solveEqSystem_withoutBasis(currEq, eqSysPart, fundSol, dim);
+				fundSol = solveEqSystem_withoutBasis(currEq, eqSysPart, fundSol, dim);
 			}
 			output.println("\n === Step " + i + " ===");
 			fundSolAndBasisOutput(basis, fundSol, output);
-			if (Thread.interrupted())
-				throw new InterruptedException(MessageFormat.format(
-						"coneSolve - eqs cycle. i = {0}/{1}", i, eqSysMutable.size()));
 		}
 		
 		
-		wrap(fundSol);
+		fundSol = wrap(fundSol);
 		
 		final ListIterator <IntVector> resultIter = fundSol.listIterator();
 		while (resultIter.hasNext()) {
@@ -114,14 +113,12 @@ public class ConeSolverImpl implements ConeSolver {
 			}
 		}
 		
-		wrap(fundSol);
+		fundSol = wrap(fundSol);
 		
 		return fundSol;
 	}
 	
-	private static List <IntVector> getInitialBasis(
-			final int dim,
-			final List <IntVector> wishfulBasis) {
+	private static List <IntVector> getInitialBasis(final int dim, final List <IntVector> wishfulBasis) {
 		final List <IntVector> basis = new ArrayList <IntVector>();
 		if (wishfulBasis == null || wishfulBasis.isEmpty()) { // TODO: remove isEmpty check?
 			for (int currDim = 0; currDim < dim; currDim++) {
@@ -140,17 +137,16 @@ public class ConeSolverImpl implements ConeSolver {
 		return false;
 	}
 	
-	
-	
 	/**
 	 * One iteration of an inequation system solving for ???
 	 * 
 	 * @param currEq
-	 * @param basis
+	 * @param tempBasis
 	 *            solution basis, cannot be empty
 	 * @param fundSol
+	 * @return new basis and fundamental solutions
 	 */
-	private static void solveEqSystem_withBasis(
+	private static Pair <List <IntVector>, List <IntVector>> solveEqSystem_withBasis(
 			final IntVector currEq,
 			final List <IntVector> basis,
 			final List <IntVector> fundSol) {
@@ -160,24 +156,32 @@ public class ConeSolverImpl implements ConeSolver {
 		final List <IntVector> newFundSols = new ArrayList <IntVector>();
 		
 		// Pre-calculate values of l(u) AND reverse vector of an old basis
-		final IntVector l = calculateLAndReverseBasisIfNeeded(currEq, basis);
+		final Pair <IntVector, List <IntVector>> temp = calculateLAndTempBasis(currEq, basis);
+		final IntVector l = temp.getFirst();
+		final List <IntVector> tempBasis = temp.getSecond();
+		
 		final int currActiveIdx = findBasisWorkingElementIndex(l);
 		
 		final BigInteger lActive = l.get(currActiveIdx);
-		final IntVector basisActive = basis.get(currActiveIdx);
+		final IntVector basisActive = tempBasis.get(currActiveIdx);
+		final IntVector basisActive2 = basis.get(currActiveIdx);
 		
 		// ADD NEW BASIS LINE
-		for (int i = 0; i < basis.size(); i++) {
+		for (int i = 0; i < tempBasis.size(); i++) {
 			if (i == currActiveIdx) {
 				continue;
 			}
-			final IntVector basisCurr = basis.get(i);
+			final IntVector basisCurr = tempBasis.get(i);
 			final BigInteger lCurr = l.get(i);
 			
 			// New basis element
 			// newBasisVec = basis[i] * l[cai] - basis[cai] * l[i]
-			final IntVector newBasisElement = basisCurr.multiply(lActive).subtract(
-					basisActive.multiply(lCurr)).getReduced();
+			final IntVector newBasisElement = basisCurr.multiply(lActive).subtract(basisActive/*
+																							 * Should
+																							 * be
+																							 * basisActive2
+																							 * ?
+																							 */.multiply(lCurr)).getReduced();
 			
 			newBasis.add(newBasisElement);
 		}
@@ -193,46 +197,42 @@ public class ConeSolverImpl implements ConeSolver {
 			
 			// New fundSol element
 			// basis[cai] * lVn - fundSol[i] * l[cai];
-			final IntVector newFundSol = basisActive.multiply(lVn).subtract(
-					fundSolCurr.multiply(lActive)).getReduced();
+			final IntVector newFundSol = basisActive.multiply(lVn).subtract(fundSolCurr.multiply(lActive)).getReduced();
 			newFundSols.add(newFundSol);
 		}
 		
-		wrap(newFundSols);
-		
-		basis.clear();
-		basis.addAll(newBasis);
-		fundSol.clear();
-		fundSol.addAll(newFundSols);
+		return Pair.make(newBasis, wrap(newFundSols));
 	}
 	
 	/**
-	 * Calculating l(u[i]). If necessary, replaces first fitting basis vector with negated one.
+	 * Calculating l(u[i]). If necessary, inverses first fitting basis vector.
 	 * 
 	 * @param currEq
 	 *            selected (in)equation
 	 * @param basis
 	 *            current basis
-	 * @return l(u[i]) vector
+	 * @return l(u[i]) vector and modified basis to be used with it
 	 */
-	private static IntVector calculateLAndReverseBasisIfNeeded(
+	private static Pair <IntVector, List <IntVector>> calculateLAndTempBasis(
 			final IntVector currEq,
 			final List <IntVector> basis) {
 		final List <BigInteger> lBase = new ArrayList <BigInteger>();
+		final List <IntVector> tempBasis = new ArrayList <IntVector>();
 		boolean found = false;
-		for (final ListIterator <IntVector> basisIter = basis.listIterator(); basisIter.hasNext();) {
-			final IntVector basisVec = basisIter.next();
-			BigInteger lBaseCurr = currEq.dotProduct(basisVec);
+		for (final IntVector basisVec : basis) {
+			final BigInteger lBaseCurr = currEq.dotProduct(basisVec);
+			boolean inverse = false;
 			if (!found && !isZero(lBaseCurr)) {
-				if (greater(lBaseCurr, ZERO)) {
-					lBaseCurr = lBaseCurr.negate();
-					basisIter.set(basisVec.negate());
-				}
+				inverse = greater(lBaseCurr, ZERO);
 				found = true;
 			}
-			lBase.add(lBaseCurr);
+			tempBasis.add(!inverse ? basisVec : basisVec.negate());
+			lBase.add(!inverse ? lBaseCurr : lBaseCurr.negate());
 		}
-		return new IntVector(lBase); // Non-reduced
+		return Pair.make( //
+				new IntVector(lBase), // Non-reduced
+				tempBasis //
+		);
 	}
 	
 	/**
@@ -249,29 +249,42 @@ public class ConeSolverImpl implements ConeSolver {
 		return -1;
 	}
 	
-	private static void solveEqSystem_withoutBasis(
+	/**
+	 * Solves an equation system if basis is exhausted.
+	 * 
+	 * @param currEq
+	 *            current equation
+	 * @param eqSysPart
+	 *            part of equation system, from first to current equation exclusive (btw, why part?)
+	 * @param fundSol
+	 *            fundamental solution
+	 * @param dim
+	 *            space dimension
+	 * @return new fundamental solution
+	 */
+	private static List <IntVector> solveEqSystem_withoutBasis(
 			final IntVector currEq,
 			final List <IntVector> eqSysPart,
 			final List <IntVector> fundSol,
 			final int dim) {
-		final List <IntVector> fundSol_Zero = new ArrayList <IntVector>();
-		final List <IntVector> fundSol_Minus = new ArrayList <IntVector>();
+		final List <IntVector> fundSolZero = new ArrayList <IntVector>();
+		final List <IntVector> fundSolMinus = new ArrayList <IntVector>();
 		final List <IntVector> fundSol_Plus = new ArrayList <IntVector>();
-		final List <IntVector> fundSol_Combined = new ArrayList <IntVector>();
+		final List <IntVector> fundSolCombined = new ArrayList <IntVector>();
 		
 		for (final IntVector currFundSol : fundSol) {
 			final BigInteger dotProd = currEq.dotProduct(currFundSol);
 			
 			if (isZero(dotProd)) {
-				fundSol_Zero.add(currFundSol);
+				fundSolZero.add(currFundSol);
 			} else if (less(dotProd, ZERO)) {
-				fundSol_Minus.add(currFundSol);
+				fundSolMinus.add(currFundSol);
 			} else {
 				fundSol_Plus.add(currFundSol);
 			}
 		}
 		
-		for (final IntVector cNegative : fundSol_Minus) {
+		for (final IntVector cNegative : fundSolMinus) {
 			for (final IntVector cPositive : fundSol_Plus) {
 				final boolean shouldCombine;
 				if (dim == 2 || fundSol.size() == 2) {
@@ -305,30 +318,27 @@ public class ConeSolverImpl implements ConeSolver {
 					final BigInteger lNegative = currEq.dotProduct(cNegative);
 					final BigInteger lPositive = currEq.dotProduct(cPositive);
 					
-					final IntVector combinedSol = cNegative.multiply(lPositive).subtract(
-							cPositive.multiply(lNegative)).getReduced();
+					final IntVector combinedSol = cNegative.multiply(lPositive).subtract(cPositive.multiply(lNegative)).getReduced();
 					
 					final ValidationResult validation = valudateSolution(combinedSol, eqSysPart);
 					if (validation == ValidationResult.CONFORMS_POS) {
-						fundSol_Combined.add(combinedSol);
+						fundSolCombined.add(combinedSol);
 					} else if (validation == ValidationResult.CONFORMS_NEG) {
-						fundSol_Combined.add(combinedSol.negate());
+						fundSolCombined.add(combinedSol.negate());
 					} else
 						// Impossible
 						throw new RuntimeException("Somehow, non-conforming +/- combination");
 				}
 			}
 		}
-		fundSol.clear();
-		fundSol.addAll(fundSol_Zero);
-		fundSol.addAll(fundSol_Minus);
-		fundSol.addAll(fundSol_Combined);
-		wrap(fundSol);
+		final List <IntVector> newFundSol = new ArrayList <IntVector>();
+		newFundSol.addAll(fundSolZero);
+		newFundSol.addAll(fundSolMinus);
+		newFundSol.addAll(fundSolCombined);
+		return wrap(newFundSol);
 	}
 	
-	private static ValidationResult valudateSolution(
-			final IntVector cVec,
-			final List <IntVector> eqSysPart) {
+	private static ValidationResult valudateSolution(final IntVector cVec, final List <IntVector> eqSysPart) {
 		
 		// We don't need to skip leading [0,0,0] vector
 		
@@ -358,12 +368,14 @@ public class ConeSolverImpl implements ConeSolver {
 	}
 	
 	/**
-	 * Removes duplicates and zero vectors.
+	 * Removes duplicates and zero vectors. Doesn't cause side effects.
 	 * 
 	 * @param vecList
+	 *            input
+	 * @return refined input
 	 */
-	protected static void wrap(final List <IntVector> vecList) {
-		if (vecList.isEmpty()) return;
+	protected static List <IntVector> wrap(final List <IntVector> vecList) {
+		if (vecList.isEmpty()) return vecList;
 		final int dim = vecList.get(0).getDim();
 		
 		// Removing duplicates
@@ -372,9 +384,7 @@ public class ConeSolverImpl implements ConeSolver {
 		// Removing zero vectors
 		vectorSet.remove(IntVector.empty(dim));
 		
-		// Changing initial collection
-		vecList.clear();
-		vecList.addAll(vectorSet);
+		return new ArrayList <IntVector>(vectorSet);
 	}
 	
 	//

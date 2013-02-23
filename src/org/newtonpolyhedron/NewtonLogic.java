@@ -67,11 +67,8 @@ public class NewtonLogic {
 	 * @throws Exception
 	 *             if... whatever.
 	 */
-	public void start(
-			final String path,
-			final WorkingMode mode,
-			final boolean illustrate,
-			final PrintWriter writer) throws WrongFormatException, UnknownModeException, Exception {
+	public void start(final String path, final WorkingMode mode, final boolean illustrate, final PrintWriter writer)
+			throws WrongFormatException, UnknownModeException, Exception {
 		final File file = new File(path);
 		final SolverPrinter <?> solver;
 		switch (mode) {
@@ -119,12 +116,10 @@ public class NewtonLogic {
 		final ConeSolver coneSolver = new ConeSolverImpl();
 		final PolyhedronSolver solver = new PolyMotzkinBurgerSolver(coneSolver);
 		final SurfaceBuilder surfaceBuilder = new SurfaceBuilderImpl();
-		return new PolyhedronSolverPrinter(solver, surfaceBuilder, pointList, commonLimits, basis,
-				illustrate, writer);
+		return new PolyhedronSolverPrinter(solver, surfaceBuilder, pointList, commonLimits, basis, illustrate, writer);
 	}
 	
-	private SolverPrinter <?> launchIntersection(final File file, final PrintWriter writer)
-			throws IOException {
+	private SolverPrinter <?> launchIntersection(final File file, final PrintWriter writer) throws IOException {
 		final BigFractionFormat frFormat = FractionVectorFormat.getFractionFormat();
 		final List <List <FractionVector>> polyhedrons = new ArrayList <List <FractionVector>>();
 		final Reader inputF = new FileReader(file);
@@ -173,18 +168,15 @@ public class NewtonLogic {
 		return new PolyIntersectionSolverPrinter(solver, polyhedrons, dim, writer);
 	}
 	
-	private SolverPrinter <?> launchCone(final File file, final PrintWriter writer)
-			throws IOException {
+	private SolverPrinter <?> launchCone(final File file, final PrintWriter writer) throws IOException {
 		final List <IntVector> pointList = new ArrayList <IntVector>();
 		final List <IntVector> basis = new ArrayList <IntVector>();
-		readFromFile(file, pointList, new ArrayList <IntVector>(), basis,
-				IntVectorFormat.getInstance());
+		readFromFile(file, pointList, new ArrayList <IntVector>(), basis, IntVectorFormat.getInstance());
 		final ConeSolver solver = new ConeSolverImpl();
 		return new ConeSolverPrinter(solver, pointList, basis, writer);
 	}
 	
-	private SolverPrinter <?> launchMatrixDet(final File file, final PrintWriter writer)
-			throws IOException {
+	private SolverPrinter <?> launchMatrixDet(final File file, final PrintWriter writer) throws IOException {
 		final BigFractionFormat frFormat = FractionVectorFormat.getFractionFormat();
 		final List <BigFraction[]> listMatrix = new ArrayList <BigFraction[]>();
 		final int skipRow;
@@ -222,8 +214,7 @@ public class NewtonLogic {
 		return new MatrixDetSolverPrinter(arrayMatrix, skipRow, skipCol, writer);
 	}
 	
-	private SolverPrinter <?> launchMatrixInverse(final File file, final PrintWriter writer)
-			throws IOException {
+	private SolverPrinter <?> launchMatrixInverse(final File file, final PrintWriter writer) throws IOException {
 		final BigFractionFormat frFormat = FractionVectorFormat.getFractionFormat();
 		final List <BigFraction[]> listMatrix = new ArrayList <BigFraction[]>();
 		final Reader inputF = new FileReader(file);
@@ -256,8 +247,7 @@ public class NewtonLogic {
 		return new MatrixInverseSolverPrinter(arrayMatrix, writer);
 	}
 	
-	private SolverPrinter <?> launchMatrixUniAlpha(final File file, final PrintWriter writer)
-			throws IOException {
+	private SolverPrinter <?> launchMatrixUniAlpha(final File file, final PrintWriter writer) throws IOException {
 		final BigFractionFormat frFormat = FractionVectorFormat.getFractionFormat();
 		final FieldMatrix <BigFraction> baseMatrix;
 		final Reader inputF = new FileReader(file);
@@ -296,8 +286,7 @@ public class NewtonLogic {
 		return new UnimodularMatrixMakerPrinter(matrixMaker, baseMatrix, writer);
 	}
 	
-	private SolverPrinter <?> launchMatrixMinorGCD(final File file, final PrintWriter writer)
-			throws IOException {
+	private SolverPrinter <?> launchMatrixMinorGCD(final File file, final PrintWriter writer) throws IOException {
 		final BigFractionFormat frFormat = FractionVectorFormat.getFractionFormat();
 		final FieldMatrix <BigFraction> baseMatrix;
 		final Reader inputF = new FileReader(file);

@@ -63,8 +63,7 @@ public class BigFractionExtFormat extends BigFractionFormat {
 	private BigDecimal parseNextBigDecimal(final String source, final ParsePosition pos) {
 		final int start = pos.getIndex();
 		int end = source.charAt(start) == '-' ? start + 1 : start;
-		while (end < source.length()
-				&& (Character.isDigit(source.charAt(end)) || source.charAt(end) == '.')) {
+		while (end < source.length() && (Character.isDigit(source.charAt(end)) || source.charAt(end) == '.')) {
 			++end;
 		}
 		

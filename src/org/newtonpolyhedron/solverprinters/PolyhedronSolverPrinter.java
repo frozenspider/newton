@@ -19,23 +19,30 @@ import static java.text.MessageFormat.*;
 import java.awt.Frame;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.vecmath.Point3d;
 
+import org.fs.utils.collection.CollectionUtils;
 import org.fs.utils.collection.set.IndexedSet;
 import org.fs.utils.collection.table.ArrayListKeyTable;
 import org.fs.utils.collection.table.KeyTable;
-import org.newtonpolyhedron.PointsLineApp;
 import org.newtonpolyhedron.entity.SolverPrinter;
 import org.newtonpolyhedron.entity.Surface;
 import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver;
 import org.newtonpolyhedron.solve.surface.SurfaceBuilder;
+import org.newtonpolyhedron.ui.render3d.PolyRenderer;
+import org.newtonpolyhedron.utils.ArithUtils;
 import org.newtonpolyhedron.utils.PointUtils;
+
+import com.sun.j3d.utils.applet.MainFrame;
 
 public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	
@@ -63,8 +70,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	}
 	
 	@Override
-	protected void solveFor(final PolyhedronSolver solver, final PrintWriter output)
-			throws Exception {
+	protected void solveFor(final PolyhedronSolver solver, final PrintWriter output) throws Exception {
 		
 		output.println(title("Polyhedron computing"));
 		
@@ -83,19 +89,19 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 			output.println(" (none)");
 		}
 		
-		final KeyTable <IntVector, Integer, Boolean> lookupTable = solver.solve(points,
-				commonLimits, basis, output);
+		final KeyTable <IntVector, Integer, Boolean> lookupTable = solver.solve(points, commonLimits, basis, output);
 		printLookupTable(lookupTable, output);
 		
-		final Map <Integer, IndexedSet <Surface>> surfacesMap = surfaceBuilder.getSurfaces(
-				lookupTable, dim);
+		final Map <Integer, IndexedSet <Surface>> surfacesMap = surfaceBuilder.getSurfaces(lookupTable, dim);
 		
+		List <Surface> upperDimSurfaces = Collections.emptyList();
 		for (final Entry <Integer, IndexedSet <Surface>> entry : surfacesMap.entrySet()) {
 			output.println(subheader("Surface Dimension:" + entry.getKey()));
 			int idx = 0;
 			for (final Surface surface : entry.getValue()) {
-				output.println(format("  {0})\t{1}", idx++, surface.toString()));
+				output.println(format("  {0})\t{1}", idx++, surface.makeString(upperDimSurfaces)));
 			}
+			upperDimSurfaces = new ArrayList <Surface>(entry.getValue());
 		}
 		
 		if (dim <= 3 && illustrate) {
@@ -143,18 +149,13 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 		}
 		
 		final List <Frame> illustrFrames = new ArrayList <Frame>();
-		illustrFrames.add(PointsLineApp.doDrawFrame(points3d, null, PointsLineApp.ALL_VS_ALL, 0,
-				150, 512, 512, dim == 2));
+		illustrFrames.add(doDrawFrame(points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2));
 		final List <Point3d> borderEdgesAlt = new ArrayList <Point3d>();
-		final IndexedSet <Surface> oneDimSurfaces = surfacesMap.get(1);
-		for (final Surface border : oneDimSurfaces) {
-			for (final int borderPtIdx : border.getPointIdxList()) {
-				borderEdgesAlt.add(PointUtils.toPoint3d(points.get(borderPtIdx)));
-			}
-			
+		final List <Surface> lines = collectLineCorners(surfacesMap.get(1), points);
+		for (final Surface line : lines) {
+			borderEdgesAlt.addAll(CollectionUtils.getAll(points3d, line.getPointIdxList()));
 		}
-		illustrFrames.add(PointsLineApp.doDrawFrame(borderEdgesAlt, null, PointsLineApp.TRIANGLES,
-				512, 150, 512, 512, dim == 2));
+		illustrFrames.add(doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2));
 		
 		try {
 			while (!Thread.interrupted()) {
@@ -167,5 +168,52 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 				frame.dispose();
 			}
 		}
+	}
+	
+	private static Frame doDrawFrame(
+			final List <Point3d> pts,
+			final int mode,
+			final int positionX,
+			final int positionY,
+			final int width,
+			final int height,
+			final boolean is2d) {
+		final PolyRenderer polyRenderer = new PolyRenderer(pts, mode, is2d);
+		final MainFrame frame = new MainFrame(polyRenderer, width, height);
+		frame.setLocation(positionX, positionY);
+		return frame;
+	}
+	
+	private static List <Surface> collectLineCorners(Collection <Surface> surfaces, List <FractionVector> points) {
+		List <Surface> result = new ArrayList <Surface>(surfaces.size());
+		for (Surface surface : surfaces) {
+			if (surface.size() == 2) {
+				result.add(surface);
+			} else {
+				result.add(getLineCorners(surface, points));
+			}
+		}
+		return result;
+	}
+	
+	private static Surface getLineCorners(Surface surface, List <FractionVector> points) {
+		List <Integer> surfacePtsIndices = surface.getPointIdxList();
+		for (int t = 0; t < points.get(0).getDim(); ++t) {
+			int lesserPtIdx = surfacePtsIndices.get(0);
+			int greaterPtIdx = surfacePtsIndices.get(0);
+			
+			for (int ptIdx : surfacePtsIndices) {
+				if (ArithUtils.less(points.get(ptIdx).get(t), points.get(lesserPtIdx).get(t))) {
+					lesserPtIdx = ptIdx;
+				}
+				if (ArithUtils.greater(points.get(ptIdx).get(t), points.get(greaterPtIdx).get(t))) {
+					greaterPtIdx = ptIdx;
+				}
+			}
+			if (lesserPtIdx != greaterPtIdx)
+				return new Surface(Arrays.asList(lesserPtIdx, greaterPtIdx), surface.getUpperDimSurfacesList());
+		}
+		// If this is the case - all points are same
+		return new Surface(Arrays.asList(surfacePtsIndices.get(0)), surface.getUpperDimSurfacesList());
 	}
 }

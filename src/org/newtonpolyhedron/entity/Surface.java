@@ -5,18 +5,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.fs.utils.ObjectUtils;
-
 
 public class Surface implements Comparable <Surface> {
 	
 	/** Indices of a points, forming the border. Never <code>null</code>. */
 	private final List <Integer>	pointIdxList;
-	/**
-	 * Indices of a upper dimension surfaces, for which this border is common. Never
-	 * <code>null</code>.
-	 */
-	private final List <Integer>	upperDimSurfacesIdxList;
+	/** Upper dimension surfaces, for which this border is common. Never <code>null</code>. */
+	private final List <Surface>	upperDimSurfaces;
 	
 	/**
 	 * Note: copies the collections content, all arguments can be <code>null</code>
@@ -26,35 +23,33 @@ public class Surface implements Comparable <Surface> {
 	 * @param upperDimSurfacesIdxList
 	 *            upper dimension surfaces containing this one
 	 */
-	public Surface(
-			final Collection <Integer> pointIdxList,
-			final Collection <Integer> upperDimSurfacesIdxList) {
-		this.pointIdxList = pointIdxList == null ? new ArrayList <Integer>(1)
-				: new ArrayList <Integer>(pointIdxList);
+	public Surface(final Collection <Integer> pointIdxList, final Collection <Surface> upperDimSurfacesIdxList) {
+		this.pointIdxList = pointIdxList == null ? new ArrayList <Integer>(1) : new ArrayList <Integer>(pointIdxList);
 		Collections.sort(this.pointIdxList);
-		this.upperDimSurfacesIdxList = upperDimSurfacesIdxList == null ? new ArrayList <Integer>(1)
-				: new ArrayList <Integer>(upperDimSurfacesIdxList);
+		this.upperDimSurfaces = upperDimSurfacesIdxList == null ? new ArrayList <Surface>(1) : new ArrayList <Surface>(
+				upperDimSurfacesIdxList);
 	}
 	
+	/** @return number of points in surface */
 	public int size() {
 		return pointIdxList.size();
 	}
 	
-	public void addUpperDimSurfaceIndices(final List <Integer> upperDimSurfacesIdxList) {
-		for (final Integer bordersIdx : upperDimSurfacesIdxList) {
-			if (!this.upperDimSurfacesIdxList.contains(bordersIdx)) {
-				this.upperDimSurfacesIdxList.add(bordersIdx);
+	public void addUpperDimSurfaces(final List <Surface> upperDimSurfaces) {
+		for (final Surface surface : upperDimSurfaces) {
+			if (!this.upperDimSurfaces.contains(surface)) {
+				this.upperDimSurfaces.add(surface);
 			}
 		}
-		Collections.sort(this.upperDimSurfacesIdxList);
+		Collections.sort(this.upperDimSurfaces);
 	}
 	
 	public List <Integer> getPointIdxList() {
-		return pointIdxList;
+		return Collections.unmodifiableList(pointIdxList);
 	}
 	
-	public List <Integer> getUpperDimSurfacesIdxList() {
-		return upperDimSurfacesIdxList;
+	public List <Surface> getUpperDimSurfacesList() {
+		return Collections.unmodifiableList(upperDimSurfaces);
 	}
 	
 	@Override
@@ -69,30 +64,32 @@ public class Surface implements Comparable <Surface> {
 		return getPointIdxList().equals(cast.getPointIdxList());
 	}
 	
-	public boolean deepEquals(final Object obj) {
-		if (!(obj instanceof Surface)) return false;
-		final Surface cast = (Surface) obj;
-		return getPointIdxList().equals(cast.getPointIdxList())//
-				&& getUpperDimSurfacesIdxList().equals(cast.getUpperDimSurfacesIdxList());
-	}
-	
 	@Override
 	public String toString() {
 		final StringBuilder result = new StringBuilder();
 		result.append('{');
-		for (final Integer pointIdx : pointIdxList) {
-			result.append(' ');
-			result.append(pointIdx);
-			result.append(',');
-		}
-		result.append(" }");
-		if (!upperDimSurfacesIdxList.isEmpty()) {
-			result.append("  / ");
-			for (final Integer borderIdx : upperDimSurfacesIdxList) {
-				result.append(' ');
-				result.append(borderIdx);
-				result.append(',');
+		result.append(StringUtils.join(pointIdxList, ", "));
+		result.append("}");
+		return result.toString();
+	}
+	
+	public String makeString(List <Surface> allUpperDimSurfaces) {
+		final StringBuilder result = new StringBuilder();
+		result.append('{');
+		result.append(StringUtils.join(pointIdxList, ", "));
+		result.append("}");
+		if (!upperDimSurfaces.isEmpty()) {
+			result.append(" / ");
+			List <Integer> upperDimSurfacesIdxList = new ArrayList <Integer>();
+			for (Surface surface : upperDimSurfaces) {
+				int idx = allUpperDimSurfaces.indexOf(surface);
+				if (idx < 0) {
+					throw new RuntimeException("Upper dimension surface is missing"
+							+ " from its all upper dimension surfaces list");
+				}
+				upperDimSurfacesIdxList.add(idx);
 			}
+			result.append(StringUtils.join(upperDimSurfacesIdxList, ", "));
 		}
 		return result.toString();
 	}
