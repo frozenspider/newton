@@ -49,11 +49,11 @@ public class Surface implements Comparable <Surface> {
 	}
 	
 	public List <Integer> getPointIdxList() {
-		return pointIdxList;
+		return Collections.unmodifiableList(pointIdxList);
 	}
 	
-	public List <Surface> getUpperDimSurfacesIdxList() {
-		return upperDimSurfaces;
+	public List <Surface> getUpperDimSurfacesList() {
+		return Collections.unmodifiableList(upperDimSurfaces);
 	}
 	
 	@Override

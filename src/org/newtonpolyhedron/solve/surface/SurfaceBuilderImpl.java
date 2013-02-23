@@ -32,8 +32,7 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 		return surfacesMap;
 	}
 	
-	private List <List <Integer>> extactLookupTableData(
-			final KeyTable <IntVector, Integer, Boolean> lookupTable) {
+	private List <List <Integer>> extactLookupTableData(final KeyTable <IntVector, Integer, Boolean> lookupTable) {
 		final List <List <Integer>> result = new ArrayList <List <Integer>>();
 		for (final IntVector point : lookupTable.rowKeyList()) {
 			final List <Integer> row = new ArrayList <Integer>();
@@ -63,12 +62,10 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 	protected static IndexedSet <Surface> findCommonSurfaces(
 			final int polyhedronDimension,
 			final int targetDimension,
-			final IndexedSet <Surface> upperLevelSurfaces,
+			final Collection <Surface> upperLevelSurfaces,
 			final List <List <Integer>> lookupTableData) {
-		if (polyhedronDimension < 2)
-			throw new IllegalArgumentException("Polyhedron dimension >= 2");
-		if (targetDimension < 0)
-			throw new IllegalArgumentException("Target dimension must be nonnegative");
+		if (polyhedronDimension < 2) throw new IllegalArgumentException("Polyhedron dimension >= 2");
+		if (targetDimension < 0) throw new IllegalArgumentException("Target dimension must be nonnegative");
 		if (targetDimension >= polyhedronDimension)
 			throw new IllegalArgumentException("Target dimension must be <= poly dimension");
 		final int width = polyhedronDimension - targetDimension;
@@ -110,8 +107,7 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 		
 		removeSemiDuplicates(surfaces);
 		
-		gatherHigherLevelSurfacesInfo(surfaces, upperLevelSurfaces, targetDimension,
-				polyhedronDimension);
+		gatherHigherLevelSurfacesInfo(surfaces, upperLevelSurfaces, targetDimension, polyhedronDimension);
 		
 		return surfaces;
 	}
@@ -124,22 +120,21 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 			final List <Surface> surfaceListCopy = new ArrayList <Surface>(surfaces);
 			surfaceListCopy.remove(currentSurface);
 			
-			if (surfaceListConatinsSuperior(surfaceListCopy, currentSurface)) {
+			if (surfacesConatinsGiven(currentSurface, surfaceListCopy)) {
 				resultIter.remove();
 			}
 		}
 	}
 	
 	private static void gatherHigherLevelSurfacesInfo(
-			final IndexedSet <Surface> surfaces,
-			final IndexedSet <Surface> upperLevelSurfaces,
+			final Collection <Surface> surfaces,
+			final Collection <Surface> upperLevelSurfaces,
 			final int targetDimension,
 			final int polyhedronDimension) {
 		for (final Iterator <Surface> resultIter = surfaces.iterator(); resultIter.hasNext();) {
 			final Surface currentSurface = resultIter.next();
 			
-			final List <Surface> superior = surfaceListConatiningSuperior(upperLevelSurfaces,
-					currentSurface);
+			final List <Surface> superior = surfacesConatiningGiven(currentSurface, upperLevelSurfaces);
 			
 			if (targetDimension == 0 && superior.size() < polyhedronDimension - 1) {
 				resultIter.remove();
@@ -164,22 +159,19 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 	 * @param surface
 	 *            new surface to test
 	 * @return <code>true</code>, if list contains a surface, which is superior to the given.
-	 * @see #surfaceListConatiningSuperior(List, Surface)
+	 * @see #surfacesConatiningGiven(Surface, Collection)
 	 */
-	private static boolean surfaceListConatinsSuperior(
-			final Collection <Surface> upperLevelSurfaces,
-			final Surface surface) {
-		final List <Integer> checkedSurfacePointsList = surface.getPointIdxList();
-		for (final Surface possibleSuperSurface : upperLevelSurfaces) {
-			if (possibleSuperSurface.getPointIdxList().containsAll(checkedSurfacePointsList))
-				return true;
+	private static boolean surfacesConatinsGiven(final Surface surface, final Collection <Surface> upperLevelSurfaces) {
+		final List <Integer> pts = surface.getPointIdxList();
+		for (final Surface supersurface : upperLevelSurfaces) {
+			if (supersurface.getPointIdxList().containsAll(pts)) return true;
 		}
 		return false;
 	}
 	
 	/**
-	 * Checks, whether the list already contains a supersurface, which is superior to the given
-	 * surface. For more information, see {@link #surfaceListConatinsSuperior(List, Surface)}.
+	 * Gather surfaces superior to the given surface. For more information, see
+	 * {@link #surfacesConatinsGiven(List, Surface)}.
 	 * <p>
 	 * The only difference is a result - this method returns a list of superior surface indices
 	 * rather than just a boolean.
@@ -188,17 +180,17 @@ public class SurfaceBuilderImpl implements SurfaceBuilder {
 	 *            list of known surfaces
 	 * @param surface
 	 *            new surface to test
-	 * @return list of superior surface indices
-	 * @see #surfaceListConatinsSuperior(List, Surface)
+	 * @return list of superior surfaces
+	 * @see #surfacesConatinsGiven(Surface, Collection)
 	 */
-	private static List <Surface> surfaceListConatiningSuperior(
-			final IndexedSet <Surface> upperLevelSurfaces,
-			final Surface surface) {
+	private static List <Surface> surfacesConatiningGiven(
+			final Surface surface,
+			final Collection <Surface> upperLevelSurfaces) {
+		final List <Integer> pts = surface.getPointIdxList();
 		final List <Surface> surfacesList = new ArrayList <Surface>();
-		final List <Integer> checkedSurfacePointsList = surface.getPointIdxList();
-		for (final Surface listedSurface : upperLevelSurfaces) {
-			if (listedSurface.getPointIdxList().containsAll(checkedSurfacePointsList)) {
-				surfacesList.add(listedSurface);
+		for (final Surface supersurface : upperLevelSurfaces) {
+			if (supersurface.getPointIdxList().containsAll(pts)) {
+				surfacesList.add(supersurface);
 			}
 		}
 		return surfacesList;

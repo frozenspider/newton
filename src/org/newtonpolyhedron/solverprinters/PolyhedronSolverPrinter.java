@@ -203,25 +203,25 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	}
 	
 	private static Surface getLineCorners(Surface surface, List <FractionVector> points) {
-		List <Integer> surfaceIndices = surface.getPointIdxList();
+		List <Integer> surfacePtsIndices = surface.getPointIdxList();
 		for (int t = 0; t < points.get(0).getDim(); ++t) {
-			int lesser = surfaceIndices.get(0);
-			int greater = surfaceIndices.get(0);
+			int lesserPtIdx = surfacePtsIndices.get(0);
+			int greaterPtIdx = surfacePtsIndices.get(0);
 			
-			for (int idx : surfaceIndices) {
-				if (ArithUtils.less(points.get(idx).get(t), points.get(lesser).get(t))) {
-					lesser = idx;
+			for (int ptIdx : surfacePtsIndices) {
+				if (ArithUtils.less(points.get(ptIdx).get(t), points.get(lesserPtIdx).get(t))) {
+					lesserPtIdx = ptIdx;
 				}
-				if (ArithUtils.greater(points.get(idx).get(t), points.get(greater).get(t))) {
-					greater = idx;
+				if (ArithUtils.greater(points.get(ptIdx).get(t), points.get(greaterPtIdx).get(t))) {
+					greaterPtIdx = ptIdx;
 				}
 			}
-			if (lesser != greater)
-				return new Surface(Arrays.asList(lesser, greater),
-						surface.getUpperDimSurfacesIdxList());
+			if (lesserPtIdx != greaterPtIdx)
+				return new Surface(Arrays.asList(lesserPtIdx, greaterPtIdx),
+						surface.getUpperDimSurfacesList());
 		}
 		// If this is the case - all points are same
-		return new Surface(Arrays.asList(surfaceIndices.get(0)),
-				surface.getUpperDimSurfacesIdxList());
+		return new Surface(Arrays.asList(surfacePtsIndices.get(0)),
+				surface.getUpperDimSurfacesList());
 	}
 }
