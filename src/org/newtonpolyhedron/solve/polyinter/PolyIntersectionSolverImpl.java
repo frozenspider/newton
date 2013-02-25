@@ -52,7 +52,7 @@ public class PolyIntersectionSolverImpl implements PolyIntersectionSolver {
 			}
 			// -- Construct a system
 			
-			final List <IntVector> solution = coneSolver.solve(commonEqSys, null, dim, NullPrintWriter.instance);
+			final List <IntVector> solution = new ArrayList <IntVector> (coneSolver.solve(commonEqSys, null, dim, NullPrintWriter.instance));
 			
 			removeNonIntersectingSolutions(solution, eqSystems);
 			
