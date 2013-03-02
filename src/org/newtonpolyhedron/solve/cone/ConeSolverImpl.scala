@@ -10,13 +10,11 @@ import org.newtonpolyhedron.utils.MatrixUtils
 
 class ConeSolverImpl extends ConeSolver {
 
-  def proxyVec(vec: java.util.List[IntVector]): IndexedSeq[IntMathVec] = vec map (x => intvec2mathvec(x))
-  def proxyVec(vec: IndexedSeq[IntVector]): IndexedSeq[IntMathVec] = vec map (x => intvec2mathvec(x))
-
   def solve(inequations: java.util.List[IntVector],
             basis: java.util.List[IntVector],
             dim: Int,
             output: PrintWriter): java.util.List[IntVector] = {
+    def proxyVec(vec: java.util.List[IntVector]): IndexedSeq[IntMathVec] = vec map (x => intvec2mathvec(x))
 
     val ineqs2 = proxyVec(inequations)
     val basis2 = proxyVec(basis)
@@ -108,8 +106,8 @@ class ConeSolverImpl extends ConeSolver {
    * @return new basis and fundamental solutions
    */
   private def solveEqSystemWithBasis(currEq: IntMathVec,
-                                      basis: IndexedSeq[IntMathVec],
-                                      fundSol: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
+                                     basis: IndexedSeq[IntMathVec],
+                                     fundSol: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
     require(!basis.isEmpty, "Empty basis")
 
     // Pre-calculate values of l(u) and reverse vector of an old basis
@@ -183,9 +181,9 @@ class ConeSolverImpl extends ConeSolver {
    * @return new fundamental solution
    */
   private def solveEqSystemWithoutBasis(currEq: IntMathVec,
-                                         eqSysPart: IndexedSeq[IntMathVec],
-                                         fundSol: IndexedSeq[IntMathVec],
-                                         dim: Int): IndexedSeq[IntMathVec] = {
+                                        eqSysPart: IndexedSeq[IntMathVec],
+                                        fundSol: IndexedSeq[IntMathVec],
+                                        dim: Int): IndexedSeq[IntMathVec] = {
     def unrollFundSol(fundSols: IndexedSeq[IntMathVec])(zrs: IndexedSeq[IntMathVec],
                                                         neg: IndexedSeq[IntMathVec],
                                                         pos: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {

@@ -6,9 +6,17 @@ import scala.math.ScalaNumericConversions
 
 import org.apache.commons.math3.fraction.BigFraction
 
+/** Wrapper around {@link org.apache.commons.math3.fraction.BigFraction} */
 class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumericConversions {
   def this(n: Int, d: Int) = this(new BigFraction(n, d))
   def this(n: BigInt, d: BigInt) = this(new BigFraction(n.underlying, d.underlying))
+
+  lazy val num = new BigInt(this.underlying.getNumerator)
+  lazy val den = new BigInt(this.underlying.getDenominator)
+  lazy val quotient = num / den
+  lazy val remainder = num % den
+  /** Behaves exactly as {@link Math#round(double)}.  */
+  lazy val round = new BigInt((this.underlying add BigFraction.ONE_HALF).bigDecimalValue(java.math.BigDecimal.ROUND_FLOOR).toBigIntegerExact)
 
   def +(that: BigFrac) = new BigFrac(this.underlying add that.underlying)
   def +(that: BigInt) = new BigFrac(this.underlying add that.underlying)
@@ -36,6 +44,7 @@ class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumeric
 
   def equals(that: BigFrac): Boolean = this.underlying equals that.underlying
 
+  val isInt = underlying.getDenominator == 1
   def isWhole = true
   def doubleValue = this.underlying.doubleValue
   def floatValue = this.underlying.floatValue
