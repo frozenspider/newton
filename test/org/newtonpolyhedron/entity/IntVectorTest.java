@@ -90,11 +90,4 @@ public class IntVectorTest {
 		BigInteger expectedDotProd = BigInteger.valueOf(16 + 6 + 12);
 		assertEquals(expectedDotProd, v1.dotProduct(v2));
 	}
-	
-	@Test
-	public void withValueAt() throws Exception {
-		IntVector v1 = new IntVector(8, 7, 25);
-		IntVector expected = new IntVector(8, 7, 250);
-		assertEquals(expected, v1.withValueAt(2, 250));
-	}
 }

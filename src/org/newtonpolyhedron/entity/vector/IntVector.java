@@ -181,11 +181,6 @@ public class IntVector extends AbstractVector <BigInteger, IntVector> {
 	}
 	
 	@Override
-	protected BigInteger valueOf(final long value) {
-		return BigInteger.valueOf(value);
-	}
-	
-	@Override
 	protected BigInteger getZeroNumber() {
 		return ZERO;
 	}

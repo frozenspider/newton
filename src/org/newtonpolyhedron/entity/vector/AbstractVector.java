@@ -113,11 +113,15 @@ public abstract class AbstractVector <T extends Comparable <T>,SELF extends Abst
 	
 	protected abstract T getZeroNumber();
 	
-	protected abstract T valueOf(long value);
-	
 	//
 	// Get/Set
 	//
+	public T[] getContentCopy() {
+		final T[] copy = createArrayOfLength(components.length);
+		System.arraycopy(components, 0, copy, 0, components.length);
+		return copy;
+	}
+	
 	public T get(final int idx) {
 		return this.components[idx];
 	}
@@ -126,10 +130,6 @@ public abstract class AbstractVector <T extends Comparable <T>,SELF extends Abst
 		final T[] copy = Arrays.copyOf(this.components, this.components.length);
 		copy[idx] = value;
 		return create(copy);
-	}
-	
-	public SELF withValueAt(final int idx, final long value) {
-		return withValueAt(idx, valueOf(value));
 	}
 	
 	//

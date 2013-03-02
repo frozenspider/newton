@@ -94,11 +94,6 @@ public class FractionVector extends AbstractVector <BigFraction, FractionVector>
 		return new FractionVector(data);
 	}
 	
-	@Override
-	protected BigFraction valueOf(final long value) {
-		return new BigFraction(value);
-	}
-	
 	public IntVector asInt() {
 		return IntVector.fromFractions(components);
 	}
