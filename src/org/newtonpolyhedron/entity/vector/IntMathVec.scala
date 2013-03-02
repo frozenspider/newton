@@ -10,6 +10,7 @@ class IntMathVec(elements: IndexedSeq[BigInt]) extends MathVector[BigInt, IntMat
   def *(n: BigInt) =
     create(elements map (_ * n))
 
+  /** Divided by GCD*/
   def reduced = {
     val gcd = elements reduceLeft (_ gcd _)
     if (gcd == 0 || gcd == 1) this

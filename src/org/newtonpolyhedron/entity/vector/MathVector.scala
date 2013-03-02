@@ -3,8 +3,8 @@ package org.newtonpolyhedron.entity.vector
 abstract class MathVector[T, SELF <: MathVector[T, SELF]](val elements: IndexedSeq[T])(
   implicit val numeric: Numeric[T],
   implicit val ordering: Ordering[IndexedSeq[T]])
-  extends Ordered[MathVector[T, SELF]]
-  with Function1[Int, T] {
+    extends Ordered[MathVector[T, SELF]]
+    with Function1[Int, T] {
 
   val dim = elements.size
   lazy val sum = elements.sum
