@@ -57,4 +57,6 @@ abstract class MathVector[T, SELF <: MathVector[T, SELF]](val elements: IndexedS
     import ordering._
     ordering.compare(this.elements, that.elements)
   }
+
+  override def toString = elements.mkString("[ ", " ", " ]")
 }

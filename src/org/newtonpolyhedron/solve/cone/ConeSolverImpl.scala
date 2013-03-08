@@ -10,7 +10,7 @@ import org.newtonpolyhedron.utils.MatrixUtils
 
 class ConeSolverImpl extends ConeSolver {
 
-  def solve(inequations: java.util.List[IntVector],
+  override def solve(inequations: java.util.List[IntVector],
             basis: java.util.List[IntVector],
             dim: Int,
             output: PrintWriter): java.util.List[IntVector] = {
@@ -21,19 +21,17 @@ class ConeSolverImpl extends ConeSolver {
 
     val fundamentalSolution = solveInner(ineqs2, basis2, dim, output)
     val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(inequations))
-    val result = removeZeroProductSolutions(ineqs2, basis2, rank)
-    return seq2list(fundamentalSolution map (x => mathvec2intvec(x)))
+    val result = withoutZeroProductSolutions(ineqs2, rank)(basis2)
+    seq2list(fundamentalSolution map (x => mathvec2intvec(x)))
   }
 
-  private def removeZeroProductSolutions(base: IndexedSeq[IntMathVec],
-                                         testing: IndexedSeq[IntMathVec],
-                                         rank: Int): IndexedSeq[IntMathVec] = {
+  private def withoutZeroProductSolutions(base: IndexedSeq[IntMathVec],
+                                          rank: Int)(testing: IndexedSeq[IntMathVec]) =
     if (base.isEmpty || testing.isEmpty) testing
     else testing.filter(vec => {
       val toZero = base count (_ *+ vec == 0)
       toZero >= rank - 1
     })
-  }
 
   private def solveInner(eqSys: IndexedSeq[IntMathVec],
                          wishfulBasis: IndexedSeq[IntMathVec],
@@ -41,10 +39,11 @@ class ConeSolverImpl extends ConeSolver {
                          output: PrintWriter): IndexedSeq[IntMathVec] = {
     val zeroPoint = IntMathVec.zero(dim)
     val eqSysWithZeroFirst =
-      if (eqSys(0) == zeroPoint) eqSys else (zeroPoint +: eqSys)
+      /*if (eqSys(0) == zeroPoint) eqSys else*/ (zeroPoint +: eqSys)
 
-    val basis = getInitialBasis(dim, wishfulBasis)
-    val fundSol = solveInitial(Vector(eqSysWithZeroFirst(0)),
+    val basis =
+      if (!wishfulBasis.isEmpty) wishfulBasis else initialBasis(dim)
+    val fundSol = solveRec(Vector(eqSysWithZeroFirst(0)),
       eqSysWithZeroFirst.tail, basis, Vector.empty, dim, 1, output)
 
     val fundSolWrapped = wrap(fundSol)
@@ -56,42 +55,36 @@ class ConeSolverImpl extends ConeSolver {
     } yield validationRes match {
       case CONFORMS_NEG => -sol
       case CONFORMS_POS => sol
+      case NOT_CONFORMS => throw new RuntimeException("Not possible, just to please the compiler")
     }
 
     val fundSolCleanedWrapped = wrap(fundSolCleaned)
     fundSolCleanedWrapped
   }
 
-  private def solveInitial(eqSysPrev: IndexedSeq[IntMathVec],
-                           eqSysNext: IndexedSeq[IntMathVec],
-                           basis: IndexedSeq[IntMathVec],
-                           fundSol: IndexedSeq[IntMathVec],
-                           dim: Int,
-                           currIdx: Int,
-                           output: PrintWriter): IndexedSeq[IntMathVec] = {
-    if (eqSysNext.isEmpty) fundSol
+  private def solveRec(eqSysPrev: IndexedSeq[IntMathVec],
+                       eqSysRemn: IndexedSeq[IntMathVec],
+                       basis: IndexedSeq[IntMathVec],
+                       fundSol: IndexedSeq[IntMathVec],
+                       dim: Int,
+                       currIdx: Int,
+                       output: PrintWriter): IndexedSeq[IntMathVec] =
+    if (eqSysRemn.isEmpty) fundSol
     else {
-      val currEq = eqSysNext(0)
-      val res = if (nonZeroValsExists(basis, currEq)) {
-        val (basis2, fundSol2) = solveEqSystemWithBasis(currEq, basis, fundSol)
-        solveInitial(eqSysPrev :+ currEq, eqSysNext.tail, basis2, fundSol2, dim, currIdx + 1, output)
-      } else {
-        val fundSol2 = solveEqSystemWithoutBasis(currEq, eqSysPrev, fundSol, dim)
-        solveInitial(eqSysPrev :+ currEq, eqSysNext.tail, basis, fundSol2, dim, currIdx + 1, output)
-      }
       output.println("\n === Step " + currIdx + " ===")
       fundSolAndBasisOutput(basis, fundSol, output)
-      res
+      val currEq = eqSysRemn.head
+      val (basis2, fundSol2) =
+        if (nonZeroValsExists(basis, currEq)) {
+          solveEqSysWithBasis(currEq, basis, fundSol)
+        } else {
+          (basis, solveEqSysWithoutBasis(currEq, eqSysPrev, fundSol, dim))
+        }
+      solveRec(eqSysPrev :+ currEq, eqSysRemn.tail, basis2, fundSol2, dim, currIdx + 1, output)
     }
-  }
 
-  private def getInitialBasis(dim: Int, wishfulBasis: IndexedSeq[IntMathVec]) =
-    if (wishfulBasis.isEmpty) {
-      val basis = for (currDim <- 0 until dim) yield IntMathVec.zero(dim).updated(currDim, 1)
-      basis
-    } else {
-      wishfulBasis
-    }
+  private def initialBasis(dim: Int) =
+    for (currDim <- 0 until dim) yield IntMathVec.zero(dim).updated(currDim, 1)
 
   private def nonZeroValsExists(basis: IndexedSeq[IntMathVec], eq: IntMathVec) =
     basis.exists(vec => eq *+ vec != 0)
@@ -105,9 +98,9 @@ class ConeSolverImpl extends ConeSolver {
    * @param fundSol
    * @return new basis and fundamental solutions
    */
-  private def solveEqSystemWithBasis(currEq: IntMathVec,
-                                     basis: IndexedSeq[IntMathVec],
-                                     fundSol: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
+  private def solveEqSysWithBasis(currEq: IntMathVec,
+                                  basis: IndexedSeq[IntMathVec],
+                                  fundSol: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
     require(!basis.isEmpty, "Empty basis")
 
     // Pre-calculate values of l(u) and reverse vector of an old basis
@@ -180,47 +173,45 @@ class ConeSolverImpl extends ConeSolver {
    *            space dimension
    * @return new fundamental solution
    */
-  private def solveEqSystemWithoutBasis(currEq: IntMathVec,
-                                        eqSysPart: IndexedSeq[IntMathVec],
-                                        fundSol: IndexedSeq[IntMathVec],
-                                        dim: Int): IndexedSeq[IntMathVec] = {
+  private def solveEqSysWithoutBasis(currEq: IntMathVec,
+                                     eqSysPart: IndexedSeq[IntMathVec],
+                                     fundSol: IndexedSeq[IntMathVec],
+                                     dim: Int): IndexedSeq[IntMathVec] = {
     def unrollFundSol(fundSols: IndexedSeq[IntMathVec])(zrs: IndexedSeq[IntMathVec],
                                                         neg: IndexedSeq[IntMathVec],
                                                         pos: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
       if (fundSols.isEmpty) (zrs, neg, pos)
       else {
-        val currSol = fundSols.head
-        val partial = unrollFundSol(fundSols.tail)_
-        ((currSol *+ currEq) compare 0) match {
-          case 0  => partial(zrs :+ currSol, neg, pos)
-          case -1 => partial(zrs, neg :+ currSol, pos)
-          case 1  => partial(zrs, neg, pos :+ currSol)
+        val h = fundSols.head
+        val unroll = unrollFundSol(fundSols.tail)_
+        ((h *+ currEq) compare 0) match {
+          case 0  => unroll(zrs :+ h, neg, pos)
+          case -1 => unroll(zrs, neg :+ h, pos)
+          case 1  => unroll(zrs, neg, pos :+ h)
         }
       }
     }
-    def shouldCombine(currNeg: IntMathVec,
-                      currPos: IntMathVec) = {
+    def shouldCombine(v1: IntMathVec, v2: IntMathVec) = {
       if (dim == 2 || fundSol.size == 2) true
       else {
-        val zeroEqs = eqSysPart filter (selEq => (Vector(selEq *+ currPos, selEq *+ currNeg) == Vector(0, 0)))
+        val zeroEqs = eqSysPart filter (selEq => (Vector(v1 *+ selEq, v2 *+ selEq) == Vector(0, 0)))
         val amtsOfZeros = for {
-          currFundSol <- fundSol
-          if currFundSol != currPos && currFundSol != currNeg
-        } yield zeroEqs count (eq => (eq *+ currFundSol) == 0)
+          sol <- fundSol if sol != v1 && sol != v2
+        } yield zeroEqs count (_ *+ sol == 0)
         !amtsOfZeros.contains(zeroEqs.size)
       }
     }
 
     val (zrs, neg, pos) = unrollFundSol(fundSol)(Vector.empty, Vector.empty, Vector.empty)
     val combined = for {
-      currNeg <- neg
-      currPos <- pos
-      if (shouldCombine(currNeg, currPos))
+      n <- neg
+      p <- pos
+      if (shouldCombine(n, p))
     } yield {
-      val lNegative = currEq *+ currNeg
-      val lPositive = currEq *+ currPos
+      val ln = n *+ currEq
+      val lp = p *+ currEq
 
-      val combinedSol = ((currNeg * lPositive) - (currPos * lNegative)).reduced
+      val combinedSol = ((n * lp) - (p * ln)).reduced
 
       valudateSolution(combinedSol, eqSysPart) match {
         case CONFORMS_POS => combinedSol
@@ -229,7 +220,7 @@ class ConeSolverImpl extends ConeSolver {
       }
     }
     val newFundSol = zrs ++ neg ++ combined
-    return wrap(newFundSol)
+    wrap(newFundSol)
   }
 
   def valudateSolution(cVec: IntMathVec,
@@ -247,36 +238,22 @@ class ConeSolverImpl extends ConeSolver {
    *            input
    * @return refined input
    */
-  protected def wrap(vecList: IndexedSeq[IntMathVec]): IndexedSeq[IntMathVec] = {
-    if (vecList.isEmpty) vecList
-    else {
-      val dim = vecList(0).dim
-
-      // Removing duplicates
-      val vectorSet = Set(vecList: _*)
-      // Removing zero vectors
-      (vectorSet - IntMathVec.zero(dim)).toIndexedSeq
-    }
-  }
+  private def wrap(vecList: IndexedSeq[IntMathVec]) =
+    vecList.distinct filter (!_.isZero)
 
   private def fundSolAndBasisOutput(basis: IndexedSeq[IntMathVec],
                                     fundSol: IndexedSeq[IntMathVec],
                                     output: PrintWriter): Unit = {
+    def printSeq[A](xs: Seq[A]): Unit =
+      if (xs.isEmpty) output.println(" (none)")
+      else for (x <- xs) output.println(x)
     output.println("=== Basis: ===")
-    if (basis.size > 0) {
-      for (currBasis <- basis) {
-        output.println(currBasis)
-      }
-    } else {
-      output.println(" (none)")
-    }
+    printSeq(basis)
     output.println("=== Fundamental Solution: ===")
-    for (currSol <- fundSol) {
-      output.println(currSol)
-    }
+    printSeq(fundSol)
   }
 
-  abstract trait ValidationResult
+  sealed abstract trait ValidationResult
   case object CONFORMS_POS extends ValidationResult
   case object CONFORMS_NEG extends ValidationResult
   case object NOT_CONFORMS extends ValidationResult

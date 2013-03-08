@@ -16,8 +16,15 @@ class IntMathVec(elements: IndexedSeq[BigInt]) extends MathVector[BigInt, IntMat
     if (gcd == 0 || gcd == 1) this
     else new IntMathVec(elements map (_ / gcd))
   }
+
+  def isZero =
+    elements forall (_ == IntMathVec.zeroValue)
 }
 
 object IntMathVec {
-  def zero(dim: Int) = new IntMathVec(Vector.fill(dim)(BigInt(0)))
+  private val zeroValue = BigInt(0)
+
+  def zero(dim: Int) = new IntMathVec(Vector.fill(dim)(zeroValue))
+
+  def apply(elements: Int*): IntMathVec = new IntMathVec(elements.toIndexedSeq map (x => BigInt(x)))
 }
