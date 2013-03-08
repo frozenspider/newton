@@ -30,16 +30,16 @@ package object newtonpolyhedron {
     new IntMathVec(content)
   }
 
-  //  def fracvec2mathvec[T](vec: FractionVector): FracMathVec = {
-  //    val content = (vec.getContentCopy() map (x => new BigFrac(x))).toIndexedSeq
-  //    new FracMathVec(content)
-  //  }
+  def fracvec2mathvec[T](vec: FractionVector): FracMathVec = {
+    val content = (vec.getContentCopy() map (x => new BigFrac(x))).toIndexedSeq
+    new FracMathVec(content)
+  }
 
   def mathvec2intvec[T](vec: IntMathVec): IntVector = {
     new IntVector(vec.elements map (_.underlying))
   }
 
-  //  def mathvec2fracvec[T](vec: FracMathVec): FractionVector = {
-  //    new FractionVector(vec.elements map (_.underlying))
-  //  }
+  def mathvec2fracvec[T](vec: FracMathVec): FractionVector = {
+    new FractionVector(vec.elements map (_.underlying))
+  }
 }

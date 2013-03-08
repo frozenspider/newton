@@ -1,9 +1,9 @@
 package org.newtonpolyhedron.entity.vector
 
-abstract class MathVector[T, SELF <: MathVector[T, SELF]](val elements: IndexedSeq[T])(
+abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: IndexedSeq[T])(
   implicit val numeric: Numeric[T],
   implicit val ordering: Ordering[IndexedSeq[T]])
-    extends Ordered[MathVector[T, SELF]]
+    extends Ordered[SELF]
     with Function1[Int, T] {
 
   val dim = elements.size
@@ -53,7 +53,7 @@ abstract class MathVector[T, SELF <: MathVector[T, SELF]](val elements: IndexedS
 
   def apply(index: Int) = elements(index)
 
-  override def compare(that: MathVector[T, SELF]): Int = {
+  override def compare(that: SELF): Int = {
     import ordering._
     ordering.compare(this.elements, that.elements)
   }

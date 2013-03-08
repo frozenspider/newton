@@ -8,9 +8,6 @@ import org.apache.commons.math3.fraction.BigFraction
 
 /** Wrapper around {@link org.apache.commons.math3.fraction.BigFraction} */
 class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumericConversions {
-  def this(n: Int, d: Int) = this(new BigFraction(n, d))
-  def this(n: BigInt, d: BigInt) = this(new BigFraction(n.underlying, d.underlying))
-
   lazy val num = new BigInt(this.underlying.getNumerator)
   lazy val den = new BigInt(this.underlying.getDenominator)
   lazy val quotient = num / den
@@ -53,13 +50,15 @@ class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumeric
 }
 
 object BigFrac {
+  def apply(n: Int, d: Int) = new BigFrac(BigFraction.getReducedFraction(n, d))
+  def apply(n: BigInt, d: BigInt) = new BigFrac(new BigFraction(n.underlying, d.underlying).reduce())
   implicit object BigFracNumeric extends Numeric[BigFrac] {
     override def compare(a: BigFrac, b: BigFrac) = a compare b
     override def plus(x: BigFrac, y: BigFrac): BigFrac = x + y
     override def minus(x: BigFrac, y: BigFrac): BigFrac = x - y
     override def times(x: BigFrac, y: BigFrac): BigFrac = x * y
     override def negate(x: BigFrac): BigFrac = -x
-    override def fromInt(x: Int): BigFrac = new BigFrac(x, 1)
+    override def fromInt(x: Int): BigFrac = BigFrac(x, 1)
     override def toInt(x: BigFrac): Int = x.underlying.intValue
     override def toLong(x: BigFrac): Long = x.underlying.longValue
     override def toFloat(x: BigFrac): Float = x.underlying.floatValue

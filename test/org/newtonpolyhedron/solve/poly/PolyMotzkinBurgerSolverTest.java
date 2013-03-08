@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl;
-import org.newtonpolyhedron.utils.NullPrintWriter;
 
 public class PolyMotzkinBurgerSolverTest {
 	
