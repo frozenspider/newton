@@ -47,6 +47,7 @@ class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumeric
   def floatValue = this.underlying.floatValue
   def longValue = this.underlying.longValue
   def intValue = this.underlying.intValue
+  override def toString = this.underlying.toString
 }
 
 object BigFrac {

@@ -29,6 +29,7 @@ object PointUtils {
    */
   def copySubtractPointAsInt(points: IndexedSeq[FracMathVec],
                              idxToSubs: Int): IndexedSeq[IntMathVec] = {
+    require(points.size > idxToSubs, "Index to big for a collection: " + idxToSubs + " in " + points)
     val toSub = points(idxToSubs)
     val result = points map (pt => IntMathVec.fromFrac(pt - toSub)) filter (!_.isZero)
     result
