@@ -8,8 +8,6 @@ import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.fs.utils.collection.map.BasicSortedMap
 import org.fs.utils.collection.iter.AbstractIterator
-import java.util.ArrayList
-import java.util.Collections
 import org.fs.utils.ListUtils
 import org.newtonpolyhedron.utils.PointUtils
 import org.newtonpolyhedron.utils.ArithUtils
@@ -17,6 +15,7 @@ import org.newtonpolyhedron.utils.NullPrintWriter
 import scala.collection.IndexedSeq
 
 class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyIntersectionSolver {
+
   override def solve(polyhedrons: java.util.List[java.util.List[FractionVector]],
                      dim: Int): java.util.Map[IntVector, java.util.List[java.util.List[Integer]]] = {
     val tmp = solveInner(polyhedrons map (_ map (v => fracvec2mathvec(v))), dim)
@@ -52,10 +51,10 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
       val intersectingSols = solutions filter (isIntersectingSol(eqSystems))
 
       for (solution <- intersectingSols) {
-        var list = ptsForVectors.get(solution);
-        if (list == null) {
-          list = IndexedSeq.empty
-        }
+        var list = if (ptsForVectors.containsKey(solution))
+          ptsForVectors.get(solution)
+        else
+          IndexedSeq.empty
         ptsForVectors.put(solution, list :+ indices)
       }
     }
@@ -71,62 +70,45 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
 
   private def isIntersectingSol(equationSystems: IndexedSeq[IndexedSeq[IntMathVec]])(solution: IntMathVec): Boolean =
     equationSystems forall (_ exists (_ *+ solution == 0))
-}
 
-//
-// Inner classes
-//
-private sealed class IndicesIterable(val length: Int, val maximums: IndexedSeq[Int])
-    extends java.lang.Iterable[IndexedSeq[Int]] {
+  //
+  // Inner classes
+  //
+  private sealed class IndicesIterable(val length: Int, val maximums: IndexedSeq[Int])
+      extends java.lang.Iterable[IndexedSeq[Int]] {
 
-  override def iterator: IndicesIterator =
-    new IndicesIterator(length, maximums)
-}
-
-private sealed class IndicesIterator extends org.fs.utils.collection.iter.AbstractIterator[IndexedSeq[Int]] {
-
-  private var length: Int = _
-  private var current: java.util.List[Int] = _
-  private var nextV: java.util.List[Int] = _
-  private var maximums: java.util.List[Int] = _
-
-  def this(length: Int, maximums: IndexedSeq[Int]) = {
-    this()
-    this.length = length
-    this.current = new ArrayList[Int](seq2list(Vector.fill(length)(0)));
-    this.current.set(length - 1, -1);
-    this.maximums = new ArrayList[Int](seq2list(maximums))
+    override def iterator: IndicesIterator =
+      new IndicesIterator(length, maximums)
   }
 
-  override def hasNext: Boolean = this.synchronized {
-    if (nextV != null) return true;
-    doGetNext
-    return nextV != null;
-  }
+  private sealed class IndicesIterator(val length: Int, val maximums: IndexedSeq[Int]) extends org.fs.utils.collection.iter.AbstractIterator[IndexedSeq[Int]] {
 
-  override def next: IndexedSeq[Int] = this.synchronized {
-    if (!hasNext()) throw new NoSuchElementException();
-    current = nextV;
-    nextV = null;
-    return new ArrayList(current);
-  }
+    private var current: IndexedSeq[Int] = Vector.fill(length)(0).updated(length - 1, -1)
+    private var nextV: IndexedSeq[Int] = _
 
-  private def doGetNext: Unit = {
-    nextV = new ArrayList(current);
-    var idx = nextV.size() - 1;
-    nextV.set(idx, nextV(idx) + 1)
-    var over = false
-    while (!over && idx > 0) {
-      if (nextV.get(idx) < maximums.get(idx)) {
-        over = true
-      } else {
-        nextV.set(idx, 0);
-        idx -= 1
-        nextV.set(idx, nextV(idx) + 1)
-      }
+    override def hasNext: Boolean = {
+      if (nextV != null) return true;
+      val t = doGetNext(current, maximums)
+      nextV = if (t.isDefined) t.get else null
+      return nextV != null;
     }
-    if (nextV.get(0) >= maximums.get(0)) {
+
+    override def next: IndexedSeq[Int] = {
+      if (!hasNext()) throw new NoSuchElementException();
+      current = nextV;
       nextV = null;
+      return current
     }
+
+    private def doGetNext(curr: IndexedSeq[Int], maximums: IndexedSeq[Int]): Option[IndexedSeq[Int]] = {
+      val last = curr.size - 1
+      val preNextSeq = curr.updated(last, current(last) + 1)
+      val nextSeq = doGetNextNew(last, preNextSeq, maximums)
+      if (nextSeq(0) < maximums(0)) Some(nextSeq) else None 
+    }
+
+    private def doGetNextNew(idx: Int, curr: IndexedSeq[Int], maximums: IndexedSeq[Int]): IndexedSeq[Int] =
+      if (idx == 0 || curr(idx) < maximums(idx)) curr
+      else doGetNextNew(idx - 1, curr.updated(idx, 0).updated(idx - 1, curr(idx - 1) + 1), maximums)
   }
 }
