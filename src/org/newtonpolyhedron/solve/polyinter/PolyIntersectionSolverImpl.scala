@@ -1,5 +1,4 @@
 package org.newtonpolyhedron.solve.polyinter
-import scala.collection.IndexedSeq
 
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.FracMathVec
@@ -51,7 +50,7 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
         val commonEqSys = eqSystems.flatten
         // -- Construct a system
 
-        val solutions = coneSolver.solve(seq2list(commonEqSys map (v => mathvec2intvec(v))), null, dim, NullPrintWriter.instance) map (x => intvec2mathvec(x))
+        val solutions = coneSolver solve (commonEqSys, IndexedSeq.empty, dim, NullPrintWriter.instance)
         val intersectingSols = solutions filter (isIntersectingSol(eqSystems))
         fillMapRecursive(indicesSeq.tail, withSoluionsToIndices(prevMap, intersectingSols, indices))
       }

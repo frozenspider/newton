@@ -1,28 +1,36 @@
 package org.newtonpolyhedron.solve.cone
 
 import java.io.PrintWriter
-import java.math.BigInteger
+
 import org.newtonpolyhedron._
-import org.newtonpolyhedron.entity.vector.IntVector
-import org.newtonpolyhedron.entity.vector.MathVector
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.utils.MatrixUtils
+import org.newtonpolyhedron.entity.vector.IntVector
 
 class ConeSolverImpl extends ConeSolver {
 
-  override def solve(inequations: java.util.List[IntVector],
-            basis: java.util.List[IntVector],
-            dim: Int,
-            output: PrintWriter): java.util.List[IntVector] = {
+  override def solve(ineqs: java.util.List[IntVector],
+                     basis: java.util.List[IntVector],
+                     dim: Int,
+                     output: PrintWriter): java.util.List[IntVector] = {
     def proxyVec(vec: java.util.List[IntVector]): IndexedSeq[IntMathVec] = vec map (x => intvec2mathvec(x))
 
-    val ineqs2 = proxyVec(inequations)
+    val ineqs2 = proxyVec(ineqs)
     val basis2 = proxyVec(basis)
 
-    val fundamentalSolution = solveInner(ineqs2, basis2, dim, output)
-    val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(inequations))
-    val result = withoutZeroProductSolutions(ineqs2, rank)(basis2)
-    seq2list(fundamentalSolution map (x => mathvec2intvec(x)))
+    val result = solve(ineqs2, basis2, dim, output)
+    seq2list(result map (x => mathvec2intvec(x)))
+  }
+
+  override def solve(ineqs: IndexedSeq[IntMathVec],
+                     basis: IndexedSeq[IntMathVec],
+                     dim: Int,
+                     output: PrintWriter): IndexedSeq[IntMathVec] = {
+    def proxyList(vec: IndexedSeq[IntMathVec]): java.util.List[IntVector] = seq2list(vec map (x => mathvec2intvec(x)))
+
+    val fundamentalSolution = solveInner(ineqs, basis, dim, output)
+    //    val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(proxyList(ineqs)))
+    //    val result = withoutZeroProductSolutions(ineqs, rank)(basis)
+    fundamentalSolution
   }
 
   private def withoutZeroProductSolutions(base: IndexedSeq[IntMathVec],
@@ -33,10 +41,10 @@ class ConeSolverImpl extends ConeSolver {
       toZero >= rank - 1
     })
 
-  private def solveInner(eqSys: IndexedSeq[IntMathVec],
-                         wishfulBasis: IndexedSeq[IntMathVec],
-                         dim: Int,
-                         output: PrintWriter): IndexedSeq[IntMathVec] = {
+  def solveInner(eqSys: IndexedSeq[IntMathVec],
+                 wishfulBasis: IndexedSeq[IntMathVec],
+                 dim: Int,
+                 output: PrintWriter): IndexedSeq[IntMathVec] = {
     val zeroPoint = IntMathVec.zero(dim)
     val eqSysWithZeroFirst =
       /*if (eqSys(0) == zeroPoint) eqSys else*/ (zeroPoint +: eqSys)

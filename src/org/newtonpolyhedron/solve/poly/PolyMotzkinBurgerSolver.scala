@@ -1,17 +1,18 @@
 package org.newtonpolyhedron.solve.poly
 
 import java.io.PrintWriter
+
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
 import org.newtonpolyhedron._
+import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.FractionVector
 import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.entity.vector.IntVector
 import org.newtonpolyhedron.solve.cone.ConeSolver
-import org.newtonpolyhedron.utils.PointUtils
 import org.newtonpolyhedron.utils.NullPrintWriter
-import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.utils.PointUtils
 
 class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolver {
   override def solve(points: java.util.List[FractionVector],
@@ -46,10 +47,7 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     val allSolutions = for (currPtIdx <- 0 until points.size) yield {
       // Forming equations by substracting current point, plus common limits - if any
       val eqSys = PointUtils.copySubtractPointAsInt(points, currPtIdx) ++ commonLimits
-      val coneSolutions = coneSolver.solve(
-        seq2list(eqSys map (x => mathvec2intvec(x))),
-        seq2list(wishfulBasis map (x => mathvec2intvec(x))),
-        dim, NullPrintWriter.instance) map (x => intvec2mathvec(x))
+      val coneSolutions = coneSolver.solve(eqSys, wishfulBasis, dim, NullPrintWriter.instance)
       coneSolutions
     }
     allSolutions
