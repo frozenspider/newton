@@ -43,8 +43,8 @@ class ConeSolverImpl extends ConeSolver {
 
     val basis =
       if (!wishfulBasis.isEmpty) wishfulBasis else initialBasis(dim)
-    val fundSol = solveRec(Vector(eqSysWithZeroFirst(0)),
-      eqSysWithZeroFirst.tail, basis, Vector.empty, dim, 1, output)
+    val fundSol = solveRec(IndexedSeq(eqSysWithZeroFirst(0)),
+      eqSysWithZeroFirst.tail, basis, IndexedSeq.empty, dim, 1, output)
 
     val fundSolWrapped = wrap(fundSol)
 
@@ -194,7 +194,7 @@ class ConeSolverImpl extends ConeSolver {
     def shouldCombine(v1: IntMathVec, v2: IntMathVec) = {
       if (dim == 2 || fundSol.size == 2) true
       else {
-        val zeroEqs = eqSysPart filter (selEq => (Vector(v1 *+ selEq, v2 *+ selEq) == Vector(0, 0)))
+        val zeroEqs = eqSysPart filter (selEq => (IndexedSeq(v1 *+ selEq, v2 *+ selEq) == IndexedSeq(0, 0)))
         val amtsOfZeros = for {
           sol <- fundSol if sol != v1 && sol != v2
         } yield zeroEqs count (_ *+ sol == 0)
@@ -202,7 +202,7 @@ class ConeSolverImpl extends ConeSolver {
       }
     }
 
-    val (zrs, neg, pos) = unrollFundSol(fundSol)(Vector.empty, Vector.empty, Vector.empty)
+    val (zrs, neg, pos) = unrollFundSol(fundSol)(IndexedSeq.empty, IndexedSeq.empty, IndexedSeq.empty)
     val combined = for {
       n <- neg
       p <- pos

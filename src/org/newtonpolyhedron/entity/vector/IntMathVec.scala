@@ -27,7 +27,7 @@ object IntMathVec {
   private val ZERO = BigInt(0)
   private val ONE = BigInt(1)
 
-  def zero(dim: Int): IntMathVec = new IntMathVec(Vector.fill(dim)(ZERO))
+  def zero(dim: Int): IntMathVec = new IntMathVec(IndexedSeq.fill(dim)(ZERO))
 
   def apply(elements: Int*): IntMathVec = new IntMathVec(elements.toIndexedSeq map (x => BigInt(x)))
 
