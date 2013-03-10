@@ -17,7 +17,7 @@ import org.newtonpolyhedron.solve.cone.ConeSolverImpl;
 
 public class PolyIntersectionSolverTest {
 	
-	private PolyIntersectionSolver	solver	= new PolyIntersectionSolverImpl(new ConeSolverImpl());
+	private PolyIntersectionSolverImpl	solver	= new PolyIntersectionSolverImpl(new ConeSolverImpl());
 	
 	@SuppressWarnings("unchecked")
 	@Test
@@ -37,20 +37,13 @@ public class PolyIntersectionSolverTest {
 				)//
 		);
 		Map <IntVector, List <List <Integer>>> expected = new LinkedHashMap <IntVector, List <List <Integer>>>();
-		expected.put(new IntVector(-4, -3, -6),
-				Arrays.asList(idc(1, 0), idc(1, 1), idc(3, 0), idc(3, 1)));
-		expected.put(new IntVector(-4, -3, -3),
-				Arrays.asList(idc(2, 0), idc(2, 1), idc(3, 0), idc(3, 1)));
-		expected.put(new IntVector(-1, 0, 0),
-				Arrays.asList(idc(1, 1), idc(1, 2), idc(2, 1), idc(2, 2)));
-		expected.put(new IntVector(0, -1, 0),
-				Arrays.asList(idc(0, 0), idc(0, 2), idc(2, 0), idc(2, 2)));
-		expected.put(new IntVector(0, 0, -1),
-				Arrays.asList(idc(0, 0), idc(0, 1), idc(1, 0), idc(1, 1)));
-		expected.put(new IntVector(8, 9, 5),
-				Arrays.asList(idc(0, 1), idc(0, 3), idc(1, 1), idc(1, 3)));
-		expected.put(new IntVector(24, 27, 26),
-				Arrays.asList(idc(0, 2), idc(0, 3), idc(1, 2), idc(1, 3)));
+		expected.put(new IntVector(-4, -3, -6), Arrays.asList(idc(1, 0), idc(1, 1), idc(3, 0), idc(3, 1)));
+		expected.put(new IntVector(-4, -3, -3), Arrays.asList(idc(2, 0), idc(2, 1), idc(3, 0), idc(3, 1)));
+		expected.put(new IntVector(-1, 0, 0), Arrays.asList(idc(1, 1), idc(1, 2), idc(2, 1), idc(2, 2)));
+		expected.put(new IntVector(0, -1, 0), Arrays.asList(idc(0, 0), idc(0, 2), idc(2, 0), idc(2, 2)));
+		expected.put(new IntVector(0, 0, -1), Arrays.asList(idc(0, 0), idc(0, 1), idc(1, 0), idc(1, 1)));
+		expected.put(new IntVector(8, 9, 5), Arrays.asList(idc(0, 1), idc(0, 3), idc(1, 1), idc(1, 3)));
+		expected.put(new IntVector(24, 27, 26), Arrays.asList(idc(0, 2), idc(0, 3), idc(1, 2), idc(1, 3)));
 		Map <IntVector, List <List <Integer>>> actual = solver.solve(source, 3);
 		
 		assertEquals(expected, actual);
@@ -84,7 +77,7 @@ public class PolyIntersectionSolverTest {
 				new IntVector(4, 3, 1),//
 				new IntVector(5, 2, 3) //
 		));
-		PolyIntersectionSolverImpl.removeNonIntersectingSolutions(solution, eqSystems);
+		solver.removeNonIntersectingSolutions(solution, eqSystems);
 		assertSetEquals(//
 				Arrays.asList(//
 						new IntVector(0, 0, -1),//
@@ -112,7 +105,7 @@ public class PolyIntersectionSolverTest {
 				new IntVector(8, 9, 5),//
 				new IntVector(2, 5, 4) //
 		));
-		PolyIntersectionSolverImpl.removeNonIntersectingSolutions(solution, eqSystems);
+		solver.removeNonIntersectingSolutions(solution, eqSystems);
 		assertSetEquals(//
 				Arrays.asList(//
 						new IntVector(0, 0, -1),//
@@ -140,7 +133,7 @@ public class PolyIntersectionSolverTest {
 				new IntVector(-1, 0, 0),//
 				new IntVector(-20, -15, -12) //
 		));
-		PolyIntersectionSolverImpl.removeNonIntersectingSolutions(solution, eqSystems);
+		solver.removeNonIntersectingSolutions(solution, eqSystems);
 		assertSetEquals(//
 				Arrays.asList(//
 						new IntVector(0, -1, 0),//
