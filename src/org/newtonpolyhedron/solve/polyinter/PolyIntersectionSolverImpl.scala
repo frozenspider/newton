@@ -42,7 +42,7 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
 
       // ++ Construct a system
       val eqSystems = for (i <- 0 until polyCount) yield {
-        copySubtractPointAsInt(polyhedrons(i), indices(i))
+        PointUtils.copySubtractPointAsInt(polyhedrons(i), indices(i))
       }
       val commonEqSys = eqSystems.flatten
       // -- Construct a system
@@ -71,13 +71,6 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
 
   private def isIntersectingSol(equationSystems: IndexedSeq[IndexedSeq[IntMathVec]])(solution: IntMathVec): Boolean =
     equationSystems forall (_ exists (_ *+ solution == 0))
-
-  def copySubtractPointAsInt(points: IndexedSeq[FracMathVec],
-                             idxToSubs: Int): IndexedSeq[IntMathVec] = {
-    val toSub = points(idxToSubs)
-    val result = points map (pt => IntMathVec.fromFrac(pt - toSub)) filter (!_.isZero)
-    result
-  }
 }
 
 //

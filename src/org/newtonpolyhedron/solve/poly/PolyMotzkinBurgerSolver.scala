@@ -45,7 +45,7 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     val dim = points.head.dim
     val allSolutions = for (currPtIdx <- 0 until points.size) yield {
       // Forming equations by substracting current point, plus common limits - if any
-      val eqSys = copySubtractPointAsInt(points, currPtIdx) ++ commonLimits
+      val eqSys = PointUtils.copySubtractPointAsInt(points, currPtIdx) ++ commonLimits
       val coneSolutions = coneSolver.solve(
         seq2list(eqSys map (x => mathvec2intvec(x))),
         seq2list(wishfulBasis map (x => mathvec2intvec(x))),
@@ -73,22 +73,5 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     for (i <- 0 until upTo)
       lookupTable.put(null, i, null)
     lookupTable.removeRow(null)
-  }
-
-  /**
-   * Creates a vector list, each element of which is produced by subtracting point with given
-   * index from the rest (and excluding it).
-   *
-   * @param points
-   *            source list.
-   * @param indexToSubtract
-   *            index of point to subtract and exclude.
-   * @return vector list of size {@code n-1}, with {@code i}'th point subtracted from all other.
-   */
-  def copySubtractPointAsInt(points: IndexedSeq[FracMathVec],
-                             idxToSubs: Int): IndexedSeq[IntMathVec] = {
-    val toSub = points(idxToSubs)
-    val result = points map (pt => IntMathVec.fromFrac(pt - toSub)) filter (!_.isZero)
-    result
   }
 }
