@@ -77,7 +77,7 @@ public class PolyIntersectionSolverTest {
 				new IntVector(4, 3, 1),//
 				new IntVector(5, 2, 3) //
 		));
-		solver.removeNonIntersectingSolutions(solution, eqSystems);
+		solution = solver.removeNonIntersectingSolutions(solution, eqSystems);
 		assertSetEquals(//
 				Arrays.asList(//
 						new IntVector(0, 0, -1),//
@@ -105,7 +105,7 @@ public class PolyIntersectionSolverTest {
 				new IntVector(8, 9, 5),//
 				new IntVector(2, 5, 4) //
 		));
-		solver.removeNonIntersectingSolutions(solution, eqSystems);
+		solution = solver.removeNonIntersectingSolutions(solution, eqSystems);
 		assertSetEquals(//
 				Arrays.asList(//
 						new IntVector(0, 0, -1),//
@@ -133,7 +133,7 @@ public class PolyIntersectionSolverTest {
 				new IntVector(-1, 0, 0),//
 				new IntVector(-20, -15, -12) //
 		));
-		solver.removeNonIntersectingSolutions(solution, eqSystems);
+		solution = solver.removeNonIntersectingSolutions(solution, eqSystems);
 		assertSetEquals(//
 				Arrays.asList(//
 						new IntVector(0, -1, 0),//
