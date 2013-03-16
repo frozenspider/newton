@@ -35,7 +35,23 @@ public class ConeSolverImplTest {
 	}
 	
 	@Test
-	public void chernTestCaseMod() throws Exception {
+	public void chernTestCaseDegenerate4d() throws Exception {
+		List <IntVector> eqSys = new ArrayList <IntVector>();
+		eqSys.add(new IntVector(1, -1, 3, 0));
+		eqSys.add(new IntVector(-1, 2, -1, 0));
+		eqSys.add(new IntVector(2, -1, -2, 0));
+		eqSys.add(new IntVector(-3, 1, -1, 0));
+		eqSys.add(new IntVector(1, 1, -3, 0));
+		List <IntVector> solution = coneSolver.solve(eqSys, null, 4, NullPrintWriter.instance);
+		assertSetEquals(//
+				Arrays.asList(//
+						new IntVector(0, 0, 0, 1), //
+						new IntVector(0, 0, 0, -1) //
+				), solution);
+	}
+	
+	@Test
+	public void chernTestCaseDegenerate5d() throws Exception {
 		List <IntVector> eqSys = new ArrayList <IntVector>();
 		eqSys.add(new IntVector(1, -1, 3, -8, 0));
 		eqSys.add(new IntVector(-1, 2, -1, 1, 0));
@@ -45,10 +61,8 @@ public class ConeSolverImplTest {
 		List <IntVector> solution = coneSolver.solve(eqSys, null, 5, NullPrintWriter.instance);
 		assertSetEquals(//
 				Arrays.asList(//
-						new IntVector(15, 11, 12, 5, 0),//
-						new IntVector(13, 9, 12, 7, 0),//
-						new IntVector(5, 5, 8, 3, 0),//
-						new IntVector(1, -1, 2, 1, 0) //
+						new IntVector(0, 0, 0, 0, 1), //
+						new IntVector(0, 0, 0, 0, -1) //
 				), solution);
 	}
 	

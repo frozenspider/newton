@@ -46,28 +46,35 @@ class ConeSolverImpl extends ConeSolver {
                  dim: Int,
                  output: PrintWriter): IndexedSeq[IntMathVec] = {
     val zeroPoint = IntMathVec.zero(dim)
-    val eqSysWithZeroFirst =
-      /*if (eqSys(0) == zeroPoint) eqSys else*/ (zeroPoint +: eqSys)
+    val eqSysWithZeroFirst = zeroPoint +: eqSys
 
     val basis =
       if (!wishfulBasis.isEmpty) wishfulBasis else initialBasis(dim)
-    val fundSol = solveRec(IndexedSeq(eqSysWithZeroFirst(0)),
+    val (endBasis, fundSol) = solveRec(IndexedSeq(eqSysWithZeroFirst(0)),
       eqSysWithZeroFirst.tail, basis, IndexedSeq.empty, dim, 1, output)
 
-    val fundSolWrapped = wrap(fundSol)
+    if (!endBasis.isEmpty) {
+      assert(endBasis.size == 1, "Unexpected basis left in the end: " + endBasis)
+      // If after all we still have single remaining basis vector, then
+      // this is degenerate case (assumption, may be wrong!)
+      // Since it's degenerate, both it it's negation are conforming
+      (endBasis ++ (endBasis map (vec => -vec))).distinct
+    } else {
+      val fundSolWrapped = wrap(fundSol)
 
-    val fundSolCleaned = for {
-      sol <- fundSolWrapped
-      validationRes = valudateSolution(sol, eqSysWithZeroFirst)
-      if validationRes != NOT_CONFORMS
-    } yield validationRes match {
-      case CONFORMS_NEG => -sol
-      case CONFORMS_POS => sol
-      case NOT_CONFORMS => throw new RuntimeException("Not possible, just to please the compiler")
+      val fundSolCleaned = for {
+        sol <- fundSolWrapped
+        validationRes = valudateSolution(sol, eqSysWithZeroFirst)
+        if validationRes != NOT_CONFORMS
+      } yield validationRes match {
+        case CONFORMS_NEG => -sol
+        case CONFORMS_POS => sol
+        case NOT_CONFORMS => throw new RuntimeException("Not possible, just to please the compiler")
+      }
+
+      val fundSolCleanedWrapped = wrap(fundSolCleaned)
+      fundSolCleanedWrapped
     }
-
-    val fundSolCleanedWrapped = wrap(fundSolCleaned)
-    fundSolCleanedWrapped
   }
 
   private def solveRec(eqSysPrev: IndexedSeq[IntMathVec],
@@ -76,8 +83,8 @@ class ConeSolverImpl extends ConeSolver {
                        fundSol: IndexedSeq[IntMathVec],
                        dim: Int,
                        currIdx: Int,
-                       output: PrintWriter): IndexedSeq[IntMathVec] =
-    if (eqSysRemn.isEmpty) fundSol
+                       output: PrintWriter): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) =
+    if (eqSysRemn.isEmpty) (basis, fundSol)
     else {
       output.println("\n === Step " + currIdx + " ===")
       fundSolAndBasisOutput(basis, fundSol, output)

@@ -451,9 +451,55 @@ public class PolyMotzkinBurgerSolverTest {
 		pointList.add(new FractionVector(1, 1, 1));
 		
 		KeyTable <IntVector, Integer, Boolean> lookupTable = doSolve(pointList, null, null);
+		/*-
+		 +------------+----+----+----+----+
+		 |            |0   |1   |2   |3   |
+		 +------------+----+----+----+----+
+		 |[ -1 -1 -1 ]|true|true|true|true|
+		 +------------+----+----+----+----+
+		 |[ 1 1 1 ]   |true|true|true|true|
+		 +------------+----+----+----+----+
+		 */
+		KeyTable <IntVector, Integer, Boolean> expectedLookupTable = new ArrayListKeyTable <IntVector, Integer, Boolean>();
+		fillTableIdxKeys(expectedLookupTable, 4);
 		
-		System.out.println(lookupTable);
-		fail("Implement me!");
+		List <IntVector> expectedVecs = new ArrayList <IntVector>();
+		expectedVecs.add(new IntVector(-1, -1, -1));
+		expectedVecs.add(new IntVector(1, 1, 1));
+		markInTable(expectedLookupTable, expectedVecs.get(0), 0, 1, 2, 3);
+		markInTable(expectedLookupTable, expectedVecs.get(1), 0, 1, 2, 3);
+		KeyTables.sortByColHeaders(expectedLookupTable, true);
+		assertEquals(expectedLookupTable, lookupTable);
+	}
+	
+	@Test
+	public void degenerateFlatFourPtsTriangleIn3d_2() throws Exception {
+		List <FractionVector> pointList = new ArrayList <FractionVector>();
+		pointList.add(new FractionVector(3, -1, -1));
+		pointList.add(new FractionVector(-1, 3, -1));
+		pointList.add(new FractionVector(-1, -1, 3));
+		pointList.add(new FractionVector(1, -1, 1));
+		
+		KeyTable <IntVector, Integer, Boolean> lookupTable = doSolve(pointList, null, null);
+		/*-
+		 +------------+----+----+----+----+
+		 |            |0   |1   |2   |3   |
+		 +------------+----+----+----+----+
+		 |[ -1 -1 -1 ]|true|true|true|true|
+		 +------------+----+----+----+----+
+		 |[ 1 1 1 ]   |true|true|true|true|
+		 +------------+----+----+----+----+
+		 */
+		KeyTable <IntVector, Integer, Boolean> expectedLookupTable = new ArrayListKeyTable <IntVector, Integer, Boolean>();
+		fillTableIdxKeys(expectedLookupTable, 4);
+		
+		List <IntVector> expectedVecs = new ArrayList <IntVector>();
+		expectedVecs.add(new IntVector(-1, -1, -1));
+		expectedVecs.add(new IntVector(1, 1, 1));
+		markInTable(expectedLookupTable, expectedVecs.get(0), 0, 1, 2, 3);
+		markInTable(expectedLookupTable, expectedVecs.get(1), 0, 1, 2, 3);
+		KeyTables.sortByColHeaders(expectedLookupTable, true);
+		assertEquals(expectedLookupTable, lookupTable);
 	}
 	
 	//
@@ -463,9 +509,7 @@ public class PolyMotzkinBurgerSolverTest {
 		return new BigFraction(num, denom);
 	}
 	
-	private static void fillTableIdxKeys(
-			KeyTable <IntVector, Integer, Boolean> lookupTable,
-			int upTo) {
+	private static void fillTableIdxKeys(KeyTable <IntVector, Integer, Boolean> lookupTable, int upTo) {
 		List <Integer> list = lookupTable.colKeyList();
 		for (int i = 0; i < upTo; ++i) {
 			list.add(i);
@@ -486,6 +530,7 @@ public class PolyMotzkinBurgerSolverTest {
 			List <IntVector> commonLimits,
 			List <IntVector> wishfulBasis) throws Exception {
 		
-		return solver.solve(pointList, commonLimits, wishfulBasis, /*NullPrintWriter.instance*/new PrintWriter(System.out, true));
+		return solver.solve(pointList, commonLimits, wishfulBasis, /* NullPrintWriter.instance */new PrintWriter(
+				System.out, true));
 	}
 }
