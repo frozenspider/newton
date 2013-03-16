@@ -19,7 +19,7 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
                      commonLimits: java.util.List[IntVector],
                      wishfulBasis: java.util.List[IntVector],
                      output: PrintWriter) = {
-    val tmp = solveInner(points map (x => fracvec2mathvec(x)),
+    val tmp = solve(points map (x => fracvec2mathvec(x)),
       commonLimits map (x => intvec2mathvec(x)),
       wishfulBasis map (x => intvec2mathvec(x)),
       output)
@@ -27,14 +27,14 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     for {
       rk <- tmp.rowKeyList
       ck <- tmp.colKeyList
-    } converted.put(mathvec2intvec(rk), ck, tmp.get(rk, ck))
+    } converted.put(mathvec2intvec(rk), ck, if (tmp.get(rk, ck)) true else null)
     converted
   }
 
-  def solveInner(points: IndexedSeq[FracMathVec],
-                 commonLimits: IndexedSeq[IntMathVec],
-                 wishfulBasis: IndexedSeq[IntMathVec],
-                 output: PrintWriter): KeyTable[IntMathVec, Integer, java.lang.Boolean] = {
+  override def solve(points: IndexedSeq[FracMathVec],
+            commonLimits: IndexedSeq[IntMathVec],
+            wishfulBasis: IndexedSeq[IntMathVec],
+            output: PrintWriter): KeyTable[IntMathVec, Integer, Boolean] = {
     val allSolutions = solveForEachPoint(points, commonLimits, wishfulBasis, output)
     fillTableWith(allSolutions)
   }
@@ -53,8 +53,8 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     allSolutions
   }
 
-  def fillTableWith(allSolutions: IndexedSeq[IndexedSeq[IntMathVec]]): KeyTable[IntMathVec, Integer, java.lang.Boolean] = {
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Integer, java.lang.Boolean]
+  def fillTableWith(allSolutions: IndexedSeq[IndexedSeq[IntMathVec]]): KeyTable[IntMathVec, Integer, Boolean] = {
+    val lookupTable = new ArrayListKeyTable[IntMathVec, Integer, Boolean]
     fillTableIdxKeys(lookupTable, allSolutions.size)
     for {
       i <- 0 until allSolutions.size
@@ -66,10 +66,10 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     lookupTable
   }
 
-  def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Integer, java.lang.Boolean],
+  def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Integer, Boolean],
                        upTo: Int) = {
     for (i <- 0 until upTo)
-      lookupTable.put(null, i, null)
+      lookupTable.put(null, i, false)
     lookupTable.removeRow(null)
   }
 }
