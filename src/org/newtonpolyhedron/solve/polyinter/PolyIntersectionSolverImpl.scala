@@ -13,7 +13,7 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
 
   override def solve(polyhedrons: java.util.List[java.util.List[FractionVector]],
                      dim: Int): java.util.Map[IntVector, java.util.List[java.util.List[Integer]]] = {
-    val tmp = solveInner(polyhedrons map (_ map (v => fracvec2mathvec(v))), dim)
+    val tmp = solve(polyhedrons map (_ map (v => fracvec2mathvec(v))), dim)
     var result = new org.fs.utils.collection.map.BasicSortedMap[IntVector, java.util.List[java.util.List[Integer]]]
     for ((k, v) <- tmp) {
       result.put(mathvec2intvec(k), seq2list(v map (xs => seq2list(xs map (x => int2Integer(x))))))
@@ -21,8 +21,8 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     result
   }
 
-  def solveInner(polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
-                 dim: Int): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]] = {
+  override def solve(polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
+                     dim: Int): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]] = {
     require(dim >= 3, "No intersections are possible below 3-dimension")
     require(polyhedrons.size >= dim - 1, "Not enough polyhedrons for intersecting at dimension " + dim)
     val polySizes = polyhedrons map (_.size)
