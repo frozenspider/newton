@@ -4,7 +4,8 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
   implicit val numeric: Numeric[T],
   implicit val ordering: Ordering[IndexedSeq[T]])
     extends Ordered[SELF]
-    with Function1[Int, T] {
+    with Function1[Int, T]
+    with Serializable {
 
   val dim = elements.size
   lazy val sum = elements.sum

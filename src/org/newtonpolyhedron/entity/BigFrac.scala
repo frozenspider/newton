@@ -3,11 +3,16 @@ package org.newtonpolyhedron.entity
 import scala.annotation.implicitNotFound
 import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
-
 import org.apache.commons.math3.fraction.BigFraction
+import org.apache.commons.math3.FieldElement
+import org.apache.commons.math3.Field
 
 /** Wrapper around {@link org.apache.commons.math3.fraction.BigFraction} */
-class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumericConversions {
+class BigFrac(val underlying: BigFraction)
+    extends ScalaNumber
+    with ScalaNumericConversions
+    with FieldElement[BigFrac]
+    with Serializable {
   lazy val num = new BigInt(this.underlying.getNumerator)
   lazy val den = new BigInt(this.underlying.getDenominator)
   lazy val quotient = num / den
@@ -41,16 +46,28 @@ class BigFrac(val underlying: BigFraction) extends ScalaNumber with ScalaNumeric
 
   def equals(that: BigFrac): Boolean = this.underlying equals that.underlying
 
+  override def add(that: BigFrac) = this + that
+  override def subtract(that: BigFrac) = this - that
+  override def multiply(that: BigFrac) = this * that
+  override def multiply(that: Int) = this * that
+  override def divide(that: BigFrac) = this / that
+  override def reciprocal = new BigFrac(underlying.reciprocal)
+  override def negate = -this
+  override def getField = BigFracField
+
   val isInt = underlying.getDenominator == 1
-  def isWhole = true
-  def doubleValue = this.underlying.doubleValue
-  def floatValue = this.underlying.floatValue
-  def longValue = this.underlying.longValue
-  def intValue = this.underlying.intValue
+  override def isWhole = true
+  override def doubleValue = this.underlying.doubleValue
+  override def floatValue = this.underlying.floatValue
+  override def longValue = this.underlying.longValue
+  override def intValue = this.underlying.intValue
   override def toString = this.underlying.toString
 }
 
 object BigFrac {
+  val ZERO = new BigFrac(BigFraction.ZERO)
+  val ONE = new BigFrac(BigFraction.ONE)
+
   def apply(n: Int, d: Int) = new BigFrac(BigFraction.getReducedFraction(n, d))
   def apply(n: BigInt, d: BigInt) = new BigFrac(new BigFraction(n.underlying, d.underlying).reduce())
   implicit object BigFracNumeric extends Numeric[BigFrac] {
@@ -65,4 +82,10 @@ object BigFrac {
     override def toFloat(x: BigFrac): Float = x.underlying.floatValue
     override def toDouble(x: BigFrac): Double = x.underlying.doubleValue
   }
+}
+
+object BigFracField extends Field[BigFrac] {
+  def getZero = BigFrac.ZERO
+  def getOne = BigFrac.ONE
+  def getRuntimeClass = classOf[BigFrac]
 }
