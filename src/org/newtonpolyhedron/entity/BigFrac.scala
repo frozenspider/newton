@@ -8,7 +8,7 @@ import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.Field
 
 /** Wrapper around {@link org.apache.commons.math3.fraction.BigFraction} */
-class BigFrac(val underlying: BigFraction)
+case class BigFrac(val underlying: BigFraction)
     extends ScalaNumber
     with ScalaNumericConversions
     with FieldElement[BigFrac]
@@ -44,8 +44,6 @@ class BigFrac(val underlying: BigFraction)
   def <(that: BigFrac): Boolean = compare(that) < 0
   def >(that: BigFrac): Boolean = compare(that) > 0
 
-  def equals(that: BigFrac): Boolean = this.underlying equals that.underlying
-
   override def add(that: BigFrac) = this + that
   override def subtract(that: BigFrac) = this - that
   override def multiply(that: BigFrac) = this * that
@@ -53,7 +51,7 @@ class BigFrac(val underlying: BigFraction)
   override def divide(that: BigFrac) = this / that
   override def reciprocal = new BigFrac(underlying.reciprocal)
   override def negate = -this
-  override def getField = BigFracField
+  override def getField = BigFrac.BigFracField
 
   val isInt = underlying.getDenominator == 1
   override def isWhole = true
@@ -61,6 +59,12 @@ class BigFrac(val underlying: BigFraction)
   override def floatValue = this.underlying.floatValue
   override def longValue = this.underlying.longValue
   override def intValue = this.underlying.intValue
+  
+  override def equals(obj: Any): Boolean = obj match {
+    case that: BigFrac => this.underlying equals that.underlying
+    case _             => false
+  }
+  override def hashCode = this.underlying.hashCode
   override def toString = this.underlying.toString
 }
 
@@ -82,10 +86,10 @@ object BigFrac {
     override def toFloat(x: BigFrac): Float = x.underlying.floatValue
     override def toDouble(x: BigFrac): Double = x.underlying.doubleValue
   }
-}
 
-object BigFracField extends Field[BigFrac] {
-  def getZero = BigFrac.ZERO
-  def getOne = BigFrac.ONE
-  def getRuntimeClass = classOf[BigFrac]
+  implicit object BigFracField extends Field[BigFrac] {
+    def getZero = BigFrac.ZERO
+    def getOne = BigFrac.ONE
+    def getRuntimeClass = classOf[BigFrac]
+  }
 }

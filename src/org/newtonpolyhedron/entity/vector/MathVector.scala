@@ -59,5 +59,10 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
     ordering.compare(this.elements, that.elements)
   }
 
+  override def equals(obj: Any): Boolean = obj match {
+    case that: MathVector[T, SELF] => this.elements equals that.elements
+    case _                         => false
+  }
+  override def hashCode = this.elements.hashCode
   override def toString = elements.mkString("[ ", " ", " ]")
 }
