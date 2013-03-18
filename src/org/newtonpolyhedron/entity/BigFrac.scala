@@ -59,7 +59,7 @@ case class BigFrac(val underlying: BigFraction)
   override def floatValue = this.underlying.floatValue
   override def longValue = this.underlying.longValue
   override def intValue = this.underlying.intValue
-  
+
   override def equals(obj: Any): Boolean = obj match {
     case that: BigFrac => this.underlying equals that.underlying
     case _             => false
@@ -72,6 +72,7 @@ object BigFrac {
   val ZERO = new BigFrac(BigFraction.ZERO)
   val ONE = new BigFrac(BigFraction.ONE)
 
+  def apply(n: Int) = new BigFrac(new BigFraction(n))
   def apply(n: Int, d: Int) = new BigFrac(BigFraction.getReducedFraction(n, d))
   def apply(n: BigInt, d: BigInt) = new BigFrac(new BigFraction(n.underlying, d.underlying).reduce())
   implicit object BigFracNumeric extends Numeric[BigFrac] {
