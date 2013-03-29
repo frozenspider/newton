@@ -201,4 +201,50 @@ class MatrixTest extends FunSuite {
       a(2, 4, 7))).rank
       === 3)
   }
+
+  test("diagonal form 1") {
+    val source = matr(a(
+      a(0, 1, -1),
+      a(2, -3, 0),
+      a(0, 0, 0)))
+    val (actual, rowOnes, colOnes) = Matrix.toDiagonal(source)
+    assert(actual
+      === matr(a(
+        a(1, 0, 0),
+        a(0, -1, 0),
+        a(0, 0, 0))))
+    assert(rowOnes
+      === matr(a(
+        a(1, 0, 0),
+        a(3, 1, 0),
+        a(0, 0, 1))))
+    assert(colOnes
+      === matr(a(
+        a(0, 1, 3),
+        a(1, 1, 2),
+        a(0, 1, 2))))
+  }
+
+  test("diagonal form 2") {
+    val source = matr(a(
+      a(36, 18, 72),
+      a(5, 6, 12),
+      a(2, 8, 16)))
+    val (actual, rowOnes, colOnes) = Matrix.toDiagonal(source)
+    assert(actual
+      === matr(a(
+        a(1, 0, 0),
+        a(0, 2, 0),
+        a(0, 0, 504))))
+    assert(rowOnes
+      === matr(a(
+        a(0, -1, 1),
+        a(-3, 142, -140),
+        a(-14, 666, -657))))
+    assert(colOnes
+      === matr(a(
+        a(-1, 2, -108),
+        a(-1, 9, -484),
+        a(0, -3, 161))))
+  }
 }

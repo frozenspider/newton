@@ -5,6 +5,7 @@ import org.apache.commons.math3.linear.FieldLUDecomposition
 import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
 import scala.collection.mutable.StringBuilder
+import org.apache.commons.math3.linear.FieldVector
 
 class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     extends Function2[Int, Int, T]
@@ -156,16 +157,172 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
 
 object Matrix {
 
-  def apply[T <: FieldElement[T]](elements: Array[Array[T]]) =
+  def apply[T <: FieldElement[T]](elements: Array[Array[T]]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(elements))
 
-  def idenitiy[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]) =
+  def idenitiy[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldIdentityMatrix(field, dim))
 
-  def zero[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]) =
+  def zero[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(field, dim, dim))
 
-  def zero[T <: FieldElement[T]](rowNum: Int, colNum: Int)(implicit field: Field[T]) =
+  def zero[T <: FieldElement[T]](rowNum: Int, colNum: Int)(implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(field, rowNum, colNum))
 
+  /**
+   * Converts the matrix to diagonal form.
+   * <p>
+   * Returns diagonal matrix alongside with row and column transformation matrices
+   */
+  def toDiagonal(m: Matrix[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
+    require(m.isSquare, "Non-square matrix")
+    val iden = idenitiy(m.rowNum)(m.field)
+    val rowOnes = iden.contentCopy
+    val colOnes = iden.contentCopy
+    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowNum)
+  }
+
+  private def toDiagonalFormInternal(m: FieldMatrix[BigFrac],
+                                     cornerIdx: Int,
+                                     rowOnes: FieldMatrix[BigFrac],
+                                     colOnes: FieldMatrix[BigFrac],
+                                     dim: Int)(implicit field: Field[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
+    def processCorner(getCurrent: (Int, Int) => BigFrac,
+                      ones: FieldMatrix[BigFrac],
+                      swap: (FieldMatrix[BigFrac], Int, Int) => Unit,
+                      inverse: (FieldMatrix[BigFrac], Int) => Unit,
+                      subtractMultiplied: (FieldMatrix[BigFrac], Int, Int, BigFrac) => Unit)(currIdx: Int,
+                                                                                             corner: BigFrac,
+                                                                                             atLeastOneFails: Boolean): (BigFrac, Boolean) = {
+      def recurse(i: Int, corner: BigFrac, fail: Boolean): (BigFrac, Boolean) = {
+        if (i == dim) (corner, fail)
+        else {
+          val current = getCurrent(i, cornerIdx)
+          if (corner == 0) {
+            if (current != 0) {
+              swap(m, cornerIdx, i)
+              inverse(m, i)
+
+              swap(ones, cornerIdx, i)
+              inverse(ones, i)
+
+              recurse(i + 1, m.getEntry(cornerIdx, cornerIdx), true)
+            } else {
+              recurse(i + 1, corner, fail)
+            }
+          } else {
+            val div = current.divide(corner)
+            if (div.remainder != 0) {
+              subtractMultiplied(m, cornerIdx, i, BigFrac(div.quotient))
+              swap(m, cornerIdx, i)
+              inverse(m, i)
+
+              subtractMultiplied(ones, cornerIdx, i, BigFrac(div.quotient))
+              swap(ones, cornerIdx, i)
+              inverse(ones, i)
+
+              recurse(i, m.getEntry(cornerIdx, cornerIdx), true)
+            } else {
+              recurse(i + 1, corner, fail)
+            }
+          }
+        }
+      }
+      recurse(currIdx, corner, atLeastOneFails)
+    }
+    def getCurrCol = (curr: Int, corner: Int) => m.getEntry(corner, curr)
+    def getCurrRow = (curr: Int, corner: Int) => m.getEntry(curr, corner)
+    def processCornerCol = processCorner(getCurrCol, colOnes, swapCols, inverseCol, subtractMultipliedCol)_
+    def processCornerRow = processCorner(getCurrRow, rowOnes, swapRows, inverseRow, subtractMultipliedRow)_
+    def processCornerFrom(corner: BigFrac): BigFrac = {
+      val (corner1, failCol) = processCornerCol(cornerIdx + 1, corner, false)
+      val (corner2, failRow) = processCornerRow(cornerIdx + 1, corner1, false)
+      if (!failRow && !failCol) corner2
+      else processCornerFrom(corner2)
+    }
+    // Make corner element a GCD of it's row and column
+    val corner = processCornerFrom(m.getEntry(cornerIdx, cornerIdx))
+
+    // Subtract multiplied first row/column from others rows/columns
+    // so that corner element remains only non-zero element in it's row/column
+    for (colIdx <- (cornerIdx + 1) until dim) {
+      val current = m.getEntry(cornerIdx, colIdx)
+      val quotient = (current / corner).quotient
+      if (quotient != 0) {
+        subtractMultipliedCol(m, cornerIdx, colIdx, BigFrac(quotient))
+        subtractMultipliedCol(colOnes, cornerIdx, colIdx, BigFrac(quotient))
+      }
+    }
+    for (rowIdx <- (cornerIdx + 1) until dim) {
+      val current = m.getEntry(rowIdx, cornerIdx)
+      val quotient = (current / corner).quotient
+      if (quotient != 0) {
+        subtractMultipliedRow(m, cornerIdx, rowIdx, BigFrac(quotient))
+        subtractMultipliedRow(rowOnes, cornerIdx, rowIdx, BigFrac(quotient))
+      }
+    }
+
+    if (cornerIdx < dim - 1) {
+      toDiagonalFormInternal(m, cornerIdx + 1, rowOnes, colOnes, dim)
+    } else {
+      (new Matrix(m), new Matrix(rowOnes), new Matrix(colOnes))
+    }
+  }
+
+  /** {@code dst = dst - src*quot} */
+  def subtractMultipliedCol[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                                  srcColIdx: Int,
+                                                  dstColIdx: Int,
+                                                  quotient: T): Unit = {
+    val srcCol = matrix.getColumnVector(srcColIdx)
+    val dstCol = matrix.getColumnVector(dstColIdx)
+    val srcColMul = srcCol mapMultiply quotient
+    val dstColSub = dstCol subtract srcColMul
+    matrix.setColumnVector(dstColIdx, dstColSub)
+  }
+
+  /** {@code dst = dst - src*quot} */
+  def subtractMultipliedRow[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                                  srcRowIdx: Int,
+                                                  dstRowIdx: Int,
+                                                  quotient: T): Unit = {
+    val srcRow = matrix.getRowVector(srcRowIdx)
+    val dstRow = matrix.getRowVector(dstRowIdx)
+    val srcRowMul = srcRow mapMultiply quotient
+    val dstRowSub = dstRow subtract srcRowMul
+    matrix.setRowVector(dstRowIdx, dstRowSub)
+  }
+
+  def swapCols[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                     idx1: Int,
+                                     idx2: Int) = {
+    val col1 = matrix.getColumnVector(idx1)
+    val col2 = matrix.getColumnVector(idx2)
+    matrix.setColumnVector(idx1, col2)
+    matrix.setColumnVector(idx2, col1)
+  }
+
+  def swapRows[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                     idx1: Int,
+                                     idx2: Int) = {
+    val row1 = matrix.getRowVector(idx1)
+    val row2 = matrix.getRowVector(idx2)
+    matrix.setRowVector(idx1, row2)
+    matrix.setRowVector(idx2, row1)
+  }
+
+  private def fieldRowOfZeros[T <: FieldElement[T]](size: Int)(implicit field: Field[T]): FieldVector[T] =
+    MatrixUtils.createFieldMatrix(field, size, 1).getColumnVector(0)
+
+  def inverseCol[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
+    val vec = m.getColumnVector(idx)
+    val zeros = fieldRowOfZeros(vec.getDimension)
+    m.setColumnVector(idx, zeros subtract vec)
+  }
+
+  def inverseRow[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
+    val vec = m.getRowVector(idx)
+    val zeros = fieldRowOfZeros(vec.getDimension)
+    m.setRowVector(idx, zeros subtract vec)
+  }
 }

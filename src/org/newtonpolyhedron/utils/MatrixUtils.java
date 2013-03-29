@@ -17,6 +17,7 @@ import org.fs.utils.structure.wrap.Pair;
 import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.IntVector;
 
+@Deprecated
 public class MatrixUtils {
 	
 	public static FieldMatrix <BigFraction> create(final BigFraction[][] matrixCopyData) {

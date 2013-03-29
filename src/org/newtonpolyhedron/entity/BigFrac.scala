@@ -60,9 +60,13 @@ case class BigFrac(val underlying: BigFraction)
   override def longValue = this.underlying.longValue
   override def intValue = this.underlying.intValue
 
-  override def equals(obj: Any): Boolean = obj match {
-    case that: BigFrac => this.underlying equals that.underlying
-    case _             => false
+  override def equals(that: Any): Boolean = that match {
+    case that: BigFrac    => this.underlying == that.underlying
+    case that: BigInt     => this == BigFrac(that)
+    case that: Int        => this == BigFrac(that)
+    case that: Long       => this == BigFrac(that)
+    case that: BigDecimal => that.toBigIntExact exists (x => this.underlying == BigFrac(x))
+    case _                => false
   }
   override def hashCode = this.underlying.hashCode
   override def toString = this.underlying.toString
@@ -71,10 +75,16 @@ case class BigFrac(val underlying: BigFraction)
 object BigFrac {
   val ZERO = new BigFrac(BigFraction.ZERO)
   val ONE = new BigFrac(BigFraction.ONE)
+  val MINUS_ONE = new BigFrac(BigFraction.MINUS_ONE)
 
   def apply(n: Int) = new BigFrac(new BigFraction(n))
+  def apply(n: BigInt) = new BigFrac(new BigFraction(n.underlying))
   def apply(n: Int, d: Int) = new BigFrac(BigFraction.getReducedFraction(n, d))
   def apply(n: BigInt, d: BigInt) = new BigFrac(new BigFraction(n.underlying, d.underlying).reduce())
+
+  implicit def int2bigFrac(n: Int) = this(n)
+  implicit def bigInt2bigFrac(n: BigInt) = this(n)
+
   implicit object BigFracNumeric extends Numeric[BigFrac] {
     override def compare(a: BigFrac, b: BigFrac) = a compare b
     override def plus(x: BigFrac, y: BigFrac): BigFrac = x + y
