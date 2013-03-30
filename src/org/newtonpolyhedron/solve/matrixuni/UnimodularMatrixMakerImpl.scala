@@ -15,7 +15,7 @@ class UnimodularMatrixMakerImpl extends UnimodularMatrixMaker {
   override def getUnimodularFrom(matrix: FieldMatrix[BigFraction]): FieldMatrix[BigFraction] =
     unimodularFrom(matrix)
 
-  def unimodularFrom(matrix: Matrix[BigFrac]): Matrix[BigFrac] = {
+  override def unimodularFrom(matrix: Matrix[BigFrac]): Matrix[BigFrac] = {
     require(matrix.isSquare, "Non-square matrix")
 
     val (matrixDiag, rowOnes, colOnes) = Matrix.toDiagonal(matrix)
