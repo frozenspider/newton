@@ -6,6 +6,8 @@ import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
 import scala.collection.mutable.StringBuilder
 import org.apache.commons.math3.linear.FieldVector
+import org.apache.commons.math3.linear.SingularValueDecomposition
+import scala.collection.mutable.ArraySeq
 
 class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     extends Function2[Int, Int, T]
@@ -31,7 +33,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
   def transpose = new Matrix(this.matrix.transpose)
 
   lazy val det = {
-    require(matrix.isSquare, "Non-square matrix")
+    require(isSquare, "Non-square matrix")
     new FieldLUDecomposition[T](matrix).getDeterminant
   }
   lazy val rank = {
@@ -48,6 +50,15 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
       val diagonal = for (n <- 0 until dim) yield triangle(n, n)
       diagonal prefixLength (_ != zero)
     }
+  }
+
+  def map[B <: FieldElement[B]](f: T => B)(implicit field: Field[B]) = {
+    val mapped = Matrix.zero[B](rowNum, colNum)
+    for {
+      r <- 0 until rowNum
+      c <- 0 until colNum
+    } mapped.matrix setEntry (r, c, f(this.matrix getEntry (r, c)))
+    mapped
   }
 
   /**
