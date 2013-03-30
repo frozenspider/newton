@@ -18,15 +18,14 @@ class UnimodularMatrixMakerImpl extends UnimodularMatrixMaker {
   def unimodularFrom(matrix: Matrix[BigFrac]): Matrix[BigFrac] = {
     require(matrix.isSquare, "Non-square matrix")
 
-//    val (matrixDiag, rowOnes, colOnes) = matrix.diagonalForm
-//
-//    val rowOnesInv = rowOnes.inv
-//    val colOnesInv = colOnes.inv
-//
-//    // Sanity check
-//    assert(matrix == rowOnesInv * matrixDiag * colOnesInv)
-//
-//    rowOnesInv * colOnesInv
-    ???
+    val (matrixDiag, rowOnes, colOnes) = Matrix.toDiagonal(matrix)
+
+    val rowOnesInv = rowOnes.inv
+    val colOnesInv = colOnes.inv
+
+    // Sanity check
+    assert(matrix == rowOnesInv * matrixDiag * colOnesInv)
+
+    rowOnesInv * colOnesInv
   }
 }
