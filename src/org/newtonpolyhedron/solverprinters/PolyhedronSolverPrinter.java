@@ -70,7 +70,7 @@ public class PolyhedronSolverPrinter extends SolverPrinter <PolyhedronSolver> {
 	}
 	
 	@Override
-	protected void solveFor(final PolyhedronSolver solver, final PrintWriter output) throws Exception {
+	public void solveFor(final PolyhedronSolver solver, final PrintWriter output) {
 		
 		output.println(title("Polyhedron computing"));
 		

@@ -17,7 +17,7 @@ public class MatrixInverseSolverPrinter extends SolverPrinter <Void> {
 	}
 	
 	@Override
-	protected void solveFor(final Void nothing, final PrintWriter output) throws Exception {
+	public void solveFor(final Void nothing, final PrintWriter output) {
 		final FieldMatrix <BigFraction> inv = MatrixUtils.inverse(baseMatrix);
 		output.println(subheader("Base matrix:"));
 		output.println(MatrixUtils.toString(baseMatrix));

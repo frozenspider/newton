@@ -26,7 +26,7 @@ public class ConeSolverPrinter extends SolverPrinter <ConeSolver> {
 	}
 	
 	@Override
-	protected void solveFor(final ConeSolver solver, final PrintWriter output) throws Exception {
+	public void solveFor(final ConeSolver solver, final PrintWriter output) {
 		output.println(title("Cone computing"));
 		final int rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(inequations));
 		output.println("Matrix rank = " + rank);

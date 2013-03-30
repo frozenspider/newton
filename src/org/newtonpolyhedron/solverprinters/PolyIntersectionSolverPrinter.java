@@ -32,7 +32,7 @@ public class PolyIntersectionSolverPrinter extends SolverPrinter <PolyIntersecti
 	}
 	
 	@Override
-	protected void solveFor(final PolyIntersectionSolver solver, final PrintWriter output) throws Exception {
+	public void solveFor(final PolyIntersectionSolver solver, final PrintWriter output) {
 		output.println(title("Polyhedron intersection"));
 		output.println(header("Original points:"));
 		for (int i = 0; i < polyhedrons.size(); ++i) {

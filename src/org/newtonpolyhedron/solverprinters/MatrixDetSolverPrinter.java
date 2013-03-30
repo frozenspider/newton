@@ -25,7 +25,7 @@ public class MatrixDetSolverPrinter extends SolverPrinter <Void> {
 	}
 	
 	@Override
-	protected void solveFor(final Void nothing, final PrintWriter output) throws Exception {
+	public void solveFor(final Void nothing, final PrintWriter output) {
 		final BigFraction det = MatrixUtils.getDet(baseMatrix, skipRow, skipCol);
 		output.println(subheader("Base matrix:"));
 		output.println(MatrixUtils.toString(baseMatrix));
