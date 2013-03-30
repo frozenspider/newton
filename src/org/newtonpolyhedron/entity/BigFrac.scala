@@ -13,8 +13,8 @@ case class BigFrac(val underlying: BigFraction)
     with ScalaNumericConversions
     with FieldElement[BigFrac]
     with Serializable {
-  lazy val num = new BigInt(this.underlying.getNumerator)
-  lazy val den = new BigInt(this.underlying.getDenominator)
+  val num = new BigInt(this.underlying.getNumerator)
+  val den = new BigInt(this.underlying.getDenominator)
   lazy val quotient = num / den
   lazy val remainder = num % den
   /** Behaves exactly as {@link Math#round(double)}.  */
@@ -53,7 +53,7 @@ case class BigFrac(val underlying: BigFraction)
   override def negate = -this
   override def getField = BigFrac.BigFracField
 
-  val isInt = underlying.getDenominator == 1
+  val isInt = den == 1
   override def isWhole = true
   override def doubleValue = this.underlying.doubleValue
   override def floatValue = this.underlying.floatValue

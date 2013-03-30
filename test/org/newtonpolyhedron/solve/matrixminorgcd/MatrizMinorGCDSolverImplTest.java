@@ -13,7 +13,7 @@ import org.junit.Test;
 
 public class MatrizMinorGCDSolverImplTest {
 	
-	private static final MatrizMinorGCDSolverImpl	solver	= new MatrizMinorGCDSolverImpl();
+	private static final MatrixMinorGCDSolverImpl	solver	= new MatrixMinorGCDSolverImpl();
 	
 	@Test
 	public void case1() throws Exception {

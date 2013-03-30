@@ -26,8 +26,8 @@ import org.newtonpolyhedron.ex.UnknownModeException;
 import org.newtonpolyhedron.ex.WrongFormatException;
 import org.newtonpolyhedron.solve.cone.ConeSolver;
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl;
-import org.newtonpolyhedron.solve.matrixminorgcd.MatrizMinorGCDSolver;
-import org.newtonpolyhedron.solve.matrixminorgcd.MatrizMinorGCDSolverImpl;
+import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolver;
+import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl;
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker;
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl;
 import org.newtonpolyhedron.solve.poly.PolyMotzkinBurgerSolver;
@@ -39,7 +39,7 @@ import org.newtonpolyhedron.solve.surface.SurfaceBuilderImpl;
 import org.newtonpolyhedron.solverprinters.ConeSolverPrinter;
 import org.newtonpolyhedron.solverprinters.MatrixDetSolverPrinter;
 import org.newtonpolyhedron.solverprinters.MatrixInverseSolverPrinter;
-import org.newtonpolyhedron.solverprinters.MatrizMinorGCDSolverPrinter;
+import org.newtonpolyhedron.solverprinters.MatrixMinorGCDSolverPrinter;
 import org.newtonpolyhedron.solverprinters.PolyIntersectionSolverPrinter;
 import org.newtonpolyhedron.solverprinters.PolyhedronSolverPrinter;
 import org.newtonpolyhedron.solverprinters.UnimodularMatrixMakerPrinter;
@@ -321,8 +321,8 @@ public class NewtonLogic {
 		} finally {
 			inputF.close();
 		}
-		final MatrizMinorGCDSolver matrixSolver = new MatrizMinorGCDSolverImpl();
-		return new MatrizMinorGCDSolverPrinter(matrixSolver, baseMatrix, writer);
+		final MatrixMinorGCDSolver matrixSolver = new MatrixMinorGCDSolverImpl();
+		return new MatrixMinorGCDSolverPrinter(matrixSolver, baseMatrix, writer);
 	}
 	
 	private <Comp extends Comparable <Comp>,Vec extends AbstractVector <Comp, Vec>>void readFromFile(

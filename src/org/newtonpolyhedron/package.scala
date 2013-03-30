@@ -27,7 +27,7 @@ package object newtonpolyhedron {
     if (set != null) asScalaSet(set).toSet
     else Set.empty
 
-  def seq2list[T](vec: IndexedSeq[T]): java.util.List[T] = {
+  def seq2list[T](vec: Seq[T]): java.util.List[T] = {
     seqAsJavaList(vec)
   }
 

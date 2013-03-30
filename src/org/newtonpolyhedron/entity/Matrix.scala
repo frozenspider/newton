@@ -31,6 +31,11 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     new Matrix(new FieldLUDecomposition(matrix).getSolver.getInverse)
   }
   def transpose = new Matrix(this.matrix.transpose)
+  def minorMatrix(skipRow: Int, skipCol: Int) = {
+    val rows = ((0 until rowNum) filter (_ != skipRow)).toArray[Int]
+    val cols = ((0 until colNum) filter (_ != skipCol)).toArray[Int]
+    new Matrix(matrix.getSubMatrix(rows, cols))
+  }
 
   lazy val det = {
     require(isSquare, "Non-square matrix")
