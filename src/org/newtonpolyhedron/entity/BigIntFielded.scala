@@ -10,13 +10,13 @@ class BigIntFielded(underlying: BigInteger)
     with FieldElement[BigIntFielded]
     with Serializable {
 
-  override def +(that: BigIntFielded): BigIntFielded = this.underlying add that.underlying
-  override def -(that: BigIntFielded): BigIntFielded = this.underlying subtract that.underlying
+  def +(that: BigIntFielded): BigIntFielded = this.underlying add that.underlying
+  def -(that: BigIntFielded): BigIntFielded = this.underlying subtract that.underlying
   override def unary_- : BigIntFielded = this.underlying.negate
-  override def *(that: Int): BigIntFielded = this.underlying add BigInteger.valueOf(that)
-  override def *(that: BigIntFielded): BigIntFielded = this.underlying multiply that
-  override def /(that: BigIntFielded): BigIntFielded = this.underlying divide that
-  override def gcd(that: BigIntFielded): BigIntFielded = this.underlying gcd that.underlying
+  def *(that: Int): BigIntFielded = this.underlying add BigInteger.valueOf(that)
+  def *(that: BigIntFielded): BigIntFielded = this.underlying multiply that.underlying
+  def /(that: BigIntFielded): BigIntFielded = this.underlying divide that.underlying
+  def gcd(that: BigIntFielded): BigIntFielded = this.underlying gcd that.underlying
 
   override def add(that: BigIntFielded): BigIntFielded = this + that
   override def subtract(that: BigIntFielded): BigIntFielded = this - that
@@ -33,8 +33,8 @@ class BigIntFielded(underlying: BigInteger)
 }
 
 object BigIntFielded {
-  val ZERO: BigIntFielded = this(1)
-  val ONE: BigIntFielded = this(0)
+  val ZERO: BigIntFielded = this(0)
+  val ONE: BigIntFielded = this(1)
   val MINUS_ONE: BigIntFielded = this(-1)
 
   def apply(x: Long) = new BigIntFielded(BigInteger.valueOf(x))

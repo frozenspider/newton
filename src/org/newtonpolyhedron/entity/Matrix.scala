@@ -8,6 +8,13 @@ import scala.collection.mutable.StringBuilder
 import org.apache.commons.math3.linear.FieldVector
 import org.apache.commons.math3.linear.SingularValueDecomposition
 import scala.collection.mutable.ArraySeq
+import org.newtonpolyhedron._
+import org.newtonpolyhedron.entity.vector.MathVector
+import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.MathVector
+import org.newtonpolyhedron.entity.vector.MathVector
+import org.newtonpolyhedron.entity.vector.MathVector
+import org.newtonpolyhedron.entity.vector.MathVector
 
 class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     extends Function2[Int, Int, T]
@@ -175,6 +182,24 @@ object Matrix {
 
   def apply[T <: FieldElement[T]](elements: Array[Array[T]]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(elements))
+
+  def apply[T <: FieldElement[T], V <: MathVector[T, _]](elements: Iterable[V])(implicit field: Field[T]): Matrix[T] = {
+    require(!elements.isEmpty, "Elements was empty")
+    val dim = elements.head.dim
+    val matrix = MatrixUtils.createFieldMatrix(field, elements.size, dim)
+    val elsSeq = elements.toIndexedSeq
+    for {
+      r <- 0 until elsSeq.size
+      c <- 0 until dim
+      val vec = elsSeq(r)
+      val value = vec(c)
+    } matrix.setEntry(r, c, value)
+    new Matrix(matrix)
+  }
+
+  def apply(elements: Iterable[IntMathVec]): Matrix[BigIntFielded] = {
+    this((elements map (x => (x.elements map int2Fielded).toArray)).toArray)
+  }
 
   def idenitiy[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldIdentityMatrix(field, dim))

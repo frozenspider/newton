@@ -19,6 +19,8 @@ class FracMathVec(elements: IndexedSeq[BigFrac]) extends MathVector[BigFrac, Fra
 object FracMathVec {
   private val zeroValue = BigFrac(0, 1)
 
+  implicit def create(elements: IndexedSeq[BigFrac]) = new FracMathVec(elements)
+
   def zero(dim: Int) = new FracMathVec(IndexedSeq.fill(dim)(zeroValue))
 
   def apply(elements: BigFrac*): FracMathVec = new FracMathVec(elements.toIndexedSeq)

@@ -54,6 +54,9 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
 
   def apply(index: Int) = elements(index)
 
+  def map[B, SELF2 <: MathVector[B, _]](f: T => B)(implicit create: IndexedSeq[B] => SELF2): SELF2 =
+    create(elements map f)
+
   override def compare(that: SELF): Int = {
     import ordering._
     ordering.compare(this.elements, that.elements)

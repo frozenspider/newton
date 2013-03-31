@@ -8,20 +8,25 @@ import org.apache.commons.math3.exception.DimensionMismatchException
 
 @RunWith(classOf[JUnitRunner])
 class MatrixTest extends FunSuite {
-  private def matr(content: Array[Array[Int]]): Matrix[BigFrac] = {
+  private def matrInt(content: Array[Array[Int]]): Matrix[BigIntFielded] = {
+    Matrix(content map (_ map (x => BigIntFielded(x))))
+  }
+
+  private def matrFrac(content: Array[Array[Int]]): Matrix[BigFrac] = {
     Matrix(content map (_ map (x => BigFrac(x))))
   }
+
   def a(values: Int*): Array[Int] = Array[Int](values: _*)
   def a(values: Array[Int]*): Array[Array[Int]] = Array[Array[Int]](values: _*)
 
   test("core") {
-    val mat = matr(a(
+    val mat = matrInt(a(
       a(1, 2, 3),
       a(2, 4, 6)))
     assert(mat.rowNum === 2)
     assert(mat.colNum === 3)
-    assert(mat(0, 0) === BigFrac(1))
-    assert(mat(1, 2) === BigFrac(6))
+    assert(mat(0, 0) === BigIntFielded(1))
+    assert(mat(1, 2) === BigIntFielded(6))
     intercept[IllegalArgumentException] { mat(-1, 0) }
     intercept[IllegalArgumentException] { mat(0, -1) }
     intercept[IllegalArgumentException] { mat(0, 3) }
@@ -30,94 +35,94 @@ class MatrixTest extends FunSuite {
   }
 
   test("+ - *") {
-    val mat1 = matr(a(
+    val mat1 = matrInt(a(
       a(1, 2, 3),
       a(2, 4, 6)))
-    val mat2 = matr(a(
+    val mat2 = matrInt(a(
       a(3, 3, 3),
       a(5, 5, 5)))
     assert(mat1 + mat2
-      === matr(a(
+      === matrInt(a(
         a(4, 5, 6),
         a(7, 9, 11))))
     assert(mat1 - mat2
-      === matr(a(
+      === matrInt(a(
         a(-2, -1, 0),
         a(-3, -1, 1))))
     assert(-mat1
-      === matr(a(
+      === matrInt(a(
         a(-1, -2, -3),
         a(-2, -4, -6))))
     assert(-mat1
-      === matr(a(
+      === matrInt(a(
         a(-1, -2, -3),
         a(-2, -4, -6))))
     intercept[DimensionMismatchException] { mat1 * mat2 }
 
-    val mat3 = matr(a(
+    val mat3 = matrInt(a(
       a(1, 2),
       a(2, 3),
       a(3, 6)))
     assert(mat1 * mat3
-      === matr(a(
+      === matrInt(a(
         a(14, 26),
         a(28, 52))))
     assert(mat3 * mat1
-      === matr(a(
+      === matrInt(a(
         a(5, 10, 15),
         a(8, 16, 24),
         a(15, 30, 45))))
   }
 
   test("inverse") {
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 0, 0),
       a(-3, 1, 0),
       a(0, 0, 1))).inv
       ===
-      matr(a(
+      matrInt(a(
         a(1, 0, 0),
         a(3, 1, 0),
         a(0, 0, 1))))
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(+1, 0, 0),
       a(-3, 1, 0),
       a(+0, 0, 1))).inv
       ===
-      matr(a(
+      matrInt(a(
         a(1, 0, 0),
         a(3, 1, 0),
         a(0, 0, 1))))
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, -3, +2),
       a(0, +1, -2),
       a(0, +0, +1))).inv
       ===
-      matr(a(
+      matrInt(a(
         a(1, 3, 4),
         a(0, 1, 2),
         a(0, 0, 1))))
   }
 
   test("transpose") {
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2, 3),
       a(4, 5, 6))).transpose
       ===
-      matr(a(
+      matrInt(a(
         a(1, 4),
         a(2, 5),
         a(3, 6))))
   }
 
   test("triangle form - no swaps") {
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2, 3),
       a(2, 5, 8),
       a(3, 7, 12))).triangleForm
-      === (matr(a(
+      === (matrInt(a(
         a(1, 2, 3),
         a(0, 1, 2),
         a(0, 0, 1))),
@@ -125,7 +130,7 @@ class MatrixTest extends FunSuite {
   }
 
   test("triangle form - single swap") {
-    val mat = matr(a(
+    val mat = matrInt(a(
       a(1, 2, 3, 3),
       a(2, 4, 8, 10),
       a(3, 7, 12, 13),
@@ -148,7 +153,7 @@ class MatrixTest extends FunSuite {
     // 	{0, 0, 2, 4}
     // 	{0, 0, -1, 0}
     assert(mat.triangleForm
-      === (matr(a(
+      === (matrInt(a(
         a(1, 2, 3, 3),
         a(0, 1, 3, 4),
         a(0, 0, 2, 4),
@@ -157,13 +162,13 @@ class MatrixTest extends FunSuite {
   }
 
   test("determinant") {
-    assert(matr(a(
+    assert(matrInt(a(
       a(4, 6, 6),
       a(4, 5, 5),
       a(4, 7, 9))).det
       === BigFrac(-8))
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1605, -1551, -3586),
       a(2278, -2267, -5287),
       a(2275, -2265, -5283))).det
@@ -171,78 +176,84 @@ class MatrixTest extends FunSuite {
   }
 
   test("rank") {
-    assert(matr(a(a(1))).rank === 1)
+    assert(matrInt(a(a(1))).rank === 1)
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2),
       a(3, 4))).rank
       === 2)
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2, 3),
       a(3, 4, 5))).rank
       === 2)
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2, 3),
       a(3, 4, 5),
       a(3, 4, 5))).rank
       === 2)
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2, 3),
       a(3, 4, 5),
       a(2, 4, 6))).rank
       === 2)
 
-    assert(matr(a(
+    assert(matrInt(a(
       a(1, 2, 3),
       a(3, 4, 5),
       a(2, 4, 7))).rank
       === 3)
+
+    assert(matrInt(a(
+      a(-3, 1, 1),
+      a(-1, 1, 0),
+      a(-1, 0, 1))).rank
+      === 3)
   }
 
   test("diagonal form 1") {
-    val source = matr(a(
+    val source = matrFrac(a(
       a(0, 1, -1),
       a(2, -3, 0),
       a(0, 0, 0)))
     val (actual, rowOnes, colOnes) = Matrix.toDiagonal(source)
     assert(actual
-      === matr(a(
+      === matrFrac(a(
         a(1, 0, 0),
         a(0, -1, 0),
         a(0, 0, 0))))
     assert(rowOnes
-      === matr(a(
+      === matrFrac(a(
         a(1, 0, 0),
         a(3, 1, 0),
         a(0, 0, 1))))
     assert(colOnes
-      === matr(a(
+      === matrFrac(a(
         a(0, 1, 3),
         a(1, 1, 2),
         a(0, 1, 2))))
   }
 
   test("diagonal form 2") {
-    val source = matr(a(
+    val source = matrFrac(a(
       a(36, 18, 72),
       a(5, 6, 12),
       a(2, 8, 16)))
     val (actual, rowOnes, colOnes) = Matrix.toDiagonal(source)
     assert(actual
-      === matr(a(
+      === matrFrac(a(
         a(1, 0, 0),
         a(0, 2, 0),
         a(0, 0, 504))))
     assert(rowOnes
-      === matr(a(
+      === matrFrac(a(
         a(0, -1, 1),
         a(-3, 142, -140),
         a(-14, 666, -657))))
     assert(colOnes
-      === matr(a(
+      === matrFrac(a(
         a(-1, 2, -108),
         a(-1, 9, -484),
         a(0, -3, 161))))
