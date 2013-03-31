@@ -35,7 +35,7 @@ public class Surface implements Comparable <Surface> {
 		return pointIdxList.size();
 	}
 	
-	public void addUpperDimSurfaces(final List <Surface> upperDimSurfaces) {
+	public void addUpperDimSurfaces(final Iterable <Surface> upperDimSurfaces) {
 		for (final Surface surface : upperDimSurfaces) {
 			if (!this.upperDimSurfaces.contains(surface)) {
 				this.upperDimSurfaces.add(surface);

@@ -21,7 +21,7 @@ import org.newtonpolyhedron.entity.vector.IntVector;
 
 public class SurfaceBuilderImplTest {
 	
-	private static final SurfaceBuilder	surfaceBuilder	= new SurfaceBuilderImpl();
+	private static final SurfaceBuilderImpl	surfaceBuilder	= new SurfaceBuilderImpl();
 	
 	@Test
 	public void mediumTestCase() throws Exception {
@@ -777,38 +777,36 @@ public class SurfaceBuilderImplTest {
 		
 		// Poly dimension < 2
 		try {
-			SurfaceBuilderImpl.findCommonSurfaces(1, 1, surfaces, lookupTableData);
+			surfaceBuilder.findCommonSurfacesJava(1, 1, surfaces, lookupTableData);
 			fail();
 		} catch(IllegalArgumentException ex) {/* Just as planned */}
 		
 		// Negative target dimension
 		try {
-			SurfaceBuilderImpl.findCommonSurfaces(3, -1, surfaces, lookupTableData);
+			surfaceBuilder.findCommonSurfacesJava(3, -1, surfaces, lookupTableData);
 			fail();
 		} catch(IllegalArgumentException ex) {/* Just as planned */}
 		
 		// Target dimension > Poly dimension
 		try {
-			SurfaceBuilderImpl.findCommonSurfaces(3, 4, surfaces, lookupTableData);
+			surfaceBuilder.findCommonSurfacesJava(3, 4, surfaces, lookupTableData);
 			fail();
 		} catch(IllegalArgumentException ex) {/* Just as planned */}
 		
 		// Target dimension = Poly dimension
 		try {
-			SurfaceBuilderImpl.findCommonSurfaces(3, 3, surfaces, lookupTableData);
+			surfaceBuilder.findCommonSurfacesJava(3, 3, surfaces, lookupTableData);
 			fail();
 		} catch(IllegalArgumentException ex) {/* Just as planned */}
 		
 		// Target dimension < Poly dimension
-		SurfaceBuilderImpl.findCommonSurfaces(3, 2, surfaces, lookupTableData);
+		surfaceBuilder.findCommonSurfacesJava(3, 2, surfaces, lookupTableData);
 	}
 	
 	//
 	// Supportive
 	//
-	private static void fillTableIdxKeys(
-			KeyTable <IntVector, Integer, Boolean> lookupTable,
-			int upTo) {
+	private static void fillTableIdxKeys(KeyTable <IntVector, Integer, Boolean> lookupTable, int upTo) {
 		List <Integer> list = lookupTable.colKeyList();
 		for (int i = 0; i < upTo; ++i) {
 			list.add(i);
