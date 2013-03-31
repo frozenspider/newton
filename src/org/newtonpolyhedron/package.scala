@@ -17,6 +17,8 @@ import org.fs.utils.structure.wrap.Pair
 import org.newtonpolyhedron.entity.Matrix
 import org.fs.utils.collection.list.SortedArrayList
 import org.fs.utils.collection.set.IndexedSet
+import org.newtonpolyhedron.entity.BigIntFielded
+import java.math.BigInteger
 
 package object newtonpolyhedron {
 
@@ -42,7 +44,7 @@ package object newtonpolyhedron {
   // Vectors
   def intvec2mathvec[T](vec: IntVector): IntMathVec = {
     val content = (vec.getContentCopy() map (x => new BigInt(x))).toIndexedSeq
-    new IntMathVec(content)
+    new IntMathVec(content map int2Fielded)
   }
 
   def fracvec2mathvec[T](vec: FractionVector): FracMathVec = {
@@ -86,4 +88,14 @@ package object newtonpolyhedron {
     }
     res
   }
+
+  // BigInt
+  implicit def int2Fielded(bigInt: BigInt): BigIntFielded =
+    new BigIntFielded(bigInt.underlying)
+  
+  implicit def int2Fielded(bigInt: BigInteger): BigIntFielded =
+    new BigIntFielded(bigInt)
+  
+  implicit def int2Fielded(int: Int): BigIntFielded =
+    BigIntFielded(int)
 }
