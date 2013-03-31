@@ -13,7 +13,7 @@ import org.newtonpolyhedron.entity.Matrix
 class UnimodularMatrixMakerImpl extends UnimodularMatrixMaker {
 
   override def getUnimodularFrom(matrix: FieldMatrix[BigFraction]): FieldMatrix[BigFraction] =
-    unimodularFrom(matrix)
+    matrixScala2Java(unimodularFrom(matrix))
 
   override def unimodularFrom(matrix: Matrix[BigFrac]): Matrix[BigFrac] = {
     require(matrix.isSquare, "Non-square matrix")

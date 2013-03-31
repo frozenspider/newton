@@ -77,7 +77,7 @@ package object newtonpolyhedron {
     new Matrix(res)
   }
 
-  implicit def matrixScala2Java(src: Matrix[BigFrac]) = {
+  def matrixScala2Java(src: Matrix[BigFrac]) = {
     val content = src.contentCopy
     val res = createOfSizeAs(content)(BigFractionField.getInstance)
     for {
