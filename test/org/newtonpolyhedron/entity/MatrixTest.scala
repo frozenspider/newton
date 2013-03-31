@@ -1,10 +1,9 @@
 package org.newtonpolyhedron.entity
 
-import org.scalatest.FunSpec
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.FunSuite
 import org.apache.commons.math3.exception.DimensionMismatchException
+import org.junit.runner.RunWith
+import org.scalatest.FunSuite
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class MatrixTest extends FunSuite {
@@ -130,7 +129,7 @@ class MatrixTest extends FunSuite {
   }
 
   test("triangle form - single swap") {
-    val mat = matrInt(a(
+    val mat = matrFrac(a(
       a(1, 2, 3, 3),
       a(2, 4, 8, 10),
       a(3, 7, 12, 13),
@@ -153,7 +152,7 @@ class MatrixTest extends FunSuite {
     // 	{0, 0, 2, 4}
     // 	{0, 0, -1, 0}
     assert(mat.triangleForm
-      === (matrInt(a(
+      === (matrFrac(a(
         a(1, 2, 3, 3),
         a(0, 1, 3, 4),
         a(0, 0, 2, 4),
@@ -166,13 +165,13 @@ class MatrixTest extends FunSuite {
       a(4, 6, 6),
       a(4, 5, 5),
       a(4, 7, 9))).det
-      === BigFrac(-8))
+      === BigInt(-8))
 
     assert(matrInt(a(
       a(1605, -1551, -3586),
       a(2278, -2267, -5287),
       a(2275, -2265, -5283))).det
-      === BigFrac(1))
+      === BigInt(1))
   }
 
   test("rank") {

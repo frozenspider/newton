@@ -20,7 +20,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     extends Function2[Int, Int, T]
     with Serializable {
 
-  implicit private lazy val field = this.matrix.getField
+  implicit private val field = this.matrix.getField
 
   val rowNum = this.matrix.getRowDimension
   val colNum = this.matrix.getColumnDimension
@@ -38,16 +38,29 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     new Matrix(new FieldLUDecomposition(matrix).getSolver.getInverse)
   }
   def transpose = new Matrix(this.matrix.transpose)
+  def minor(skipRow: Int, skipCol: Int) =
+    minorMatrix(skipRow, skipCol).det
   def minorMatrix(skipRow: Int, skipCol: Int) = {
     val rows = ((0 until rowNum) filter (_ != skipRow)).toArray[Int]
     val cols = ((0 until colNum) filter (_ != skipCol)).toArray[Int]
     new Matrix(matrix.getSubMatrix(rows, cols))
   }
 
-  lazy val det = {
+  lazy val det: T = {
     require(isSquare, "Non-square matrix")
-    new FieldLUDecomposition[T](matrix).getDeterminant
+    if (rowNum == 1) this(0, 0)
+    else {
+      // FieldLUDecomposition uses division, which is not acceptable for integer matrix
+      // new FieldLUDecomposition[T](matrix).getDeterminant
+      val additiveMinors = for (c <- 0 until colNum) yield this(0, c) multiply minor(0, c)
+      val last = if (additiveMinors.size % 2 != 0) additiveMinors.last else field.getZero
+      additiveMinors.grouped(2) map { s =>
+        if (s.size == 1) s(0)
+        else s(0) subtract s(1)
+      } reduce (_ add _)
+    }
   }
+
   lazy val rank = {
     // TODO: Delegate to library
     require(rowNum != 0, "0-row matrix")
