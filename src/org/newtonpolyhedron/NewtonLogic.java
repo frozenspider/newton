@@ -47,8 +47,6 @@ import org.newtonpolyhedron.utils.MatrixUtils;
 
 public class NewtonLogic {
 	
-	private Thread	workingThread	= null;
-	
 	/**
 	 * Starts the processing thread.
 	 * 
@@ -60,6 +58,7 @@ public class NewtonLogic {
 	 *            try to illustrate the solution if possible
 	 * @param writer
 	 *            where to output data during work process
+	 * @return working thread (not started)
 	 * @throws WrongFormatException
 	 *             if file was malformed
 	 * @throws UnknownModeException
@@ -67,7 +66,7 @@ public class NewtonLogic {
 	 * @throws Exception
 	 *             if... whatever.
 	 */
-	public void start(final String path, final WorkingMode mode, final boolean illustrate, final PrintWriter writer)
+	public Thread start(final String path, final WorkingMode mode, final boolean illustrate, final PrintWriter writer)
 			throws WrongFormatException, UnknownModeException, Exception {
 		final File file = new File(path);
 		final SolverPrinter <?> solver;
@@ -96,13 +95,7 @@ public class NewtonLogic {
 			default:
 				throw new UnknownModeException(mode);
 		}
-		workingThread = new Thread(new ExecutorRunnable(solver, writer), "MainSolver");
-		workingThread.start();
-	}
-	
-	public void stop() {
-		workingThread.interrupt();
-		// workingThread.join();
+		return new Thread(new ExecutorRunnable(solver, writer), "MainSolver");
 	}
 	
 	private SolverPrinter <?> launchPolyMotzkinBurger(

@@ -30,6 +30,7 @@ public class NewtonPolyhedronFrame extends JFrame {
 	private final JTextArea		txtrOutput;
 	private final PrintWriter	printWriter;
 	private boolean				started				= false;
+	private Thread				workingThread		= null;
 	
 	public NewtonPolyhedronFrame() {
 		this.printWriter = new PrintWriter(new NewtonTextAreaOutput());
@@ -123,12 +124,14 @@ public class NewtonPolyhedronFrame extends JFrame {
 					final boolean illustrate = chckbxIllustrate.isSelected();
 					final WorkingMode mode = (WorkingMode) cbMode.getItemAt(selectedIdx);
 					if (selectedIdx != -1) {
-						logic.start(path, mode, illustrate, printWriter);
+						workingThread = logic.start(path, mode, illustrate, printWriter);
+						workingThread.start();
 						btnStart.setText("Stop");
 						started = true;
 					}
 				} else {
-					logic.stop();
+					workingThread.interrupt();
+					workingThread = null;
 					btnStart.setText("Start");
 					started = false;
 				}
