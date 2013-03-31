@@ -2,31 +2,16 @@ package org.newtonpolyhedron.solve.cone
 
 import java.io.PrintWriter
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.IntVector
 
 class ConeSolverImpl extends ConeSolver {
-
-  override def solve(ineqs: java.util.List[IntVector],
-                     basis: java.util.List[IntVector],
-                     dim: Int,
-                     output: PrintWriter): java.util.List[IntVector] = {
-    def proxyVec(vec: java.util.List[IntVector]): IndexedSeq[IntMathVec] = vec map (x => intvec2mathvec(x))
-
-    val ineqs2 = proxyVec(ineqs)
-    val basis2 = proxyVec(basis)
-
-    val result = solve(ineqs2, basis2, dim, output)
-    seq2list(result map (x => mathvec2intvec(x)))
-  }
 
   override def solve(ineqs: IndexedSeq[IntMathVec],
                      basis: IndexedSeq[IntMathVec],
                      dim: Int,
                      output: PrintWriter): IndexedSeq[IntMathVec] = {
-    def proxyList(vec: IndexedSeq[IntMathVec]): java.util.List[IntVector] = seq2list(vec map (x => mathvec2intvec(x)))
-
+    require(ineqs forall (_.dim == dim), "Inequation vector with incorrect dimension")
+    require(basis forall (_.dim == dim), "Basis vector with incorrect dimension")
     val fundamentalSolution = solveInner(ineqs, basis, dim, output)
     //    val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(proxyList(ineqs)))
     //    val result = withoutZeroProductSolutions(ineqs, rank)(basis)
