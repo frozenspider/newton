@@ -1,9 +1,9 @@
 package org.newtonpolyhedron.solve.matrixuni
+import org.apache.commons.math3.fraction.BigFraction
 
 import org.apache.commons.math3.linear.FieldMatrix
-import org.apache.commons.math3.fraction.BigFraction
-import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.Matrix
 
 trait UnimodularMatrixMaker {
   /**

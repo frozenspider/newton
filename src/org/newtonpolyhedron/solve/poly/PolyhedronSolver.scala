@@ -1,10 +1,10 @@
 package org.newtonpolyhedron.solve.poly
+import java.io.PrintWriter
 
 import org.fs.utils.collection.table.KeyTable
-import java.io.PrintWriter
-import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.FractionVector
+import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.entity.vector.IntVector
 
 trait PolyhedronSolver {

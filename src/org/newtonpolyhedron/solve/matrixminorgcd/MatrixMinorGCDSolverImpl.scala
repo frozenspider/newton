@@ -5,7 +5,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair
 import org.apache.commons.lang3.tuple.Pair
 import org.apache.commons.math3.fraction.BigFraction
 import org.apache.commons.math3.linear.FieldMatrix
-
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Matrix

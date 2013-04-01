@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.cone
 
 import java.io.PrintWriter
-import org.newtonpolyhedron.entity.vector.IntVector
+
 import org.newtonpolyhedron.entity.vector.IntMathVec
 
 trait ConeSolver {

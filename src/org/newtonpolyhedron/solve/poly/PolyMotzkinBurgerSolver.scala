@@ -1,6 +1,7 @@
 package org.newtonpolyhedron.solve.poly
 
 import java.io.PrintWriter
+import java.util.Comparator
 
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
@@ -15,6 +16,7 @@ import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PointUtils
 
 class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolver {
+
   override def solve(points: java.util.List[FractionVector],
                      commonLimits: java.util.List[IntVector],
                      wishfulBasis: java.util.List[IntVector],
@@ -32,9 +34,9 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
   }
 
   override def solve(points: IndexedSeq[FracMathVec],
-            commonLimits: IndexedSeq[IntMathVec],
-            wishfulBasis: IndexedSeq[IntMathVec],
-            output: PrintWriter): KeyTable[IntMathVec, Integer, Boolean] = {
+                     commonLimits: IndexedSeq[IntMathVec],
+                     wishfulBasis: IndexedSeq[IntMathVec],
+                     output: PrintWriter): KeyTable[IntMathVec, Int, Boolean] = {
     val allSolutions = solveForEachPoint(points, commonLimits, wishfulBasis, output)
     fillTableWith(allSolutions)
   }
@@ -53,8 +55,12 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     allSolutions
   }
 
-  def fillTableWith(allSolutions: IndexedSeq[IndexedSeq[IntMathVec]]): KeyTable[IntMathVec, Integer, Boolean] = {
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Integer, Boolean]
+  val intComparator: Comparator[Int] = new Comparator[Int] {
+    override def compare(o1: Int, o2: Int) = o1 compare o2
+  }
+
+  def fillTableWith(allSolutions: IndexedSeq[IndexedSeq[IntMathVec]]): KeyTable[IntMathVec, Int, Boolean] = {
+    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, allSolutions.size)
     for {
       i <- 0 until allSolutions.size
@@ -62,11 +68,11 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
       sol <- coneSols
     } lookupTable.put(sol, i, true)
     KeyTables.sortByRowHeaders(lookupTable, true)
-    KeyTables.sortByColHeaders(lookupTable, true)
+    KeyTables.sortByColHeaders(lookupTable, intComparator, true)
     lookupTable
   }
 
-  def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Integer, Boolean],
+  def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Int, Boolean],
                        upTo: Int) = {
     for (i <- 0 until upTo)
       lookupTable.put(null, i, false)

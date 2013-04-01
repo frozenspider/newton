@@ -1,9 +1,9 @@
 package org.newtonpolyhedron.solve.polyinter
+import org.newtonpolyhedron.entity.vector.FracMathVec
 
 import org.newtonpolyhedron.entity.vector.FractionVector
-import org.newtonpolyhedron.entity.vector.IntVector
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.vector.IntVector
 
 trait PolyIntersectionSolver {
   /**
