@@ -16,5 +16,5 @@ trait PolyhedronSolver {
   def solve(points: IndexedSeq[FracMathVec],
             commonLimits: IndexedSeq[IntMathVec],
             wishfulBasis: IndexedSeq[IntMathVec],
-            output: PrintWriter): KeyTable[IntMathVec, Integer, Boolean]
+            output: PrintWriter): KeyTable[IntMathVec, Int, Boolean]
 }

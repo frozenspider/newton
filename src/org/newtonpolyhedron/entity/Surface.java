@@ -85,7 +85,8 @@ public class Surface implements Comparable <Surface> {
 				int idx = allUpperDimSurfaces.indexOf(surface);
 				if (idx < 0) {
 					throw new RuntimeException("Upper dimension surface is missing"
-							+ " from its all upper dimension surfaces list");
+							+ " from its all upper dimension surfaces list: " + surface + " given "
+							+ allUpperDimSurfaces);
 				}
 				upperDimSurfacesIdxList.add(idx);
 			}
