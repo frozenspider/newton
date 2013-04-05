@@ -30,7 +30,7 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
     this.pointIndices.hashCode * 17 + this.upperSurfaces.hashCode
 
   override lazy val toString =
-    "{" + pointIndices.mkString(", ") + "}"
+    "{" + pointIndices.mkString(", ") + "}/" + upperSurfaces.mkString("[", ", ", "]")
 
   def makeString(allUpperSurfaces: IndexedSeq[Surface]) = {
     val result = new StringBuilder
