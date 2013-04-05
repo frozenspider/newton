@@ -20,6 +20,18 @@ public class Surface implements Comparable <Surface> {
 	 * 
 	 * @param pointIdxList
 	 *            surface forming points
+	 */
+	public Surface(final Collection <Integer> pointIdxList) {
+		this.pointIdxList = pointIdxList == null ? new ArrayList <Integer>(1) : new ArrayList <Integer>(pointIdxList);
+		Collections.sort(this.pointIdxList);
+		this.upperDimSurfaces = new ArrayList <Surface>(1);
+	}
+	
+	/**
+	 * Note: copies the collections content, all arguments can be <code>null</code>
+	 * 
+	 * @param pointIdxList
+	 *            surface forming points
 	 * @param upperDimSurfacesIdxList
 	 *            upper dimension surfaces containing this one
 	 */
@@ -35,13 +47,14 @@ public class Surface implements Comparable <Surface> {
 		return pointIdxList.size();
 	}
 	
-	public void addUpperDimSurfaces(final Iterable <Surface> upperDimSurfaces) {
+	public Surface addUpperDimSurfaces(final Iterable <Surface> upperDimSurfaces) {
 		for (final Surface surface : upperDimSurfaces) {
 			if (!this.upperDimSurfaces.contains(surface)) {
 				this.upperDimSurfaces.add(surface);
 			}
 		}
 		Collections.sort(this.upperDimSurfaces);
+		return this;
 	}
 	
 	public List <Integer> getPointIdxList() {
@@ -54,14 +67,14 @@ public class Surface implements Comparable <Surface> {
 	
 	@Override
 	public int hashCode() {
-		return getPointIdxList().hashCode() * 17;
+		return getPointIdxList().hashCode() * 17 + getUpperDimSurfacesList().hashCode();
 	}
 	
 	@Override
 	public boolean equals(final Object obj) {
 		if (!(obj instanceof Surface)) return false;
 		final Surface cast = (Surface) obj;
-		return getPointIdxList().equals(cast.getPointIdxList());
+		return getPointIdxList().equals(cast.getPointIdxList()) && getUpperDimSurfacesList().equals(cast.getUpperDimSurfacesList());
 	}
 	
 	@Override
@@ -70,7 +83,7 @@ public class Surface implements Comparable <Surface> {
 		result.append('{');
 		result.append(StringUtils.join(pointIdxList, ", "));
 		result.append("}");
-		return result.toString();
+		return result.toString() + "/" + upperDimSurfaces;
 	}
 	
 	public String makeString(List <Surface> allUpperDimSurfaces) {

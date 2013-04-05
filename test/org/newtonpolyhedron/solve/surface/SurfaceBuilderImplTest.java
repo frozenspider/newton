@@ -692,7 +692,7 @@ public class SurfaceBuilderImplTest {
 			borderList2.add(new Surface(asList(4, 6, 8, 10), asListFrom(borderList3, 3, 6)));
 			borderList2.add(new Surface(asList(4, 6, 12, 14), asListFrom(borderList3, 4, 6)));
 			borderList2.add(new Surface(asList(4, 8, 12, 16), asListFrom(borderList3, 5, 6)));
-			borderList2.add(new Surface(asList(5, 7, 9, 11), asListFrom(borderList3, 3, 2)));
+			borderList2.add(new Surface(asList(5, 7, 9, 11), asListFrom(borderList3, 2, 3)));
 			borderList2.add(new Surface(asList(5, 7, 13, 15), asListFrom(borderList3, 2, 4)));
 			borderList2.add(new Surface(asList(5, 9, 13, 17), asListFrom(borderList3, 2, 5)));
 			borderList2.add(new Surface(asList(6, 7, 10, 11), asListFrom(borderList3, 1, 3)));
@@ -767,7 +767,8 @@ public class SurfaceBuilderImplTest {
 			borderList0.add(new Surface(asList(19), asListFrom(borderList1, 0, 27, 30, 31)));
 			expectedSurface.put(0, borderList0);
 		}
-		assertEquals(expectedSurface, surfaceBuilder.getSurfaces(lookupTable, 4));
+		Map <Integer, IndexedSet <Surface>> actualSurface = surfaceBuilder.getSurfaces(lookupTable, 4);
+		assertEquals(expectedSurface, actualSurface);
 	}
 	
 	@Test
