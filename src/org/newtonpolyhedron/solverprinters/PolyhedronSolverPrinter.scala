@@ -116,8 +116,8 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                          freq: Int) = {
     val points3d = points map (PointUtils.toPoint3d)
     val lines = collectLineCorners(surfacesMap(1), points)
-    var borderEdgesAlt = (lines map (_.getPointIdxList map (points3d(_)))).flatten
-    var illustrFrames = Seq(
+    val borderEdgesAlt = (lines map (_.getPointIdxList map (points3d(_)))).flatten
+    val illustrFrames = Seq(
       doDrawFrame(points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
       doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2))
     try {
@@ -149,23 +149,28 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
   }
 
   private def getLineCorners(surface: Surface, points: Seq[FracMathVec]): Surface = {
-    val surfacePtsIndices = surface.getPointIdxList()
-    val dim = points(0).dim
-    for (t <- 0 until dim) {
-      var lesserPtIdx = surfacePtsIndices(0)
-      var greaterPtIdx = surfacePtsIndices(0)
-      for (ptIdx <- surfacePtsIndices) {
-        if (points(ptIdx)(t) < points(lesserPtIdx)(t)) {
-          lesserPtIdx = ptIdx
-        }
-        if (points(ptIdx)(t) > points(greaterPtIdx)(t)) {
-          greaterPtIdx = ptIdx
+    def getLesserAndGreaterPoints(surfacePtsIndices: List[Int],
+                                  currDim: Int, lesserPtIdx: Int, greaterPtIdx: Int): (Int, Int) =
+      surfacePtsIndices match {
+        case Nil => (lesserPtIdx, greaterPtIdx)
+        case x :: xs => {
+          val newLesser =
+            if (points(x)(currDim) < points(lesserPtIdx)(currDim)) x
+            else lesserPtIdx
+          val newGreater =
+            if (points(x)(currDim) > points(greaterPtIdx)(currDim)) x
+            else greaterPtIdx
+          getLesserAndGreaterPoints(xs, currDim, newLesser, newGreater)
         }
       }
+    val surfacePtsIndices = surface.getPointIdxList.toIndexedSeq
+    val dim = points(0).dim
+    for (t <- 0 until dim) {
+      val (lesserPtIdx, greaterPtIdx) = getLesserAndGreaterPoints((surfacePtsIndices map (_.intValue)).toList, t, surfacePtsIndices(0), surfacePtsIndices(0))
       if (lesserPtIdx != greaterPtIdx)
-        return new Surface(seq2list(Seq(lesserPtIdx, greaterPtIdx)), surface.getUpperDimSurfacesList)
+        return new Surface(seq2list(Seq(lesserPtIdx, greaterPtIdx) map int2Integer)).addUpperDimSurfaces(surface.getUpperDimSurfacesList)
     }
     // If this is the case - all points are same
-    return new Surface(seq2list(Seq(surfacePtsIndices.get(0))), surface.getUpperDimSurfacesList())
+    return new Surface(seq2list(Seq(surfacePtsIndices.head) map (x => int2Integer(x)))).addUpperDimSurfaces(surface.getUpperDimSurfacesList)
   }
 }

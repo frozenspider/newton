@@ -91,13 +91,13 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
       val res = if (targetDim > 0) {
         // Common surface
         if (commonPoints.size > targetDim) {
-          Seq(new Surface(seq2list(commonPoints map (int2Integer(_))), null))
+          Seq(new Surface(seq2list(commonPoints map (int2Integer(_)))))
         } else {
           Seq.empty
         }
       } else {
         // Vertex
-        for (commonPoint <- commonPoints) yield new Surface(seq2list(Seq(commonPoint)), null)
+        for (commonPoint <- commonPoints) yield new Surface(seq2list(Seq(commonPoint)))
       }
       res
     }).toIndexedSeq
