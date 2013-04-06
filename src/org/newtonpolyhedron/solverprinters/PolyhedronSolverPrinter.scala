@@ -116,7 +116,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                          freq: Int) = {
     val points3d = points map (PointUtils.toPoint3d)
     val lines = collectLineCorners(surfacesMap(1), points)
-    val borderEdgesAlt = (lines map (_.getPointIdxList map (points3d(_)))).flatten
+    val borderEdgesAlt = (lines map (_.pointIndices map points3d)).flatten
     val illustrFrames = Seq(
       doDrawFrame(points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
       doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2))
@@ -163,14 +163,14 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
           getLesserAndGreaterPoints(xs, currDim, newLesser, newGreater)
         }
       }
-    val surfacePtsIndices = surface.getPointIdxList.toIndexedSeq
+    val surfacePtsIndices = surface.pointIndices.toIndexedSeq
     val dim = points(0).dim
     for (t <- 0 until dim) {
-      val (lesserPtIdx, greaterPtIdx) = getLesserAndGreaterPoints((surfacePtsIndices map (_.intValue)).toList, t, surfacePtsIndices(0), surfacePtsIndices(0))
+      val (lesserPtIdx, greaterPtIdx) = getLesserAndGreaterPoints(surfacePtsIndices.toList, t, surfacePtsIndices(0), surfacePtsIndices(0))
       if (lesserPtIdx != greaterPtIdx)
-        return new Surface(seq2list(Seq(lesserPtIdx, greaterPtIdx) map int2Integer)).addUpperDimSurfaces(surface.getUpperDimSurfacesList)
+        return new Surface(Seq(lesserPtIdx, greaterPtIdx)).addUpperSurfaces(surface.upperSurfaces)
     }
     // If this is the case - all points are same
-    return new Surface(seq2list(Seq(surfacePtsIndices.head) map (x => int2Integer(x)))).addUpperDimSurfaces(surface.getUpperDimSurfacesList)
+    return new Surface(Seq(surfacePtsIndices.head)).addUpperSurfaces(surface.upperSurfaces)
   }
 }

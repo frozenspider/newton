@@ -85,7 +85,8 @@ public class SurfaceBuilderImplTest {
 			borderList0.add(new Surface(asList(4), asListFrom(borderList1, 2, 4, 6, 7)));
 			expectedSurface.put(0, borderList0);
 		}
-		assertEquals(expectedSurface, surfaceBuilder.getSurfaces(lookupTable, 3));
+		Map <Integer, IndexedSet <Surface>> actualSurface = surfaceBuilder.getSurfaces(lookupTable, 3);
+		assertEquals(expectedSurface, actualSurface);
 	}
 	
 	@Test

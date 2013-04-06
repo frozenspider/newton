@@ -1,5 +1,7 @@
 package org.newtonpolyhedron.solve.surface
+
 import scala.collection.JavaConversions
+import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.set.IndexedSet
 import org.fs.utils.collection.table.ArrayListKeyTable
@@ -22,17 +24,17 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
   }
 
   override def surfaces(lookupTable: KeyTable[IntMathVec, Int, Boolean],
-                        dim: Int): Map[Int, Set[Surface]] = {
+                        dim: Int): Map[Int, SortedSet[Surface]] = {
     val lookupData = extactLookupTableData(lookupTable)
     val surfacesMap = gatherSurfacesMap(dim, lookupData)
     surfacesMap
   }
 
   private def gatherSurfacesMap(dim: Int,
-                                lookupData: Seq[Seq[Int]]): Map[Int, Set[Surface]] = {
+                                lookupData: Seq[Seq[Int]]): Map[Int, SortedSet[Surface]] = {
     def recurse(targetDim: Int,
-                result: Map[Int, Set[Surface]],
-                prevSurface: Set[Surface]): Map[Int, Set[Surface]] = {
+                result: Map[Int, SortedSet[Surface]],
+                prevSurface: Set[Surface]): Map[Int, SortedSet[Surface]] = {
       if (targetDim < 0) result
       else {
         val surfaces = findCommonSurfaces(dim, targetDim, prevSurface, lookupData)
@@ -72,7 +74,7 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
   def findCommonSurfaces(polyDim: Int,
                          targetDim: Int,
                          upperLevelSurfaces: Set[Surface],
-                         lookupTableData: Seq[Seq[Int]]): Set[Surface] = {
+                         lookupTableData: Seq[Seq[Int]]): SortedSet[Surface] = {
     require(polyDim >= 2, "Polyhedron dimension >= 2")
     require(targetDim >= 0, "Target dimension must be nonnegative")
     require(targetDim < polyDim, "Target dimension must be < poly dimension")
@@ -91,13 +93,13 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
       val res = if (targetDim > 0) {
         // Common surface
         if (commonPoints.size > targetDim) {
-          Seq(new Surface(seq2list(commonPoints map (int2Integer(_)))))
+          Seq(new Surface(commonPoints))
         } else {
           Seq.empty
         }
       } else {
         // Vertex
-        for (commonPoint <- commonPoints) yield new Surface(seq2list(Seq(commonPoint)))
+        for (commonPoint <- commonPoints) yield new Surface(Seq(commonPoint))
       }
       res
     }).toIndexedSeq
@@ -123,15 +125,13 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
                                             upperLevelSurfaces: Set[Surface],
                                             tagetDim: Int,
                                             polyDim: Int): Set[Surface] = {
-    surfaces.filter { currentSurface =>
+    surfaces map { currentSurface =>
       val superior = surfacesConatiningGiven(currentSurface, upperLevelSurfaces)
-      if (tagetDim == 0 && (superior.size < polyDim - 1)) {
-        false
-      } else {
-        currentSurface.addUpperDimSurfaces(immset2indexed(superior))
-        true
-      }
-    }
+      if (tagetDim == 0 && (superior.size < polyDim - 1))
+        None
+      else
+        Some(currentSurface.addUpperSurfaces(superior))
+    } filter (_.isDefined) map (_.get)
   }
 
   /**
@@ -151,10 +151,8 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
    * @return <code>true</code>, if list contains a surface, which is superior to the given.
    * @see #surfacesConatiningGiven(Surface, Collection)
    */
-  def surfacesContainsGiven(surface: Surface, upperLevelSurfaces: Set[Surface]): Boolean = {
-    val pts = surface.getPointIdxList
-    upperLevelSurfaces exists (_.getPointIdxList containsAll pts)
-  }
+  def surfacesContainsGiven(surface: Surface, upperLevelSurfaces: Set[Surface]): Boolean =
+    upperLevelSurfaces exists (surface.pointIndices subsetOf _.pointIndices)
 
   /**
    * Gather surfaces superior to the given surface. For more information, see
@@ -170,8 +168,6 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
    * @return list of superior surfaces
    * @see #surfacesContainsGiven(Surface, Collection)
    */
-  def surfacesConatiningGiven(surface: Surface, upperLevelSurfaces: Set[Surface]): Set[Surface] = {
-    val pts = surface.getPointIdxList
-    upperLevelSurfaces filter (_.getPointIdxList containsAll pts)
-  }
+  def surfacesConatiningGiven(surface: Surface, upperLevelSurfaces: Set[Surface]): Set[Surface] =
+    upperLevelSurfaces filter (surface.pointIndices subsetOf _.pointIndices)
 }
