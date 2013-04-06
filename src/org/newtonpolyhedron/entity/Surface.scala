@@ -48,14 +48,14 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
     result
   }
 
-  def compare(that: Surface): Int =
-    if (this.pointIndices.size != that.pointIndices.size)
-      this.pointIndices.size compare that.pointIndices.size
-    else
-      (this.pointIndices zip that.pointIndices) find {
-        case (i1, i2) => i1 != i2
-      } match {
-        case Some((i1, i2)) => i1 compare i2
-        case None           => 0
-      }
+  def compare(that: Surface): Int = {
+    (this.pointIndices.toSeq zipAll (that.pointIndices, -1, -1)) find {
+      case (i1, i2) => i1 != i2 || i1 == -1 || i2 == -1
+    } match {
+      case Some((_, -1))  => 1
+      case Some((-1, _))  => -1
+      case Some((i1, i2)) => i1 compare i2
+      case None           => 0
+    }
+  }
 }

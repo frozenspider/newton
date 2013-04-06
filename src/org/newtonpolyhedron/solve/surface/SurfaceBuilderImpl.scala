@@ -1,5 +1,7 @@
 package org.newtonpolyhedron.solve.surface
+
 import scala.collection.JavaConversions
+import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.set.IndexedSet
 import org.fs.utils.collection.table.ArrayListKeyTable
@@ -22,17 +24,17 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
   }
 
   override def surfaces(lookupTable: KeyTable[IntMathVec, Int, Boolean],
-                        dim: Int): Map[Int, Set[Surface]] = {
+                        dim: Int): Map[Int, SortedSet[Surface]] = {
     val lookupData = extactLookupTableData(lookupTable)
     val surfacesMap = gatherSurfacesMap(dim, lookupData)
     surfacesMap
   }
 
   private def gatherSurfacesMap(dim: Int,
-                                lookupData: Seq[Seq[Int]]): Map[Int, Set[Surface]] = {
+                                lookupData: Seq[Seq[Int]]): Map[Int, SortedSet[Surface]] = {
     def recurse(targetDim: Int,
-                result: Map[Int, Set[Surface]],
-                prevSurface: Set[Surface]): Map[Int, Set[Surface]] = {
+                result: Map[Int, SortedSet[Surface]],
+                prevSurface: Set[Surface]): Map[Int, SortedSet[Surface]] = {
       if (targetDim < 0) result
       else {
         val surfaces = findCommonSurfaces(dim, targetDim, prevSurface, lookupData)
@@ -72,7 +74,7 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
   def findCommonSurfaces(polyDim: Int,
                          targetDim: Int,
                          upperLevelSurfaces: Set[Surface],
-                         lookupTableData: Seq[Seq[Int]]): Set[Surface] = {
+                         lookupTableData: Seq[Seq[Int]]): SortedSet[Surface] = {
     require(polyDim >= 2, "Polyhedron dimension >= 2")
     require(targetDim >= 0, "Target dimension must be nonnegative")
     require(targetDim < polyDim, "Target dimension must be < poly dimension")

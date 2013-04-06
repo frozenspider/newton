@@ -19,6 +19,7 @@ import org.fs.utils.collection.list.SortedArrayList
 import org.fs.utils.collection.set.IndexedSet
 import org.newtonpolyhedron.entity.BigIntFielded
 import java.math.BigInteger
+import scala.collection.immutable.SortedSet
 
 package object newtonpolyhedron {
 
@@ -36,6 +37,10 @@ package object newtonpolyhedron {
 
   def immset2indexed[T](set: Set[T]): IndexedSet[T] =
     new SortedArrayList[T](seqAsJavaList(set.toList))
+
+  implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
+    SortedSet.empty[T] ++ t
+  }
 
   implicit def convertPair[T1, T2](pair: Pair[T1, T2]) = (pair.getFirst, pair.getSecond)
 
@@ -92,10 +97,10 @@ package object newtonpolyhedron {
   // BigInt
   implicit def int2Fielded(bigInt: BigInt): BigIntFielded =
     new BigIntFielded(bigInt.underlying)
-  
+
   implicit def int2Fielded(bigInt: BigInteger): BigIntFielded =
     new BigIntFielded(bigInt)
-  
+
   implicit def int2Fielded(int: Int): BigIntFielded =
     BigIntFielded(int)
 }
