@@ -1,25 +1,12 @@
 package org.newtonpolyhedron.solve.polyinter
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.FractionVector
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.IntVector
 import org.newtonpolyhedron.solve.cone.ConeSolver
 import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PointUtils
 
 class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyIntersectionSolver {
-
-  override def solve(polyhedrons: java.util.List[java.util.List[FractionVector]],
-                     dim: Int): java.util.Map[IntVector, java.util.List[java.util.List[Integer]]] = {
-    val tmp = solve(polyhedrons map (_ map (v => fracvec2mathvec(v))), dim)
-    var result = new org.fs.utils.collection.map.BasicSortedMap[IntVector, java.util.List[java.util.List[Integer]]]
-    for ((k, v) <- tmp) {
-      result.put(mathvec2intvec(k), seq2list(v map (xs => seq2list(xs map (x => int2Integer(x))))))
-    }
-    result
-  }
 
   override def solve(polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
                      dim: Int): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]] = {
@@ -86,13 +73,6 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     if (nextSeq(0) < maximums(0))
       nextSeq #:: indicesStream(nextSeq, maximums)
     else Stream.empty
-  }
-
-  def removeNonIntersectingSolutions(solutions: java.util.List[IntVector],
-                                     equationSystems: java.util.List[java.util.List[IntVector]]): java.util.List[IntVector] = {
-    val eqSystemsMapped = equationSystems map (_ map (v => intvec2mathvec(v)))
-    val solMapped = solutions map (v => intvec2mathvec(v))
-    seq2list(solMapped.filter(isIntersectingSol(eqSystemsMapped)) map (v => mathvec2intvec(v)))
   }
 
   def isIntersectingSol(equationSystems: IndexedSeq[IndexedSeq[IntMathVec]])(solution: IntMathVec): Boolean =

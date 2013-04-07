@@ -24,4 +24,6 @@ object FracMathVec {
   def zero(dim: Int) = new FracMathVec(IndexedSeq.fill(dim)(zeroValue))
 
   def apply(elements: BigFrac*): FracMathVec = new FracMathVec(elements.toIndexedSeq)
+
+  def fromInts(elements: Int*): FracMathVec = new FracMathVec((elements map BigFrac.apply).toIndexedSeq)
 }

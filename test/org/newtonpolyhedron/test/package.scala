@@ -12,6 +12,9 @@ package object test {
     Matrix(content map (_ map (x => BigFrac(x))))
   }
 
-  def a(values: Int*): Array[Int] = Array[Int](values: _*)
-  def a(values: Array[Int]*): Array[Array[Int]] = Array[Array[Int]](values: _*)
+  def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
+
+  def a(values: Int*): Array[Int] = Array(values: _*)
+  def a(values: Array[Int]*): Array[Array[Int]] = Array(values: _*)
+  def a(values: Array[Array[Int]]*): Array[Array[Array[Int]]] = Array(values: _*)
 }
