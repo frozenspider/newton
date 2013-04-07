@@ -1,23 +1,12 @@
 package org.newtonpolyhedron.entity
-
 import org.apache.commons.math3.exception.DimensionMismatchException
 import org.junit.runner.RunWith
+import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class MatrixTest extends FunSuite {
-  private def matrInt(content: Array[Array[Int]]): Matrix[BigIntFielded] = {
-    Matrix(content map (_ map (x => BigIntFielded(x))))
-  }
-
-  private def matrFrac(content: Array[Array[Int]]): Matrix[BigFrac] = {
-    Matrix(content map (_ map (x => BigFrac(x))))
-  }
-
-  def a(values: Int*): Array[Int] = Array[Int](values: _*)
-  def a(values: Array[Int]*): Array[Array[Int]] = Array[Array[Int]](values: _*)
-
   test("core") {
     val mat = matrInt(a(
       a(1, 2, 3),
