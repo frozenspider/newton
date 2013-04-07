@@ -6,32 +6,13 @@ import java.util.Comparator
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.FractionVector
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.IntVector
 import org.newtonpolyhedron.solve.cone.ConeSolver
 import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PointUtils
 
 class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolver {
-
-  override def solve(points: java.util.List[FractionVector],
-                     commonLimits: java.util.List[IntVector],
-                     wishfulBasis: java.util.List[IntVector],
-                     output: PrintWriter) = {
-    val tmp = solve(points map (x => fracvec2mathvec(x)),
-      commonLimits map (x => intvec2mathvec(x)),
-      wishfulBasis map (x => intvec2mathvec(x)),
-      output)
-    val converted = new ArrayListKeyTable[IntVector, Integer, java.lang.Boolean]
-    for {
-      rk <- tmp.rowKeyList
-      ck <- tmp.colKeyList
-    } converted.put(mathvec2intvec(rk), ck, if (tmp.get(rk, ck)) true else null)
-    converted
-  }
 
   override def solve(points: IndexedSeq[FracMathVec],
                      commonLimits: IndexedSeq[IntMathVec],
@@ -73,7 +54,7 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
   }
 
   def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Int, Boolean],
-                       upTo: Int) = {
+                       upTo: Int): Unit = {
     for (i <- 0 until upTo)
       lookupTable.put(null, i, false)
     lookupTable.removeRow(null)

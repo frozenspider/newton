@@ -13,9 +13,6 @@ class PolyIntersectionSolverTest extends FunSuite {
 
   val solver = new PolyIntersectionSolverImpl(new ConeSolverImpl)
 
-  def iv(ints: Int*): IntMathVec = IntMathVec(ints: _*)
-  def fv(ints: Int*): FracMathVec = FracMathVec.fromInts(ints: _*)
-
   test("simple") {
     val source = s(
       s(
