@@ -21,6 +21,23 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
   def addUpperSurfaces(upperSurfaces: Traversable[Surface]): Surface =
     new Surface(pointIndices, (this.upperSurfaces ++ upperSurfaces).distinct.sorted)
 
+  def makeString(allUpperSurfaces: IndexedSeq[Surface]) = {
+    val result = new StringBuilder(pointIndices.mkString("{", ", ", "}"))
+    if (!upperSurfaces.isEmpty) {
+      result.append(" / ")
+      val upperSurfacesIndices = upperSurfaces map (allUpperSurfaces indexOf _)
+      assert(upperSurfacesIndices forall (_ != -1),
+        "Upper dimension surface is missing  from its upper dimension surfaces list: " +
+          allUpperSurfaces(upperSurfacesIndices indexOf -1) +
+          " given " + allUpperSurfaces)
+      result.append(upperSurfacesIndices.mkString(", "))
+    }
+    result
+  }
+
+  //
+  // Standard
+  //
   override def equals(that: Any) = that match {
     case that: Surface => this.pointIndices == that.pointIndices && this.upperSurfaces == that.upperSurfaces
     case _             => false
@@ -32,23 +49,7 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
   override lazy val toString =
     "{" + pointIndices.mkString(", ") + "}/" + (upperSurfaces map (_.pointIndices mkString ("(", ", ", ")"))).mkString("[", ", ", "]")
 
-  def makeString(allUpperSurfaces: IndexedSeq[Surface]) = {
-    val result = new StringBuilder
-    result.append('{');
-    result.append(pointIndices.mkString(", "));
-    result.append("}");
-    if (!upperSurfaces.isEmpty) {
-      result.append(" / ");
-      val upperSurfacesIndices = upperSurfaces map (allUpperSurfaces.indexOf(_))
-      assert(upperSurfacesIndices forall (_ != -1), "Upper dimension surface is missing"
-        + " from its all upper dimension surfaces list: " + allUpperSurfaces(upperSurfacesIndices.indexOf(-1)) + " given "
-        + allUpperSurfaces)
-      result.append(upperSurfacesIndices.mkString(", "))
-    }
-    result
-  }
-
-  def compare(that: Surface): Int = {
+  override def compare(that: Surface): Int = {
     (this.pointIndices.toSeq zipAll (that.pointIndices, -1, -1)) find {
       case (i1, i2) => i1 != i2 || i1 == -1 || i2 == -1
     } match {
