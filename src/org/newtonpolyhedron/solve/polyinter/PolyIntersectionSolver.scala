@@ -1,4 +1,5 @@
 package org.newtonpolyhedron.solve.polyinter
+
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
 
