@@ -17,24 +17,11 @@ import java.util.Comparator
 class PolyMotzkinBurgerSolverTest extends FunSuite {
 
   val solver = new PolyMotzkinBurgerSolver(new ConeSolverImpl)
-  val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
 
   def solve(points: IndexedSeq[FracMathVec],
             commonLimits: IndexedSeq[IntMathVec],
             wishfulBasis: IndexedSeq[IntMathVec]) =
     solver.solve(points, commonLimits, wishfulBasis, /* NullPrintWriter.instance */ new PrintWriter(System.out, true))
-
-  def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Int, Boolean],
-                       upTo: Int): Unit = {
-    for (i <- 0 until upTo)
-      lookupTable.put(null, i, false)
-    lookupTable.removeRow(null)
-  }
-
-  def markInTable(lookupTable: KeyTable[IntMathVec, Int, Boolean])(rowKey: IntMathVec)(toMark: Seq[Int]): Unit = {
-    toMark map (lookupTable.put(rowKey, _, true))
-    KeyTables.sortByColHeaders(lookupTable, intCmp, true)
-  }
 
   test("Bruno, pages 19 to 30") {
     val points = s(

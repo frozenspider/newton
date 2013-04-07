@@ -1,28 +1,12 @@
 package org.newtonpolyhedron.solve.surface
-
-import scala.collection.JavaConversions
 import scala.collection.immutable.SortedSet
 
-import org.fs.utils.collection.set.IndexedSet
-import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.IntVector
 
 class SurfaceBuilderImpl extends SurfaceBuilder {
-  override def getSurfaces(lookupTable: KeyTable[IntVector, Integer, java.lang.Boolean],
-                           dim: Int) = {
-    val convLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
-    for {
-      rk <- lookupTable.rowKeyList
-      ck <- lookupTable.colKeyList
-    } convLookupTable.put(intvec2mathvec(rk), ck, if (lookupTable.get(rk, ck) != null) true else false)
-    val solution = surfaces(convLookupTable, dim)
-    JavaConversions.mapAsJavaMap(solution map { case (i, surfaces) => (int2Integer(i), immset2indexed(surfaces)) })
-  }
-
   override def surfaces(lookupTable: KeyTable[IntMathVec, Int, Boolean],
                         dim: Int): Map[Int, SortedSet[Surface]] = {
     val lookupData = extactLookupTableData(lookupTable)
@@ -51,13 +35,6 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
       colKey <- lookup.colKeyList() if lookup.get(point, colKey)
     } yield colKey
 
-  def findCommonSurfacesJava(polyDim: Int,
-                             targetDim: Int,
-                             upperLevelSurfaces: java.util.Set[Surface],
-                             lookupTableData: java.util.List[java.util.List[Integer]]): java.util.Set[Surface] = {
-    val res = findCommonSurfaces(polyDim, targetDim, upperLevelSurfaces, lookupTableData map (_ map (_.intValue)))
-    immset2indexed(res)
-  }
   /**
    * Finds the common surfaces of a lesser dimension
    *
