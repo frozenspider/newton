@@ -1,10 +1,14 @@
 package org.newtonpolyhedron;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,6 +18,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.math3.fraction.BigFraction;
 import org.apache.commons.math3.fraction.BigFractionFormat;
 import org.apache.commons.math3.linear.FieldMatrix;
+import org.fs.utils.io.IOUtils;
 import org.newtonpolyhedron.entity.ExecutorRunnable;
 import org.newtonpolyhedron.entity.SolverPrinter;
 import org.newtonpolyhedron.entity.vector.AbstractVector;
@@ -318,13 +323,24 @@ public class NewtonLogic {
 		return new MatrixMinorGCDSolverPrinter(matrixSolver, baseMatrix, writer);
 	}
 	
-	private <Comp extends Comparable <Comp>,Vec extends AbstractVector <Comp, Vec>>void readFromFile(
+	private <C extends Comparable <C>,V extends AbstractVector <C, V>>void readFromFile(
 			final File file,
-			final List <Vec> pointList,
+			final List <V> pointList,
 			final List <IntVector> commonLimits,
 			final List <IntVector> basis,
-			final VectorFormatOld <Comp, Vec> format) throws IOException {
-		final Reader inputF = new FileReader(file);
+			final VectorFormatOld <C, V> format) throws IOException {
+		byte[] bytes = IOUtils.readFully(new FileInputStream(file), true);
+		String content = new String(bytes, Charset.forName("UTF-8"));
+		readFromContent(content, pointList, commonLimits, basis, format);
+	}
+	
+	protected <C extends Comparable <C>,V extends AbstractVector <C, V>>void readFromContent(
+			final String content,
+			final List <V> pointList,
+			final List <IntVector> commonLimits,
+			final List <IntVector> basis,
+			final VectorFormatOld <C, V> format) {
+		final StringReader inputF = new StringReader(content);
 		try {
 			final Scanner scannerF = new Scanner(inputF);
 			scannerF.useDelimiter(Pattern.compile("[ \\t\\n\\r]"));
@@ -334,7 +350,7 @@ public class NewtonLogic {
 			}
 			final int dim = Integer.parseInt(d);
 			final long[] xInt = new long[dim];
-			final Comp[] x = format.createArrayOfZeros(dim);
+			final C[] x = format.createArrayOfZeros(dim);
 			int j = 0;
 			while (scannerF.hasNext()) {
 				final String st = scannerF.next();
