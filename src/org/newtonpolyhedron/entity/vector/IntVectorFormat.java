@@ -3,7 +3,7 @@ package org.newtonpolyhedron.entity.vector;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class IntVectorFormat implements VectorFormat <BigInteger, IntVector> {
+public class IntVectorFormat implements VectorFormatOld <BigInteger, IntVector> {
 	
 	private static final IntVectorFormat	instance	= new IntVectorFormat();
 	

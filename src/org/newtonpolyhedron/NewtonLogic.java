@@ -21,7 +21,7 @@ import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.FractionVectorFormat;
 import org.newtonpolyhedron.entity.vector.IntVector;
 import org.newtonpolyhedron.entity.vector.IntVectorFormat;
-import org.newtonpolyhedron.entity.vector.VectorFormat;
+import org.newtonpolyhedron.entity.vector.VectorFormatOld;
 import org.newtonpolyhedron.ex.UnknownModeException;
 import org.newtonpolyhedron.ex.WrongFormatException;
 import org.newtonpolyhedron.solve.cone.ConeSolver;
@@ -323,7 +323,7 @@ public class NewtonLogic {
 			final List <Vec> pointList,
 			final List <IntVector> commonLimits,
 			final List <IntVector> basis,
-			final VectorFormat <Comp, Vec> format) throws IOException {
+			final VectorFormatOld <Comp, Vec> format) throws IOException {
 		final Reader inputF = new FileReader(file);
 		try {
 			final Scanner scannerF = new Scanner(inputF);

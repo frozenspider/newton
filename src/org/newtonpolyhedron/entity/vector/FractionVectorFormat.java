@@ -6,7 +6,7 @@ import org.apache.commons.math3.fraction.BigFraction;
 import org.apache.commons.math3.fraction.BigFractionFormat;
 import org.newtonpolyhedron.utils.BigFractionExtFormat;
 
-public class FractionVectorFormat implements VectorFormat <BigFraction, FractionVector> {
+public class FractionVectorFormat implements VectorFormatOld <BigFraction, FractionVector> {
 	
 	private static final FractionVectorFormat	instance	= new FractionVectorFormat();
 	private static final BigFractionFormat		frFormat	= new BigFractionExtFormat();

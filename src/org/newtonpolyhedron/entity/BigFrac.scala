@@ -12,6 +12,7 @@ case class BigFrac(val underlying: BigFraction)
     extends ScalaNumber
     with ScalaNumericConversions
     with FieldElement[BigFrac]
+    with Ordered[BigFrac]
     with Serializable {
   val num = new BigInt(this.underlying.getNumerator)
   val den = new BigInt(this.underlying.getDenominator)
@@ -38,11 +39,7 @@ case class BigFrac(val underlying: BigFraction)
 
   def unary_- = new BigFrac(this.underlying.negate)
 
-  def compare(that: BigFrac): Int = this.underlying compareTo that.underlying
-  def <=(that: BigFrac): Boolean = compare(that) <= 0
-  def >=(that: BigFrac): Boolean = compare(that) >= 0
-  def <(that: BigFrac): Boolean = compare(that) < 0
-  def >(that: BigFrac): Boolean = compare(that) > 0
+  override def compare(that: BigFrac): Int = this.underlying compareTo that.underlying
 
   override def add(that: BigFrac) = this + that
   override def subtract(that: BigFrac) = this - that
