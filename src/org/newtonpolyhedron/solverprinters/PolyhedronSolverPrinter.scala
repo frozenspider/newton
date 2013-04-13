@@ -1,4 +1,5 @@
 package org.newtonpolyhedron.solverprinters
+
 import java.awt.Frame
 import java.io.PrintWriter
 import java.text.MessageFormat
@@ -9,9 +10,7 @@ import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.FractionVector
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.IntVector
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver
 import org.newtonpolyhedron.solve.surface.SurfaceBuilder
 import org.newtonpolyhedron.ui.render3d.PolyRenderer
@@ -29,19 +28,6 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                               val illustrate: Boolean,
                               output: PrintWriter)
     extends SolverPrinter[PolyhedronSolver](solver, output) {
-
-  def this(solver: PolyhedronSolver,
-           surfaceBuilder: SurfaceBuilder,
-           points: java.util.List[FractionVector],
-           commonLimits: java.util.List[IntVector],
-           basis: java.util.List[IntVector],
-           illustrate: Boolean,
-           output: PrintWriter) =
-    this(solver, surfaceBuilder,
-      points map fracvec2mathvec,
-      commonLimits map intvec2mathvec,
-      basis map intvec2mathvec,
-      illustrate, output)
 
   override def solveFor(solver: PolyhedronSolver,
                         output: PrintWriter) = {

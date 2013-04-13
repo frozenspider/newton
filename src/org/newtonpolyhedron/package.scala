@@ -6,8 +6,6 @@ import Ordering.Implicits._
 import Numeric.Implicits._
 import org.apache.commons.math3.fraction.BigFraction
 import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.vector.FractionVector
-import org.newtonpolyhedron.entity.vector.IntVector
 import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.Field
@@ -45,25 +43,6 @@ package object newtonpolyhedron {
   implicit def convertPair[T1, T2](pair: Pair[T1, T2]) = (pair.getFirst, pair.getSecond)
 
   implicit def convertPair[T1, T2](pair: (T1, T2)) = Pair.make(pair._1, pair._2)
-
-  // Vectors
-  def intvec2mathvec[T](vec: IntVector): IntMathVec = {
-    val content = (vec.getContentCopy() map (x => new BigInt(x))).toIndexedSeq
-    new IntMathVec(content map int2Fielded)
-  }
-
-  def fracvec2mathvec[T](vec: FractionVector): FracMathVec = {
-    val content = (vec.getContentCopy() map (x => new BigFrac(x))).toIndexedSeq
-    new FracMathVec(content)
-  }
-
-  def mathvec2intvec[T](vec: IntMathVec): IntVector = {
-    new IntVector(vec.elements map (_.underlying))
-  }
-
-  def mathvec2fracvec[T](vec: FracMathVec): FractionVector = {
-    new FractionVector(vec.elements map (_.underlying))
-  }
 
   // Matrices
   private def createOfSizeAs[S <: FieldElement[S], T <: FieldElement[T]](src: FieldMatrix[S])(implicit field: Field[T]) =

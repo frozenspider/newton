@@ -141,8 +141,6 @@ public class NewtonPolyhedronFrame extends JFrame {
 				printWriter.println("Illegal file format, see instruction");
 			} catch(final UnknownModeException ex) {
 				printWriter.println("Unknown mode selected: " + ex.getLocalizedMessage());
-			} catch(final InterruptedException ex) {
-				printWriter.println("Interrupted");
 			} catch(final RuntimeException ex) {
 				ex.printStackTrace(printWriter);
 			} catch(final Exception ex) {

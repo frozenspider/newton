@@ -1,16 +1,11 @@
 package org.newtonpolyhedron.utils
 
-import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.FractionVector
+import org.newtonpolyhedron.entity.vector.IntMathVec
+
 import javax.vecmath.Point3d
 
 object PointUtils {
-
-  def toPoint3d(v: FractionVector): Point3d =
-    new Point3d(v.get(0).doubleValue(),
-      if (v.getDim() > 1) v.get(1).doubleValue() else 0,
-      if (v.getDim() > 2) v.get(2).doubleValue() else 0);
 
   def toPoint3d(v: FracMathVec): Point3d =
     new Point3d(v(0).toDouble,

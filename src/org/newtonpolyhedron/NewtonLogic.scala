@@ -1,21 +1,26 @@
 package org.newtonpolyhedron
+
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.PrintWriter
+
+import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.ExecutorRunnable
+import org.newtonpolyhedron.entity.MatrixSupport
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.ex.UnknownModeException
+import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.solve.cone._
+import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl
+import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
 import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
 import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
-import org.newtonpolyhedron.entity.MatrixSupport
-import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
-import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl
 
-class NewtonLogicNew {
+class NewtonLogic {
 
   val intFmt = IntMathVec.IntMathVecFormat
   val fracFmt = FracMathVec.FracMathVecFormat
@@ -40,6 +45,9 @@ class NewtonLogicNew {
    * @throws Exception
    *             if... whatever.
    */
+  @throws(classOf[FileNotFoundException])
+  @throws(classOf[WrongFormatException])
+  @throws(classOf[UnknownModeException])
   def start(path: String,
             mode: WorkingMode,
             illustrate: Boolean,
@@ -94,7 +102,13 @@ class NewtonLogicNew {
 
   def launchMatrixUniAlpha(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    val matrix = {
+      val m = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+      // Add all-zero row if necessary
+      if (m.isSquare) m
+      else if (m.rowNum != m.colNum - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
+      else m addRow (Seq.fill(m.colNum)(BigFrac.ZERO))
+    }
     val uniMatrixMaker = new UnimodularMatrixMakerImpl
     new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer);
   }

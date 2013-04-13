@@ -167,6 +167,24 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     elementsStrartingFrom(0, 0)
   }
 
+  def addRow(row: Traversable[T]) = {
+    require(row.size == colNum, "Wrong row size")
+    val res = Matrix.zero[T](rowNum + 1, colNum)
+    res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
+    val rowSeq = row.toIndexedSeq
+    for (i <- 0 until colNum) res.matrix setEntry (rowNum, i, rowSeq(i))
+    res
+  }
+
+  def addCol(col: Traversable[T]) = {
+    require(col.size == rowNum, "Wrong col size")
+    val res = Matrix.zero[T](rowNum, colNum + 1)
+    res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
+    val colSeq = col.toIndexedSeq
+    for (i <- 0 until rowNum) res.matrix setEntry (i, colNum, colSeq(i))
+    res
+  }
+
   override def equals(obj: Any): Boolean = obj match {
     case that: Matrix[T] => this.matrix equals that.matrix
     case _               => false

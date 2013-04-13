@@ -246,4 +246,32 @@ class MatrixTest extends FunSuite {
         a(-1, 9, -484),
         a(0, -3, 161))))
   }
+
+  test("adding rows and cols") {
+    val source = matrFrac(a(a(1)))
+    val withRow1 = source addRow Seq(2)
+    assert(withRow1
+      === matrFrac(a(
+        a(1),
+        a(2))))
+    val withRow2 = withRow1 addRow Seq(3)
+    assert(withRow2
+      === matrFrac(a(
+        a(1),
+        a(2),
+        a(3))))
+    val withCol1 = withRow2 addCol Seq(4, 5, 6)
+    assert(withCol1
+      === matrFrac(a(
+        a(1, 4),
+        a(2, 5),
+        a(3, 6))))
+    val withRow3 = withCol1 addRow Seq(7, 8)
+    assert(withRow3
+      === matrFrac(a(
+        a(1, 4),
+        a(2, 5),
+        a(3, 6),
+        a(7, 8))))
+  }
 }

@@ -32,9 +32,9 @@ object InputParser {
                                            read: Lines => R): R = {
     val lines = {
       val src = Source.fromFile(file)
-      val lines = src.getLines
+      val lines = src.getLines.toIndexedSeq
       src.close
-      refineLines(lines.toStream)
+      refineLines(lines)
     }
     read(lines)
   }
@@ -74,7 +74,7 @@ object InputParser {
     }
 
   /** Normalizes spacing, trims, removes empty lines */
-  def refineLines(lines: Stream[String]) =
+  def refineLines(lines: Seq[String]) =
     lines map (_ replaceAll ("[\\s]+", " ") trim) filterNot (_.isEmpty)
 
   //
