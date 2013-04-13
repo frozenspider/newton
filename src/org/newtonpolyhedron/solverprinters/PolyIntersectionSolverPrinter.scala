@@ -1,29 +1,24 @@
 package org.newtonpolyhedron.solverprinters
-import org.newtonpolyhedron._
+
 import java.io.PrintWriter
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.solve.polyinter.PolyIntersectionSolver
 import java.text.MessageFormat
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.fs.utils.collection.table.KeyTable
-import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.newtonpolyhedron.entity.vector.FractionVector
-import org.fs.utils.collection.table.KeyTables
+
 import scala.collection.immutable.SortedSet
+
+import org.fs.utils.collection.table.ArrayListKeyTable
+import org.fs.utils.collection.table.KeyTable
+import org.fs.utils.collection.table.KeyTables
+import org.newtonpolyhedron._
+import org.newtonpolyhedron.entity.SolverPrinter
+import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.solve.polyinter.PolyIntersectionSolver
 
 class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
                                     val polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
                                     val dim: Int,
                                     output: PrintWriter)
     extends SolverPrinter[PolyIntersectionSolver](solver, output) {
-
-  def this(solver: PolyIntersectionSolver,
-           polyhedrons: java.util.List[java.util.List[FractionVector]],
-           dim: Int,
-           output: PrintWriter) =
-    this(solver, polyhedrons map (_ map fracvec2mathvec), dim, output)
 
   override def solveFor(solver: PolyIntersectionSolver,
                         output: PrintWriter) = {

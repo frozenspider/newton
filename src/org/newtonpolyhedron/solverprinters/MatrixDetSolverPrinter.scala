@@ -1,8 +1,7 @@
 package org.newtonpolyhedron.solverprinters
+
 import java.io.PrintWriter
 
-import org.apache.commons.math3.fraction.BigFraction
-import org.apache.commons.math3.linear.FieldMatrix
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.SolverPrinter
@@ -12,12 +11,6 @@ class MatrixDetSolverPrinter(val baseMatrix: Matrix[BigFrac],
                              val skipCol: Int,
                              output: PrintWriter)
     extends SolverPrinter[Void](null, output) {
-
-  def this(baseMatrix: FieldMatrix[BigFraction],
-           skipRow: Int,
-           skipCol: Int,
-           output: PrintWriter) =
-    this(Matrix(baseMatrix.getData map (_ map (BigFrac(_)))), skipRow, skipCol, output)
 
   override def solveFor(nothing: Void,
                         output: PrintWriter) = {

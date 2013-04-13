@@ -26,13 +26,16 @@ package object test {
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
 
   def a(values: Int*): Array[Int] = Array(values: _*)
+  def a(values: BigFrac*): Array[BigFrac] = Array(values: _*)
   def a(values: Array[Int]*): Array[Array[Int]] = Array(values: _*)
+  def a(values: Array[BigFrac]*): Array[Array[BigFrac]] = Array(values: _*)
   def a(values: Array[Array[Int]]*): Array[Array[Array[Int]]] = Array(values: _*)
 
   def iv(ints: Int*): IntMathVec = IntMathVec(ints: _*)
   def fv(ints: Int*): FracMathVec = FracMathVec.fromInts(ints: _*)
   def fv2(fracs: BigFrac*): FracMathVec = FracMathVec(fracs: _*)
 
+  def bf(n: Int) = BigFrac(n, 1)
   def bf(n: Int, d: Int) = BigFrac(n, d)
 
   val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
