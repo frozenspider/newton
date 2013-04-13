@@ -1,7 +1,6 @@
 package org.newtonpolyhedron
 import java.io.File
 import java.io.PrintWriter
-
 import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.vector.FracMathVec
@@ -12,6 +11,9 @@ import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
 import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
+import org.newtonpolyhedron.entity.MatrixSupport
+import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
+import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl
 
 class NewtonLogicNew {
 
@@ -80,21 +82,27 @@ class NewtonLogicNew {
 
   def launchMatrixDet(file: File,
                       writer: PrintWriter): SolverPrinter[_] = {
-    ???
+    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer);
   }
 
   def launchMatrixInverse(file: File,
                           writer: PrintWriter): SolverPrinter[_] = {
-    ???
+    val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    new MatrixInverseSolverPrinter(matrix, writer);
   }
 
   def launchMatrixUniAlpha(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
-    ???
+    val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    val uniMatrixMaker = new UnimodularMatrixMakerImpl
+    new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer);
   }
 
   def launchMatrixMinorGCD(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
-    ???
+    val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
+    new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer);
   }
 }

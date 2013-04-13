@@ -223,6 +223,9 @@ object Matrix {
   def zero[T <: FieldElement[T]](rowNum: Int, colNum: Int)(implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(field, rowNum, colNum))
 
+  def empty[T <: FieldElement[T]](implicit field: Field[T]): Matrix[T] =
+    new Matrix(MatrixUtils.createFieldMatrix(field, 0, 0))
+
   /**
    * Converts the matrix to diagonal form.
    * <p>
@@ -324,10 +327,10 @@ object Matrix {
   }
 
   /** {@code dst = dst - src*quot} */
-  def subtractMultipliedCol[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                                  srcColIdx: Int,
-                                                  dstColIdx: Int,
-                                                  quotient: T): Unit = {
+  private def subtractMultipliedCol[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                                          srcColIdx: Int,
+                                                          dstColIdx: Int,
+                                                          quotient: T): Unit = {
     val srcCol = matrix.getColumnVector(srcColIdx)
     val dstCol = matrix.getColumnVector(dstColIdx)
     val srcColMul = srcCol mapMultiply quotient
@@ -336,10 +339,10 @@ object Matrix {
   }
 
   /** {@code dst = dst - src*quot} */
-  def subtractMultipliedRow[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                                  srcRowIdx: Int,
-                                                  dstRowIdx: Int,
-                                                  quotient: T): Unit = {
+  private def subtractMultipliedRow[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                                          srcRowIdx: Int,
+                                                          dstRowIdx: Int,
+                                                          quotient: T): Unit = {
     val srcRow = matrix.getRowVector(srcRowIdx)
     val dstRow = matrix.getRowVector(dstRowIdx)
     val srcRowMul = srcRow mapMultiply quotient
@@ -347,18 +350,18 @@ object Matrix {
     matrix.setRowVector(dstRowIdx, dstRowSub)
   }
 
-  def swapCols[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                     idx1: Int,
-                                     idx2: Int) = {
+  private def swapCols[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                             idx1: Int,
+                                             idx2: Int) = {
     val col1 = matrix.getColumnVector(idx1)
     val col2 = matrix.getColumnVector(idx2)
     matrix.setColumnVector(idx1, col2)
     matrix.setColumnVector(idx2, col1)
   }
 
-  def swapRows[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                     idx1: Int,
-                                     idx2: Int) = {
+  private def swapRows[T <: FieldElement[T]](matrix: FieldMatrix[T],
+                                             idx1: Int,
+                                             idx2: Int) = {
     val row1 = matrix.getRowVector(idx1)
     val row2 = matrix.getRowVector(idx2)
     matrix.setRowVector(idx1, row2)
@@ -368,13 +371,13 @@ object Matrix {
   private def fieldRowOfZeros[T <: FieldElement[T]](size: Int)(implicit field: Field[T]): FieldVector[T] =
     MatrixUtils.createFieldMatrix(field, size, 1).getColumnVector(0)
 
-  def inverseCol[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
+  private def inverseCol[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
     val vec = m.getColumnVector(idx)
     val zeros = fieldRowOfZeros(vec.getDimension)
     m.setColumnVector(idx, zeros subtract vec)
   }
 
-  def inverseRow[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
+  private def inverseRow[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
     val vec = m.getRowVector(idx)
     val zeros = fieldRowOfZeros(vec.getDimension)
     m.setRowVector(idx, zeros subtract vec)
