@@ -39,4 +39,15 @@ object IntMathVec {
     val ints = elements map (x => x.num * multiplier / x.den)
     new IntMathVec(ints.toIndexedSeq).reduced
   }
+
+  object IntMathVecFormat extends VectorFormat[BigInt, IntMathVec] {
+    def createArrayOfZeros(length: Int): Array[BigInt] =
+      Array.fill(length)(ZERO)
+
+    def parseElement(src: String): BigInt =
+      BigInt(src)
+
+    def makeVector(components: Seq[BigInt]): IntMathVec =
+      new IntMathVec(components.toIndexedSeq)
+  }
 }

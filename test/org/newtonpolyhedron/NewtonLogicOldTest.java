@@ -10,9 +10,6 @@ import org.junit.Test;
 import org.newtonpolyhedron.entity.vector.FractionVector;
 import org.newtonpolyhedron.entity.vector.FractionVectorFormat;
 import org.newtonpolyhedron.entity.vector.IntVector;
-import org.newtonpolyhedron.entity.vector.VectorFormatOld;
-
-import scala.actors.threadpool.Arrays;
 
 public class NewtonLogicOldTest {
 	
@@ -67,10 +64,10 @@ public class NewtonLogicOldTest {
 		final FractionVectorFormat format = FractionVectorFormat.getInstance();
 		final String content = "3\n" + //
 				"#\n" + //
-				"1 0 0\n" + //
-				"0 0 1\n" + //
+				"1 0 0 \n" + //
+				"0 0 1 \n" + //
 				"3 1 -1\n" + //
-				"2 3 4\n" + //
+				"2 3 4 \n" + //
 				"#\n" + //
 				"1 2 3\n" + //
 				"4 5 6\n";

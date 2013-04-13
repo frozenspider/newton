@@ -19,8 +19,15 @@ import java.util.Scanner
 import java.util.regex.Pattern
 import scala.util.control.BreakControl
 import scala.io.Source
+import scala.util.matching.Regex
+import org.newtonpolyhedron.entity.vector.IntMathVec.IntMathVecFormat
+import org.newtonpolyhedron.solverprinters.ConeSolverPrinter
+import org.newtonpolyhedron.solverprinters.ConeSolverPrinter
 
 class NewtonLogicNew {
+
+  val intFmt = IntMathVec.IntMathVecFormat
+  val fracFmt = FracMathVec.FracMathVecFormat
   /**
    * Starts the processing thread.
    *
@@ -46,14 +53,14 @@ class NewtonLogicNew {
             writer: PrintWriter): Thread = {
     val file = new File(path)
     val solver = mode match {
-      case WorkingMode.POLY_MOTZKIN_BURGER => launchPolyMotzkinBurger(file, illustrate, writer)
-      //      case WorkingMode.POLY_INTERSECTION         => launchIntersection(file, writer)
-      //      case WorkingMode.CONE                      => launchCone(file, writer)
-      //      case WorkingMode.MATRIX_DET                => launchMatrixDet(file, writer)
-      //      case WorkingMode.MATRIX_INVERSE            => launchMatrixInverse(file, writer)
-      //      case WorkingMode.MATRIX_UNIMODULAR_ALPHA   => launchMatrixUniAlpha(file, writer)
-      //      case WorkingMode.MATRIX_LAST_ROW_MINOR_GCD => launchMatrixMinorGCD(file, writer)
-      case _                               => throw new UnknownModeException(mode)
+      case WorkingMode.POLY_MOTZKIN_BURGER       => launchPolyMotzkinBurger(file, illustrate, writer)
+      case WorkingMode.POLY_INTERSECTION         => launchIntersection(file, writer)
+      case WorkingMode.CONE                      => launchCone(file, writer)
+      case WorkingMode.MATRIX_DET                => launchMatrixDet(file, writer)
+      case WorkingMode.MATRIX_INVERSE            => launchMatrixInverse(file, writer)
+      case WorkingMode.MATRIX_UNIMODULAR_ALPHA   => launchMatrixUniAlpha(file, writer)
+      case WorkingMode.MATRIX_LAST_ROW_MINOR_GCD => launchMatrixMinorGCD(file, writer)
+      case _                                     => throw new UnknownModeException(mode)
     }
     return new Thread(new ExecutorRunnable(solver, writer), "MainSolver")
   }
@@ -61,78 +68,42 @@ class NewtonLogicNew {
   def launchPolyMotzkinBurger(file: File,
                               illustrate: Boolean,
                               writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = readFromFile(file, FracMathVec.FracMathVecFormat)
+    val (pointList, commonLimits, basis) = InputParser.readPolyFromFile(file, fracFmt)
     val coneSolver = new ConeSolverImpl
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
     val surfaceBuilder = new SurfaceBuilderImpl
     new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimits, basis, illustrate, writer)
   }
 
-  /**@return pointList, commonLimits, basis*/
-  private def readFromFile[C <: Ordered[C], V <: MathVector[C, V]](
-    file: File, format: VectorFormat[C, V]): (IndexedSeq[V], IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
-    val lines = {
-      val src = Source.fromFile(file)
-      val lines = src.getLines
-      src.close
-      lines.toStream map (_.replaceAll("[ \\t]", " ").trim) filter (!_.isEmpty)
-    }
-    val dim = Integer.parseInt(lines.head)
-    val xInt = Array.ofDim[Long](dim)
-    val x = format.createArrayOfZeros(dim)
-    val CommentPat = "(@.*)".r
-    val DollarPat = "\\$(.*)".r
-    val SharpPat = "#(.*)".r
-    def read(src: Seq[String],
-             pointList: IndexedSeq[V],
-             commonLimits: IndexedSeq[IntMathVec],
-             basis: IndexedSeq[IntMathVec]): (IndexedSeq[V], IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) =
-      src.headOption match {
-        //      var j = 0
-        //      while (scannerF.hasNext) {
-        //        val st = scannerF.next()
-        case None                => (pointList, commonLimits, basis)
-        case Some(CommentPat(_)) => (pointList, commonLimits, basis)
-        case Some(DollarPat(s))  => ???
-        //          while (scannerF.hasNext()) {
-        //            val stAlt = scannerF.next()
-        //            if (stAlt.charAt(0) == '$') {
-        //              break
-        //            }
-        //            xInt(j) = Long.parseLong(stAlt)
-        //            j += 1
-        //            if (j == dim) {
-        //              j = 0
-        //              commonLimits.add(new IntVector(xInt))
-        //            }
-        //          }
-        //          j = 0
-        //          continue
-        case Some(SharpPat(s))   => ???
-        //          while (scannerF.hasNext()) {
-        //            val stAlt = scannerF.next()
-        //            if (stAlt.length() == 0) {
-        //              continue
-        //            }
-        //            if (stAlt.charAt(0) == '#') {
-        //              break
-        //            }
-        //            xInt(j) = Long.parseLong(stAlt)
-        //            j += 1
-        //            if (j == dim) {
-        //              j = 0
-        //              basis.add(new IntVector(xInt))
-        //            }
-        //          }
-        //          j = 0
-        //          continue
-        case Some(s) => {
-          val parsed = s split " " map format.parseElement
-          require(parsed.length == dim, "Incorrect line size: '" + s + "', while dim = " + dim)
-          val vec = format makeVector parsed
-          read(src.tail, pointList :+ vec, commonLimits, basis)
-        }
-      }
-    read(lines.tail, IndexedSeq.empty, IndexedSeq.empty, IndexedSeq.empty)
+  def launchIntersection(file: File,
+                         writer: PrintWriter): SolverPrinter[_] = {
+    ???
+  }
+
+  def launchCone(file: File,
+                 writer: PrintWriter): SolverPrinter[_] = {
+    val (pointList, commonLimits, basis) = InputParser.readPolyFromFile(file, intFmt)
+    val coneSolver = new ConeSolverImpl
+    new ConeSolverPrinter(coneSolver, pointList, basis, writer)
+  }
+
+  def launchMatrixDet(file: File,
+                      writer: PrintWriter): SolverPrinter[_] = {
+    ???
+  }
+
+  def launchMatrixInverse(file: File,
+                          writer: PrintWriter): SolverPrinter[_] = {
+    ???
+  }
+
+  def launchMatrixUniAlpha(file: File,
+                           writer: PrintWriter): SolverPrinter[_] = {
+    ???
+  }
+
+  def launchMatrixMinorGCD(file: File,
+                           writer: PrintWriter): SolverPrinter[_] = {
+    ???
   }
 }
