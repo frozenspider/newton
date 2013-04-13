@@ -36,30 +36,30 @@ class InputParserTest extends FunSuite {
     assert(section === s(fv(1, 2, 9), fv2(bf(222, 100), bf(3, 2), bf(6, 2))))
   }
 
-  test("read poly from file - empty") {
+  test("parse poly - empty") {
     val str = // 
       """  
       """
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromLines(toLines(str), FracMathVecFormat)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str), FracMathVecFormat)
     assert(pointList === s())
     assert(commonLimits === s())
     assert(basis === s())
   }
 
-  test("read poly from file - simplest") {
+  test("parse poly - simplest") {
     val str = // 
       """  
       3
       1 2 3
       4 5 6
       """
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromLines(toLines(str), FracMathVecFormat)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str), FracMathVecFormat)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s())
     assert(basis === s())
   }
 
-  test("read poly from file - basis") {
+  test("parse poly - basis") {
     val str = // 
       """
       3
@@ -72,7 +72,7 @@ class InputParserTest extends FunSuite {
       1 2 3
       4 5 6
       """
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromLines(toLines(str), FracMathVecFormat)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str), FracMathVecFormat)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s())
     assert(basis === s(
@@ -82,7 +82,7 @@ class InputParserTest extends FunSuite {
       iv(2, 3, 4)))
   }
 
-  test("read poly from file - limits") {
+  test("parse poly - limits") {
     val str = // 
       """
       3
@@ -95,7 +95,7 @@ class InputParserTest extends FunSuite {
       1 2 3
       4 5 6
       """
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromLines(toLines(str), FracMathVecFormat)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str), FracMathVecFormat)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s(
       iv(1, 0, 0),
@@ -105,7 +105,7 @@ class InputParserTest extends FunSuite {
     assert(basis === s())
   }
 
-  test("read poly from file - both") {
+  test("parse poly - both") {
     val str = // 
       """
       3
@@ -122,9 +122,12 @@ class InputParserTest extends FunSuite {
       1 	2.00 3   
         4  10/2 6     
       
+      @
+      
+      comment
       
       """
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromLines(toLines(str), FracMathVecFormat)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str), FracMathVecFormat)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s(
       iv(1, 0, 0),
@@ -134,5 +137,77 @@ class InputParserTest extends FunSuite {
     assert(basis === s(
       iv(0, 2, 3),
       iv(1, 9, 2)))
+  }
+
+  test("parse polys - two") {
+    val str = // 
+      """
+      3
+      9 0 0
+      0 8 0
+      0 0 7
+      3 2 1
+      %
+      3 0 0
+      0 4 0
+      0 0 5
+      1 2 2
+      """
+    val (polys, dim) = InputParser.parsePolysFromLines(toLines(str), FracMathVecFormat)
+    assert(dim === 3)
+    assert(polys.size === 2)
+    assert(polys === s(
+      s(
+        iv(9, 0, 0),
+        iv(0, 8, 0),
+        iv(0, 0, 7),
+        iv(3, 2, 1)),
+      s(
+        iv(3, 0, 0),
+        iv(0, 4, 0),
+        iv(0, 0, 5),
+        iv(1, 2, 2))))
+  }
+
+  test("parse polys - three") {
+    val str = // 
+      """
+      4
+      9 0 0 1
+      0 8 0 2
+      0 0 7 3
+      3 2 1 4
+      %
+      3 0 0 4
+      0 4 0 3
+      0 0 5 2
+      1 2 2 1
+      %
+      1 2 2 4
+      0 1 2 3
+      0 0 1 2
+      4 3 2 1
+      5 6 7 8
+      """
+    val (polys, dim) = InputParser.parsePolysFromLines(toLines(str), FracMathVecFormat)
+    assert(dim === 4)
+    assert(polys.size === 3)
+    assert(polys === s(
+      s(
+        iv(9, 0, 0, 1),
+        iv(0, 8, 0, 2),
+        iv(0, 0, 7, 3),
+        iv(3, 2, 1, 4)),
+      s(
+        iv(3, 0, 0, 4),
+        iv(0, 4, 0, 3),
+        iv(0, 0, 5, 2),
+        iv(1, 2, 2, 1)),
+      s(
+        iv(1, 2, 2, 4),
+        iv(0, 1, 2, 3),
+        iv(0, 0, 1, 2),
+        iv(4, 3, 2, 1),
+        iv(5, 6, 7, 8))))
   }
 }

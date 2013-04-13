@@ -1,33 +1,24 @@
 package org.newtonpolyhedron
+import java.io.File
+import java.io.PrintWriter
 
 import org.newtonpolyhedron.entity.ExecutorRunnable
-import java.io.PrintWriter
-import org.newtonpolyhedron.ex.UnknownModeException
-import java.io.File
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.solve.surface.SurfaceBuilderImpl
-import org.newtonpolyhedron.solve.cone.ConeSolverImpl
-import org.newtonpolyhedron.solverprinters.PolyhedronSolverPrinter
-import org.newtonpolyhedron.solve.poly.PolyMotzkinBurgerSolver
-import org.newtonpolyhedron.entity.vector.MathVector
 import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.VectorFormat
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.BigFrac
-import java.io.FileReader
-import java.util.Scanner
-import java.util.regex.Pattern
-import scala.util.control.BreakControl
-import scala.io.Source
-import scala.util.matching.Regex
-import org.newtonpolyhedron.entity.vector.IntMathVec.IntMathVecFormat
-import org.newtonpolyhedron.solverprinters.ConeSolverPrinter
-import org.newtonpolyhedron.solverprinters.ConeSolverPrinter
+import org.newtonpolyhedron.ex.UnknownModeException
+import org.newtonpolyhedron.solve.cone._
+import org.newtonpolyhedron.solve.poly._
+import org.newtonpolyhedron.solve.polyinter._
+import org.newtonpolyhedron.solve.surface._
+import org.newtonpolyhedron.solverprinters._
 
 class NewtonLogicNew {
 
   val intFmt = IntMathVec.IntMathVecFormat
   val fracFmt = FracMathVec.FracMathVecFormat
+  val coneSolver: ConeSolver = new ConeSolverImpl
+
   /**
    * Starts the processing thread.
    *
@@ -68,8 +59,7 @@ class NewtonLogicNew {
   def launchPolyMotzkinBurger(file: File,
                               illustrate: Boolean,
                               writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromFile(file, fracFmt)
-    val coneSolver = new ConeSolverImpl
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file, fracFmt)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
     val surfaceBuilder = new SurfaceBuilderImpl
     new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimits, basis, illustrate, writer)
@@ -77,13 +67,14 @@ class NewtonLogicNew {
 
   def launchIntersection(file: File,
                          writer: PrintWriter): SolverPrinter[_] = {
-    ???
+    val (polys, dim) = InputParser.parsePolysFromFile(file, fracFmt)
+    val polySolver = new PolyIntersectionSolverImpl(coneSolver)
+    new PolyIntersectionSolverPrinter(polySolver, polys, dim, writer)
   }
 
   def launchCone(file: File,
                  writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = InputParser.readPolyFromFile(file, intFmt)
-    val coneSolver = new ConeSolverImpl
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file, intFmt)
     new ConeSolverPrinter(coneSolver, pointList, basis, writer)
   }
 
