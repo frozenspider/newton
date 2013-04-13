@@ -10,7 +10,7 @@ object PointUtils {
   def toPoint3d(v: FracMathVec): Point3d =
     new Point3d(v(0).toDouble,
       if (v.dim > 1) v(1).toDouble else 0,
-      if (v.dim > 2) v(2).toDouble else 0);
+      if (v.dim > 2) v(2).toDouble else 0)
 
   /**
    * Creates a vector list, each element of which is produced by subtracting point with given

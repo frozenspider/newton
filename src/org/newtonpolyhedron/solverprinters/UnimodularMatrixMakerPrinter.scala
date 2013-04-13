@@ -15,18 +15,18 @@ class UnimodularMatrixMakerPrinter(solver: UnimodularMatrixMaker,
 
   override def solveFor(solver: UnimodularMatrixMaker,
                         output: PrintWriter) = {
-    val alpha = solver.unimodularFrom(baseMatrix);
+    val alpha = solver.unimodularFrom(baseMatrix)
     val alphaInv = alpha.inv
-    output.println(title("Unimodular \"Alpha\" matrix"));
-    val text1 = new StringBuilder();
+    output.println(title("Unimodular \"Alpha\" matrix"))
+    val text1 = new StringBuilder()
     text1 ++= subheader("Base matrix:") + "\n"
     text1 ++= baseMatrix + "\n"
-    val text2 = new StringBuilder();
+    val text2 = new StringBuilder()
     text2 ++= subheader("Alpha-matrix:") + "\n"
     text2 ++= alpha + "\n"
-    val text3 = new StringBuilder();
+    val text3 = new StringBuilder()
     text3 ++= subheader("Inverse alpha-matrix:") + "\n"
     text3 ++= alphaInv + "\n"
-    output.println(StringUtils.appendToRight(5, text1, text2, text3));
+    output.println(StringUtils.appendToRight(5, text1, text2, text3))
   }
 }

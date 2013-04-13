@@ -91,13 +91,13 @@ class NewtonLogic {
   def launchMatrixDet(file: File,
                       writer: PrintWriter): SolverPrinter[_] = {
     val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, fracFmt, MatrixSupport.fromFracs)
-    new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer);
+    new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
   def launchMatrixInverse(file: File,
                           writer: PrintWriter): SolverPrinter[_] = {
     val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
-    new MatrixInverseSolverPrinter(matrix, writer);
+    new MatrixInverseSolverPrinter(matrix, writer)
   }
 
   def launchMatrixUniAlpha(file: File,
@@ -110,13 +110,13 @@ class NewtonLogic {
       else m addRow (Seq.fill(m.colNum)(BigFrac.ZERO))
     }
     val uniMatrixMaker = new UnimodularMatrixMakerImpl
-    new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer);
+    new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer)
   }
 
   def launchMatrixMinorGCD(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
     val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
-    new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer);
+    new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
   }
 }

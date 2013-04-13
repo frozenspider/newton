@@ -8,7 +8,6 @@ import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec

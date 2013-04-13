@@ -16,11 +16,11 @@ abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
   def title(title: String): String = {
     val bordered = "======= " + title + " ======="
     val line = StringUtils.repeat("=", bordered.length())
-    "\n\n\n" + line + "\n" + bordered + "\n" + line;
+    "\n\n\n" + line + "\n" + bordered + "\n" + line
   }
 
   def header(header: String): String =
-    "\n=== " + header + " ===";
+    "\n=== " + header + " ==="
 
   def subheader(subheader: String): String =
     "\n" + subheader + ""

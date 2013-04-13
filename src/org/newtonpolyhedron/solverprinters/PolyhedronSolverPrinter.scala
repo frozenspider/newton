@@ -53,14 +53,14 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
 
     val surfacesMap = surfaceBuilder.surfaces(lookupTable, dim)
 
-    var upperDimSurfaces = List.empty[Surface]
+    var upperDimSurfaces = IndexedSeq.empty[Surface]
     for ((surfaceDim, currDimSurfaces) <- surfacesMap) {
-      val currDimSurfacesList = currDimSurfaces.toList.sorted
+      val currDimSurfacesList = currDimSurfaces.toIndexedSeq.sorted
       output.println(subheader("Surface Dimension: " + surfaceDim))
       var idx = 0
       for (surface <- currDimSurfacesList) {
         idx += 1
-        output.println(MessageFormat.format("  {0})\t{1}", int2Integer(idx), surface.makeString(seq2list(upperDimSurfaces))))
+        output.println(MessageFormat.format("  {0})\t{1}", int2Integer(idx), surface.makeString(upperDimSurfaces)))
       }
       upperDimSurfaces = currDimSurfacesList
     }

@@ -3,7 +3,6 @@ package org.newtonpolyhedron.solverprinters
 import java.io.PrintWriter
 import java.text.MessageFormat
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.vector.IntMathVec

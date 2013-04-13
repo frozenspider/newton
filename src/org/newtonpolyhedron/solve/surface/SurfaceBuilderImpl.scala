@@ -1,8 +1,8 @@
 package org.newtonpolyhedron.solve.surface
+
 import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.table.KeyTable
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.IntMathVec
 
@@ -30,10 +30,11 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
 
   def extactLookupTableData(lookup: KeyTable[IntMathVec, Int, Boolean]): Seq[Seq[Int]] =
     for {
-      point <- lookup.rowKeyList()
+      point <- lookup.rowKeyList
     } yield for {
-      colKey <- lookup.colKeyList() if lookup.get(point, colKey)
-    } yield colKey
+      colKey <- scala.collection.JavaConversions.asScalaBuffer(lookup.colKeyList)
+      if lookup.get(point, colKey)
+    } yield ???//colKey
 
   /**
    * Finds the common surfaces of a lesser dimension

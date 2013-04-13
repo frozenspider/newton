@@ -14,12 +14,12 @@ class MatrixMinorGCDSolverPrinter(solver: MatrixMinorGCDSolver,
 
   override def solveFor(solver: MatrixMinorGCDSolver,
                         output: PrintWriter) = {
-    val result = solver.lastRowGcd(baseMatrix);
+    val result = solver.lastRowGcd(baseMatrix)
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)
-    output.println("Last row minors:");
-    output.println(result._2 mkString " ");
-    output.println("Minors GCD: ");
-    output.println(result._1);
+    output.println("Last row minors:")
+    output.println(result._2 mkString " ")
+    output.println("Minors GCD: ")
+    output.println(result._1)
   }
 }
