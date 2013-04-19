@@ -48,10 +48,10 @@ class NewtonLogic {
   @throws(classOf[FileNotFoundException])
   @throws(classOf[WrongFormatException])
   @throws(classOf[UnknownModeException])
-  def start(path: String,
-            mode: WorkingMode,
-            illustrate: Boolean,
-            writer: PrintWriter): Thread = {
+  def makeThread(path: String,
+                 mode: WorkingMode,
+                 illustrate: Boolean,
+                 writer: PrintWriter): Thread = {
     val file = new File(path)
     val solver = mode match {
       case WorkingMode.POLY_MOTZKIN_BURGER       => launchPolyMotzkinBurger(file, illustrate, writer)
