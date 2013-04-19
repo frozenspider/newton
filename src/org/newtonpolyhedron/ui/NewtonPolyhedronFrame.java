@@ -35,7 +35,7 @@ public class NewtonPolyhedronFrame extends JFrame {
 	public NewtonPolyhedronFrame() {
 		this.printWriter = new PrintWriter(new NewtonTextAreaOutput());
 		this.logic = new NewtonLogic();
-		setTitle("Newton v." + Version.VERSION);
+		setTitle("Newton v." + Version.VERSION());
 		setBounds(100, 100, 530, 400);
 		{
 			final JPanel panelTop = new JPanel();

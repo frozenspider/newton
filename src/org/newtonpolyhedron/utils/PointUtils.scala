@@ -7,7 +7,9 @@ import javax.vecmath.Point3d
 
 object PointUtils {
 
-  def toPoint3d(v: FracMathVec): Point3d =
+  def p3d(x: Double, y: Double, z: Double) = new Point3d(x, y, z)
+
+  def p3d(v: FracMathVec): Point3d =
     new Point3d(v(0).toDouble,
       if (v.dim > 1) v(1).toDouble else 0,
       if (v.dim > 2) v(2).toDouble else 0)

@@ -100,7 +100,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                          points: Seq[FracMathVec],
                          surfacesMap: Map[Int, Set[Surface]],
                          freq: Int) = {
-    val points3d = points map (PointUtils.toPoint3d)
+    val points3d = points map (PointUtils.p3d)
     val lines = collectLineCorners(surfacesMap(1), points)
     val borderEdgesAlt = (lines map (_.pointIndices map points3d)).flatten
     val illustrFrames = Seq(
@@ -124,7 +124,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                           width: Int,
                           height: Int,
                           is2d: Boolean): Frame = {
-    val polyRenderer = new PolyRenderer(seq2list(pts), mode, is2d)
+    val polyRenderer = new PolyRenderer(pts, mode, is2d)
     val frame = new MainFrame(polyRenderer, width, height)
     frame.setLocation(positionX, positionY)
     frame

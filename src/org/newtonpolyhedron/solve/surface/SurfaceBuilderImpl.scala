@@ -34,7 +34,7 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
     } yield for {
       colKey <- scala.collection.JavaConversions.asScalaBuffer(lookup.colKeyList)
       if lookup.get(point, colKey)
-    } yield ???//colKey
+    } yield colKey
 
   /**
    * Finds the common surfaces of a lesser dimension
