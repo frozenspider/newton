@@ -67,8 +67,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(3), s(1, 5, 7)),
         (s(4), s(2, 4, 6, 7)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("large test case") {
@@ -185,8 +185,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(21), s(14, 18, 22, 24)),
         (s(22), s(6, 21, 23, 24)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("penleve") {
@@ -226,8 +226,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(8), s(1, 3)),
         (s(9), s(2, 3)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 2);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 2)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("half-cube diagonal") {
@@ -285,8 +285,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(4), s(3, 6, 8)),
         (s(5), s(4, 7, 8)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("Bruno, pages 19 to 30") {
@@ -335,8 +335,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(2), s(1, 3, 5)),
         (s(3), s(2, 4, 5)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("Bruno, page 18, ex. 1") {
@@ -422,8 +422,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(10), s(0, 2, 4)),
         (s(11), s(0, 3, 5)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("Bruno, page 35, ex. 2") {
@@ -577,8 +577,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(10), s(0, 5, 10, 18, 20, 22)),
         (s(11), s(0, 6, 11, 15, 21, 23)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("Bruno, unknown ex.") {
@@ -698,8 +698,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(18), s(19, 26, 29, 31)),
         (s(19), s(0, 27, 30, 31)))))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4);
-    assert(actualSurfaces === expectedSurfaces);
+    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
+    assert(actualSurfaces === expectedSurfaces)
   }
 
   test("illegal cases") {

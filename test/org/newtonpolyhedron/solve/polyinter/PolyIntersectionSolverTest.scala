@@ -35,7 +35,7 @@ class PolyIntersectionSolverTest extends FunSuite {
       (iv(24, 27, 26) -> s(s(0, 2), s(0, 3), s(1, 2), s(1, 3))))
 
     val actual = solver.solve(source, 3)
-    assert(actual === expected);
+    assert(actual === expected)
   }
 
   // TODO: More tests

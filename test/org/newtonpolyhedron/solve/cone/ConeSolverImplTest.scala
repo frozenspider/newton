@@ -30,7 +30,7 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 1),
       (-3, 1, -1, 6),
       (1, 1, -3, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (15, 11, 12, 5),
       (13, 9, 12, 7),
@@ -45,7 +45,7 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 0),
       (-3, 1, -1, 0),
       (1, 1, -3, 0)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, 0, 1),
       (0, 0, 0, -1)) map tupleToVec).toSet)
@@ -58,7 +58,7 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, 0),
       (1, 1, -3, 2, 0)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 5, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 5, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, 0, 0, 1),
       (0, 0, 0, 0, -1)) map tupleToVec).toSet)
@@ -76,7 +76,7 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, -3),
       (1, 1, -3, 2, -1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 5, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 5, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (15, 11, 12, 5, 0),
       (13, 0, 17, 8, 0),
@@ -97,7 +97,7 @@ class ConeSolverImplTest extends FunSuite {
       (-1, 3, -1),
       (-1, -1, 3),
       (1, -1, 1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-1, -2, -1),
       (-1, -1, -2),
@@ -110,7 +110,7 @@ class ConeSolverImplTest extends FunSuite {
       (-1, 3, -1),
       (3, -1, 2),
       (-1, 3, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, -2),
       (-1, -3, 0),
@@ -134,7 +134,7 @@ class ConeSolverImplTest extends FunSuite {
       (-4, -4, 0, 0),
       (-4, 0, -4, 0),
       (-4, 0, 0, -4)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (1, -1, -1, -1),
       (1, 1, -1, -1),
@@ -153,7 +153,7 @@ class ConeSolverImplTest extends FunSuite {
       (2, 1, 1, 1),
       (2, 2, 1, 1),
       (2, 1, 2, 1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 4, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, -1, 1),
       (0, 0, 1, -2),
@@ -169,7 +169,7 @@ class ConeSolverImplTest extends FunSuite {
     def eqSys = IndexedSeq(
       (1, -4),
       (-2, -1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 2, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 2, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (4, 1),
       (-1, 2)) map tupleToVec).toSet)
@@ -179,7 +179,7 @@ class ConeSolverImplTest extends FunSuite {
     def eqSys = IndexedSeq(
       (-1, 2),
       (2, -1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 2, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 2, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-2, -1),
       (-1, -2)) map tupleToVec).toSet)
@@ -189,7 +189,7 @@ class ConeSolverImplTest extends FunSuite {
     def eqSys = IndexedSeq(
       (-1, 2),
       (3, -3)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 2, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 2, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-2, -1),
       (-1, -1)) map tupleToVec).toSet)
@@ -203,7 +203,7 @@ class ConeSolverImplTest extends FunSuite {
       (-3, 1, 1),
       (-1, 1, 0),
       (-1, 0, 1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, -2),
       (-1, -2, -1),
@@ -221,7 +221,7 @@ class ConeSolverImplTest extends FunSuite {
       (-3, 4, 0),
       (-3, 0, 5),
       (-2, 2, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-8, -9, -30),
       (-14, -33, -18),
@@ -239,7 +239,7 @@ class ConeSolverImplTest extends FunSuite {
       (3, -4, 0),
       (0, -4, 5),
       (1, -2, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (-34, -21, -24),
       (0, 0, -1),
@@ -257,7 +257,7 @@ class ConeSolverImplTest extends FunSuite {
       (3, 0, -5),
       (0, 4, -5),
       (1, 2, -3)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter);
+    val solution = coneSolver.solve(eqSys, IndexedSeq.empty, 3, NullPrintWriter)
     assert(solution.toSet === (IndexedSeq(
       (56, 63, 72),
       (0, -1, 0),
