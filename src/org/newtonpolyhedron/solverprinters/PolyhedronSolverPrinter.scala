@@ -113,7 +113,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     } catch {
       case ex: InterruptedException => // NOOP
     } finally {
-      illustrFrames map (_.dispose)
+      illustrFrames foreach (_.dispose)
     }
   }
 
