@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.utils
 
-object StringUtils extends org.apache.commons.lang3.StringUtils {
+object StringUtils {
 
   private def maxLength(s: Seq[Seq[_]]) = s.foldLeft(0)(_ max _.size)
   private def maxStrLength(s: Seq[String]) = s.foldLeft(0)(_ max _.size)

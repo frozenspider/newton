@@ -1,7 +1,6 @@
 package org.newtonpolyhedron.entity
 
 import java.io.PrintWriter
-import org.apache.commons.lang3.StringUtils
 
 abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
 
@@ -15,7 +14,7 @@ abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
   //
   def title(title: String): String = {
     val bordered = "======= " + title + " ======="
-    val line = StringUtils.repeat("=", bordered.length())
+    val line = "=" * bordered.length
     "\n\n\n" + line + "\n" + bordered + "\n" + line
   }
 
