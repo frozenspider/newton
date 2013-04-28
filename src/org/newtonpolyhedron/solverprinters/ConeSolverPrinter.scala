@@ -46,6 +46,6 @@ class ConeSolverPrinter(solver: ConeSolver,
       }
     }
     output.println(header("ANSWERS:"))
-    testing map (output.println)
+    testing foreach (output.println)
   }
 }
