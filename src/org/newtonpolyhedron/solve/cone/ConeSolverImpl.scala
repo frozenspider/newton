@@ -12,38 +12,37 @@ class ConeSolverImpl extends ConeSolver {
                      output: PrintWriter): IndexedSeq[IntMathVec] = {
     require(ineqs forall (_.dim == dim), "Inequation vector with incorrect dimension")
     require(basis forall (_.dim == dim), "Basis vector with incorrect dimension")
-    val fundamentalSolution = solveInner(ineqs, basis, dim, output)
-    //    val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(proxyList(ineqs)))
-    //    val result = withoutZeroProductSolutions(ineqs, rank)(basis)
+    val basis2 = if (!basis.isEmpty) basis else initialBasis(dim)
+    val fundamentalSolution = solveInner(ineqs, basis2, dim, output)
+    // val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(proxyList(ineqs)))
+    // val result = withoutZeroProductSolutions(ineqs, rank)(basis)
     fundamentalSolution
   }
 
   private def withoutZeroProductSolutions(base: IndexedSeq[IntMathVec],
                                           rank: Int)(testing: IndexedSeq[IntMathVec]) =
     if (base.isEmpty || testing.isEmpty) testing
-    else testing.filter(vec => {
-      val toZero = base count (_ *+ vec == 0)
+    else testing.filter(v => {
+      val toZero = base count (_ *+ v == 0)
       toZero >= rank - 1
     })
 
   def solveInner(eqSys: IndexedSeq[IntMathVec],
-                 wishfulBasis: IndexedSeq[IntMathVec],
+                 basis: IndexedSeq[IntMathVec],
                  dim: Int,
                  output: PrintWriter): IndexedSeq[IntMathVec] = {
     val zeroPoint = IntMathVec.zero(dim)
     val eqSysWithZeroFirst = zeroPoint +: eqSys
 
-    val basis =
-      if (!wishfulBasis.isEmpty) wishfulBasis else initialBasis(dim)
-    val (endBasis, fundSol) = solveRec(IndexedSeq(eqSysWithZeroFirst(0)),
+    val (finalBasis, fundSol) = solveRec(IndexedSeq(eqSysWithZeroFirst(0)),
       eqSysWithZeroFirst.tail, basis, IndexedSeq.empty, dim, 1, output)
 
-    if (!endBasis.isEmpty) {
-      assert(endBasis.size == 1, "Unexpected basis left in the end: " + endBasis)
+    if (!finalBasis.isEmpty) {
+      assert(finalBasis.size == 1, "Unexpected basis left in the end: " + finalBasis)
       // If after all we still have single remaining basis vector, then
       // this is degenerate case (assumption, may be wrong!)
       // Since it's degenerate, both it it's negation are conforming
-      (endBasis ++ (endBasis map (vec => -vec))).distinct
+      (finalBasis ++ finalBasis.map(vec => -vec)).distinct
     } else {
       val fundSolWrapped = wrap(fundSol)
 
@@ -54,7 +53,7 @@ class ConeSolverImpl extends ConeSolver {
       } yield validationRes match {
         case CONFORMS_NEG => -sol
         case CONFORMS_POS => sol
-        case NOT_CONFORMS => throw new RuntimeException("Not possible, just to please the compiler")
+        case NOT_CONFORMS => throw new RuntimeException("Should not be possible, please report")
       }
 
       val fundSolCleanedWrapped = wrap(fundSolCleaned)
@@ -75,7 +74,7 @@ class ConeSolverImpl extends ConeSolver {
       fundSolAndBasisOutput(basis, fundSol, output)
       val currEq = eqSysRemn.head
       val (basis2, fundSol2) =
-        if (nonZeroValsExists(basis, currEq)) {
+        if (basis exists (currEq *+ _ != 0)) {
           solveEqSysWithBasis(currEq, basis, fundSol)
         } else {
           (basis, solveEqSysWithoutBasis(currEq, eqSysPrev, fundSol, dim))
@@ -84,10 +83,7 @@ class ConeSolverImpl extends ConeSolver {
     }
 
   private def initialBasis(dim: Int) =
-    for (currDim <- 0 until dim) yield IntMathVec.zero(dim).updated(currDim, 1)
-
-  private def nonZeroValsExists(basis: IndexedSeq[IntMathVec], eq: IntMathVec) =
-    basis.exists(vec => eq *+ vec != 0)
+    for (d <- 0 until dim) yield IntMathVec.zero(dim).updated(d, 1)
 
   /**
    * One iteration of an inequation system solving for ???
@@ -141,9 +137,9 @@ class ConeSolverImpl extends ConeSolver {
    */
   private def calculateLAndTempBasis(currEq: IntMathVec,
                                      basis: IndexedSeq[IntMathVec]): (IntMathVec, IndexedSeq[IntMathVec]) = {
-    val nonInverted = basis.map(vec => (vec *+ currEq, vec))
+    val nonInverted = basis map (v => (v *+ currEq, v))
     val (l, tempBasis) = (nonInverted map {
-      case (l, vec) => if (l <= 0) (l, vec) else (-l, -vec)
+      case (l, v) => if (l <= 0) (l, v) else (-l, -v)
     }).unzip
 
     // Non-reduced lBase
@@ -177,36 +173,22 @@ class ConeSolverImpl extends ConeSolver {
                                      eqSysPart: IndexedSeq[IntMathVec],
                                      fundSol: IndexedSeq[IntMathVec],
                                      dim: Int): IndexedSeq[IntMathVec] = {
-    def unrollFundSol(fundSols: IndexedSeq[IntMathVec])(zrs: IndexedSeq[IntMathVec],
-                                                        neg: IndexedSeq[IntMathVec],
-                                                        pos: IndexedSeq[IntMathVec]): (IndexedSeq[IntMathVec], IndexedSeq[IntMathVec], IndexedSeq[IntMathVec]) = {
-      if (fundSols.isEmpty) (zrs, neg, pos)
-      else {
-        val h = fundSols.head
-        val unroll = unrollFundSol(fundSols.tail)_
-        ((h *+ currEq) compare 0) match {
-          case 0  => unroll(zrs :+ h, neg, pos)
-          case -1 => unroll(zrs, neg :+ h, pos)
-          case 1  => unroll(zrs, neg, pos :+ h)
-        }
-      }
-    }
     def shouldCombine(v1: IntMathVec, v2: IntMathVec) = {
-      if (dim == 2 || fundSol.size == 2) true
-      else {
-        val zeroEqs = eqSysPart filter (selEq => (IndexedSeq(v1 *+ selEq, v2 *+ selEq) == IndexedSeq(0, 0)))
-        val amtsOfZeros = for {
-          sol <- fundSol if sol != v1 && sol != v2
-        } yield zeroEqs count (_ *+ sol == 0)
-        !amtsOfZeros.contains(zeroEqs.size)
-      }
+      // Our original "zero"-equations are the past equations giving zero for both v+ and v-
+      val zeroEqs = eqSysPart filter (eq => (v1 *+ eq, v2 *+ eq) == (0, 0))
+      val otherSols = fundSol filter (sol => sol != v1 && sol != v2)
+      // Zero-equations L should contain non-zero for all other solutions
+      otherSols forall (sol => zeroEqs exists (_ *+ sol != 0))
     }
-
-    val (zrs, neg, pos) = unrollFundSol(fundSol)(IndexedSeq.empty, IndexedSeq.empty, IndexedSeq.empty)
+    val (zrs, neg, pos) = {
+      val (pos, rest) = fundSol partition (_ *+ currEq > 0)
+      val (zrs, neg) = rest partition (_ *+ currEq == 0)
+      (zrs, neg, pos)
+    }
     val combined = for {
       n <- neg
       p <- pos
-      if (shouldCombine(n, p))
+      if dim == 2 || fundSol.size == 2 || shouldCombine(n, p)
     } yield {
       val ln = n *+ currEq
       val lp = p *+ currEq
@@ -226,18 +208,12 @@ class ConeSolverImpl extends ConeSolver {
   def valudateSolution(cVec: IntMathVec,
                        solution: IndexedSeq[IntMathVec]): ValidationResult = {
     // We don't need to skip leading [0,0,0] vector
-    if (solution.find(_ *+ cVec > 0).isEmpty) CONFORMS_POS
-    else if (solution.find(_ *+ -cVec > 0).isEmpty) CONFORMS_NEG
+    if (solution forall (_ *+ cVec <= 0)) CONFORMS_POS
+    else if (solution forall (_ *+ -cVec <= 0)) CONFORMS_NEG
     else NOT_CONFORMS
   }
 
-  /**
-   * Removes duplicates and zero vectors. Doesn't cause side effects.
-   *
-   * @param vecList
-   *            input
-   * @return refined input
-   */
+  /** Removes duplicates and zero vectors. */
   private def wrap(vecList: IndexedSeq[IntMathVec]) =
     vecList.distinct filter (!_.isZero)
 
@@ -246,7 +222,7 @@ class ConeSolverImpl extends ConeSolver {
                                     output: PrintWriter): Unit = {
     def printSeq[A](xs: Seq[A]): Unit =
       if (xs.isEmpty) output.println(" (none)")
-      else for (x <- xs) output.println(x)
+      else xs foreach output.println
     output.println("=== Basis: ===")
     printSeq(basis)
     output.println("=== Fundamental Solution: ===")
