@@ -44,4 +44,27 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
     val actual = maker.unimodularFrom(source)
     assert(actual === expected)
   }
+
+  test("3x3 power transform article") {
+    // Article by Sollev and Khakimov 
+    val source = matrFrac(a(
+      a(2, -3, 1),
+      a(-1, -1, 1),
+      a(1, -1, 0)))
+    // Unimodular matrix in article:
+    //  1, -1, -2
+    //  1, -1, -3
+    //  2, -1, -5
+    // Unimodular matrix computed by app:
+    // -2,  3, -1
+    //  1,  1, -1
+    //  1, -1,  0
+    val expected = matrFrac(a(
+      a(-2, 3, -1),
+      a(1, 1, -1),
+      a(1, -1, 0)))
+
+    val actual = maker.unimodularFrom(source)
+    assert(actual === expected)
+  }
 }
