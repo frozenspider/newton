@@ -7,12 +7,13 @@ import javax.vecmath.Point3d
 
 object PointUtils {
 
-  def p3d(x: Double, y: Double, z: Double) = new Point3d(x, y, z)
+  def p3d(x: Double, y: Double, z: Double): Point3d = new Point3d(x, y, z)
+  def p3d(coord: (Double, Double, Double)): Point3d = p3d(coord._1, coord._2, coord._3)
 
-  def p3d(v: FracMathVec): Point3d =
-    new Point3d(v(0).toDouble,
-      if (v.dim > 1) v(1).toDouble else 0,
-      if (v.dim > 2) v(2).toDouble else 0)
+  def p3d(v: FracMathVec): Point3d = p3d(
+    v(0).toDouble,
+    if (v.dim > 1) v(1).toDouble else 0,
+    if (v.dim > 2) v(2).toDouble else 0)
 
   /**
    * Creates a vector list, each element of which is produced by subtracting point with given

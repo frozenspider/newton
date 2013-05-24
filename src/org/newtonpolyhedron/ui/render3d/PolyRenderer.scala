@@ -58,9 +58,9 @@ class PolyRenderer extends JApplet {
     // Enable the TRANSFORM_WRITE capability so that our behavior code can modify it at runtime.
     // Add it to the root of the subgraph.
     val rotate = new Transform3D
-    val tempRotate = new Transform3D
     if (!is2d) {
       rotate.rotX(Pi * 1.75d)
+      val tempRotate = new Transform3D
       tempRotate.rotZ(Pi * 1.15d)
       rotate.mul(tempRotate)
     }
