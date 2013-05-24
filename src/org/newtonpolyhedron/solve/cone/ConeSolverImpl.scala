@@ -101,16 +101,17 @@ class ConeSolverImpl extends ConeSolver {
 
     // Pre-calculate values of l(u) and reverse vector of an old basis
     val (l, tempBasis) = calculateLAndTempBasis(currEq, basis)
+    
+    val activeIdx = l.elements indexWhere (_ != 0)
+    assert(activeIdx != -1)
 
-    val currActiveIdx = findBasisWorkingElementIndex(l)
-
-    val lActive = l(currActiveIdx)
-    val basisActive = tempBasis(currActiveIdx)
-    val basisActive2 = basis(currActiveIdx)
+    val lActive = l(activeIdx)
+    val basisActive = tempBasis(activeIdx)
+    val basisActive2 = basis(activeIdx)
 
     // Add new basis line
     val newBasis = for {
-      i <- 0 until tempBasis.size if i != currActiveIdx
+      i <- 0 until tempBasis.size if i != activeIdx
       val basisCurr = tempBasis(i)
       val lCurr = l(i)
       /* Should we use basisActive2 ? */
@@ -145,16 +146,6 @@ class ConeSolverImpl extends ConeSolver {
     // Non-reduced lBase
     (new IntMathVec(l), tempBasis)
   }
-
-  /**
-   * Returns an index of a working element index of l(u[i]) - the first non-zero.
-   *
-   * @param l
-   *            l(u[i]) vector
-   * @return working element index, or -1 if vector is zero-sized.
-   */
-  private def findBasisWorkingElementIndex(l: IntMathVec): Int =
-    l.elements indexWhere (_ != 0)
 
   /**
    * Solves an equation system if basis is exhausted.
