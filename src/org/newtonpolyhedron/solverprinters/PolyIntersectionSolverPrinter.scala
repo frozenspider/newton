@@ -8,6 +8,7 @@ import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
+import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
@@ -33,7 +34,7 @@ class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
     val ptsForVectors = solver.solve(polyhedrons, dim)
 
     val vectorPointTable = reverseTableMeaning(ptsForVectors)
-    output.println(vectorPointTable) // TODO: print without TreeSet(...)
+    printTable(vectorPointTable, output)
   }
 
   private def reverseTableMeaning(ptsForVectors: Map[IntMathVec, Seq[IndexedSeq[Int]]]): KeyTable[Int, IntMathVec, SortedSet[Int]] = {
@@ -48,5 +49,16 @@ class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
     }
     KeyTables.sortByColHeaders(vectPtTable, true)
     vectPtTable
+  }
+
+  private def printTable(vectorPointTable: KeyTable[Int, IntMathVec, SortedSet[Int]], output: PrintWriter): Unit = {
+    var strTable = new ArrayListKeyTable[Int, IntMathVec, String]
+    for {
+      r <- vectorPointTable.rowKeyList()
+      c <- vectorPointTable.colKeyList()
+    } {
+      strTable.put(r, c, vectorPointTable.get(r, c).mkString("(Q", ", Q", ")"))
+    }
+    output.println(strTable)
   }
 }
