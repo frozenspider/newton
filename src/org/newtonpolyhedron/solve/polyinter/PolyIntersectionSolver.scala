@@ -1,5 +1,7 @@
 package org.newtonpolyhedron.solve.polyinter
+import scala.collection.immutable.SortedSet
 
+import org.fs.utils.collection.table.KeyTable
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
 
@@ -11,8 +13,8 @@ trait PolyIntersectionSolver {
    *            source polyhedrons
    * @param dim
    *            polyhedron dimensions
-   * @return { vector : [ point indices list per polyhedron ] }
+   * @return { polyIdx, vector -> [ points giving this vector for this poly when intersecting ] }
    */
   def solve(polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
-            dim: Int): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]]
+            dim: Int): KeyTable[Int, IntMathVec, SortedSet[Int]]
 }
