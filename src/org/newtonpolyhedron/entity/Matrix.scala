@@ -201,7 +201,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     val result = new StringBuilder
     for (row <- 0 until rowNum) {
       for (col <- 0 until colNum) {
-        result ++= String.format("%1$#" + colsWidth(col) + "s ", this(row, col).toString)
+        result ++= String.format("%1$" + colsWidth(col) + "s ", this(row, col).toString)
       }
       result += '\n'
     }
