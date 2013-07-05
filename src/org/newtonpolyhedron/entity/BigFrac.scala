@@ -37,6 +37,9 @@ case class BigFrac(val underlying: BigFraction)
   def /(that: BigInt) = new BigFrac(this.underlying divide that.underlying)
   def /(that: Long) = new BigFrac(this.underlying divide that)
 
+  def min(that: BigFrac) = if (this <= that) this else that
+  def max(that: BigFrac) = if (this >= that) this else that
+
   def unary_- = new BigFrac(this.underlying.negate)
 
   override def compare(that: BigFrac): Int = this.underlying compareTo that.underlying

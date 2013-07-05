@@ -13,6 +13,9 @@ class FracMathVec(elements: IndexedSeq[BigFrac]) extends MathVector[BigFrac, Fra
   def *(n: BigInt) =
     create(elements map (_ * n))
 
+  def *(n: BigFrac) =
+    create(elements map (_ * n))
+
   def isZero =
     elements forall (_ == FracMathVec.zeroValue)
 }
