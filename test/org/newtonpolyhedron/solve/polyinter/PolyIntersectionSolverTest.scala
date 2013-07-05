@@ -42,7 +42,68 @@ class PolyIntersectionSolverTest extends FunSuite {
     assert(actual === expectedTable)
   }
 
+  test("Orkin, 2013-06-08") {
+    val source = s(
+      s(
+        fv(1, 1, 1),
+        fv(6, 0, 0),
+        fv(0, 6, 0),
+        fv(0, 0, 6),
+        fv(3, 0, 3)),
+      s(
+        fv(0, 1, 1),
+        fv(2, 0, 1),
+        fv(3, 1, 0),
+        fv(2, 1, 1)))
+    val expected = Map(
+      (iv(-5, -10, -3) -> s(s(0, 3), s(0, 1))),
+      (iv(-5, -4, -15) -> s(s(0, 2), s(0, 2))),
+      (iv(-1, -2, -3) -> s(s(0, 1), s(0, 1, 2))),
+      (iv(0, 1, 1) -> s(s(2, 3), s(0, 3))),
+      (iv(1, 0, 1) -> s(s(1, 3, 4), s(1, 2, 3))),
+      (iv(1, 1, 1) -> s(s(1, 2, 3, 4), s(2, 3))))
+    val expectedTable = polyTableFromMap(expected)
+
+    val actual = solver.solve(source, 3)
+    assert(actual === expectedTable)
+  }
+
+  test("unknown example") {
+    val source = s(
+      s(
+        fv(4, 0, 0),
+        fv(0, 4, 0),
+        fv(0, 2, 2),
+        fv(0, 1, 3),
+        fv(0, 0, 4),
+        fv(1, 2, 2)),
+      s(
+        fv(2, 0, 0),
+        fv(0, 3, 0),
+        fv(0, 0, 4),
+        fv(1, 1, 2)))
+    val expected = Map(
+      (iv(-3, -2, -2) -> s(s(1, 2, 3, 4), s(0, 1))),
+      // ^ This intersection is dominating and is actually useful, may require this info later.
+      // Besides, there are actually four points of the same line - p2 and p3 are inner points
+      (iv(-1, 0, 0) -> s(s(1, 2, 3, 4), s(1, 2))),
+      (iv(0, -1, 0) -> s(s(0, 4), s(0, 2))),
+      (iv(0, 0, -1) -> s(s(0, 1), s(0, 1))),
+      (iv(2, 2, 1) -> s(s(0, 1, 5), s(1, 3))),
+      (iv(2, 4, 3) -> s(s(1, 5), s(1, 2, 3))),
+      (iv(6, 4, 5) -> s(s(0, 5), s(2, 3))))
+
+    val expectedTable = polyTableFromMap(expected)
+
+    val actual = solver.solve(source, 3)
+    assert(actual === expectedTable)
+  }
+
   // TODO: More tests
+
+  //
+  // Solution filtering tests
+  //
 
   test("filter out non-intersecting solutions, case 1") {
     val eqSystems = s(
@@ -118,33 +179,7 @@ class PolyIntersectionSolverTest extends FunSuite {
     val filtered = solutions.filter(solver.isIntersectingSol(eqSystems)).sorted
     assert(filtered === expected)
   }
-
-  test("Orkin, 2013-06-08") {
-    val source = s(
-      s(
-        fv(1, 1, 1),
-        fv(6, 0, 0),
-        fv(0, 6, 0),
-        fv(0, 0, 6),
-        fv(3, 0, 3)),
-      s(
-        fv(0, 1, 1),
-        fv(2, 0, 1),
-        fv(3, 1, 0),
-        fv(2, 1, 1)))
-    val expected = Map(
-      (iv(-5, -10, -3) -> s(s(0, 3), s(0, 1))),
-      (iv(-5, -4, -15) -> s(s(0, 2), s(0, 2))),
-      (iv(-1, -2, -3) -> s(s(0, 1), s(0, 1, 2))),
-      (iv(0, 1, 1) -> s(s(2, 3), s(0, 3))),
-      (iv(1, 0, 1) -> s(s(1, 3, 4), s(1, 2, 3))),
-      (iv(1, 1, 1) -> s(s(1, 2, 3, 4), s(2, 3))))
-    val expectedTable = polyTableFromMap(expected)
-
-    val actual = solver.solve(source, 3)
-    assert(actual === expectedTable)
-  }
-
+  
   /** @param map { vector -> [ pts sequence per polyhedron ] }*/
   private def polyTableFromMap(map: Map[IntMathVec, IndexedSeq[Seq[Int]]]): KeyTable[Int, IntMathVec, SortedSet[Int]] = {
     var table = new ArrayListKeyTable[Int, IntMathVec, SortedSet[Int]]
@@ -159,16 +194,3 @@ class PolyIntersectionSolverTest extends FunSuite {
     table
   }
 }
-/*
-Map(
-
-[ -5 -10 -3 ] -> Vector(Vector(0, 0), Vector(0, 1), Vector(3, 0), Vector(3, 1)),
-[ 1 0 1 ] -> Vector(Vector(1, 1), Vector(1, 2), Vector(1, 3), Vector(3, 1), Vector(3, 2), Vector(3, 3), Vector(4, 1), Vector(4, 2), Vector(4, 3)),
-[ -5 -4 -15 ] -> Vector(Vector(0, 0), Vector(0, 2), Vector(2, 0), Vector(2, 2)),
-[ 0 1 1 ] -> Vector(Vector(2, 0), Vector(2, 3), Vector(3, 0), Vector(3, 3)),
-[ -1 -2 -3 ] -> Vector(Vector(0, 0), Vector(0, 1), Vector(0, 2), Vector(1, 0), Vector(1, 1), Vector(1, 2)),
-[ 1 1 1 ] -> Vector(Vector(1, 2), Vector(1, 3), Vector(2, 2), Vector(2, 3), Vector(3, 2), Vector(3, 3), Vector(4, 2), Vector(4, 3)))
-
-
-*/
-
