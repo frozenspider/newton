@@ -10,6 +10,7 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
   val dim = elements.size
   lazy val sum = elements.sum
   lazy val max = elements.max
+  lazy val min = elements.min
   lazy val head = elements.head
   lazy val tail = create(elements.tail)
 
@@ -18,19 +19,19 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
   def +(that: SELF) = {
     require(this.dim == that.dim, "Dimension of other vector was different")
     import numeric._
-    create((this.elements zip that.elements) map { case (x, y) => x + y })
+    create((this.elements, that.elements).zipped map (_ + _))
   }
 
   def -(that: SELF) = {
     require(this.dim == that.dim, "Dimension of other vector was different")
     import numeric._
-    create((this.elements zip that.elements) map { case (x, y) => x - y })
+    create((this.elements, that.elements).zipped map (_ - _))
   }
 
   def *(that: SELF) = {
     require(this.dim == that.dim, "Dimension of other vector was different")
     import numeric._
-    create((this.elements zip that.elements) map { case (x, y) => x * y })
+    create((this.elements, that.elements).zipped map (_ * _))
   }
 
   def *(that: Int): SELF =
@@ -46,7 +47,7 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
 
   def unary_- = {
     import numeric._
-    create(this.elements map { x => -x })
+    create(this.elements map (x => -x))
   }
 
   def updated(index: Int, value: T) =
@@ -59,7 +60,7 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
 
   override def compare(that: SELF): Int = {
     import ordering._
-    ordering.compare(this.elements, that.elements)
+    ordering compare (this.elements, that.elements)
   }
 
   override def equals(obj: Any): Boolean = obj match {
