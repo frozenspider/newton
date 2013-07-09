@@ -51,6 +51,20 @@ class ProductTest extends FunSuite {
     assert((p(8) pow 6).intValue === 262144)
   }
 
+  test("addition, subtraction") {
+    assert((p(0) + p(0)).intValue === 0)
+    assert((p(0) + p(1)).intValue === 1)
+    assert((p(-1) + p(0)).intValue === -1)
+    assert((p(-1) + p(1)).intValue === 0)
+    assert((p(6) + p(7)).intValue === 13)
+    assert((p(30) + p(12)).intValue === 42)
+    assert((p(30) + p(-12)).intValue === 18)
+    assert((p(-30) + p(12)).intValue === -18)
+    assert((-p(30) + p(12)).intValue === -18)
+    assert((p(12) - p(30)).intValue === -18)
+    assert((-p(0) - -p(0)).intValue === 0)
+  }
+
   test("checking divisors") {
     assert(p(3).underlying === Map(3 -> 1))
     assert(p(4).underlying === Map(2 -> 2))

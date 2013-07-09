@@ -3,6 +3,7 @@ package org.newtonpolyhedron.entity
 import scala.math.ScalaNumber
 import org.newtonpolyhedron.utils.MathUtils
 import scala.collection.immutable.SortedSet
+import scala.math.ScalaNumericConversions
 
 /**
  * Represents a number as a product of powers of its prime factors.
@@ -11,7 +12,10 @@ import scala.collection.immutable.SortedSet
  * <p>
  * Only supports multiplication and power operations.
  */
-class Product(val signum: Int, val underlying: Map[Int, Int]) extends ScalaNumber {
+class Product(val signum: Int, val underlying: Map[Int, Int])
+    extends ScalaNumber
+    with ScalaNumericConversions
+    with Ordered[Product] {
   require((-1 to 1) contains signum, "Sign should be -1, 0 or 1")
   require(if (signum == 0) underlying.isEmpty else true, "For zero product, powers should be empty")
 
@@ -32,11 +36,28 @@ class Product(val signum: Int, val underlying: Map[Int, Int]) extends ScalaNumbe
     if (this.signum == 0 || that.signum == 0) Product.ZERO
     else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying))
 
+  def +(that: Product): Product = {
+    val (commonFactors, thisFactors, thatFactors) = extractCommonFactors(this.underlying, that.underlying)
+    val common = new Product(1, commonFactors)
+    val part1 = new Product(this.signum, thisFactors)
+    val part2 = new Product(that.signum, thatFactors)
+    val partSum = Product(part1.bigIntValue + part2.bigIntValue)
+    val res = common * partSum
+    res
+  }
+  def +(that: Int): Product = this + Product(that)
+  def -(that: Product): Product = this + -that
+  def -(that: Int): Product = this + Product(-that)
+  def unary_- : Product = new Product(-signum, underlying)
+
   def pow(p: Int): Product = {
     require(p >= 0, "Can only raise to non-negative powers")
     if (this.signum == 0 && p == 0) Product.ONE
     else new Product(this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
   }
+
+  /** Very ineffective! */
+  override def compare(that: Product): Int = this.bigIntValue compare that.bigIntValue
 
   override def isWhole = true
   override def doubleValue =
@@ -74,6 +95,25 @@ class Product(val signum: Int, val underlying: Map[Int, Int]) extends ScalaNumbe
       val updatedMain = Product.changePower(main, headPrime, headPow)
       mergePowers(updatedMain, other.tail)
     }
+  }
+
+  private def extractCommonFactors(one: Map[Int, Int],
+                                   two: Map[Int, Int]): (Map[Int, Int], Map[Int, Int], Map[Int, Int]) = {
+    def extract(keys: Seq[Int],
+                acc: Map[Int, Int],
+                one: Map[Int, Int],
+                two: Map[Int, Int]): (Map[Int, Int], Map[Int, Int], Map[Int, Int]) = {
+      if (keys.isEmpty) (acc, one, two)
+      else {
+        val key = keys.head
+        val min = one(key) min two(key)
+        val newOne = Product.changePower(one, key, -min)
+        val newTwo = Product.changePower(two, key, -min)
+        extract(keys.tail, acc + (key -> min), newOne, newTwo)
+      }
+    }
+    val commonKeys = one.keys.toSeq intersect two.keys.toSeq
+    extract(commonKeys, Map.empty, one, two)
   }
 }
 
@@ -117,7 +157,24 @@ object Product {
   def incPower(map: Map[Int, Int], key: Int): Map[Int, Int] =
     changePower(map, key, 1)
 
-  def changePower(map: Map[Int, Int], key: Int, diff: Int): Map[Int, Int] =
-    map updated (key, map.getOrElse(key, 0) + diff)
+  def changePower(map: Map[Int, Int], key: Int, diff: Int): Map[Int, Int] = {
+    val oldVal = map.getOrElse(key, 0)
+    if (oldVal + diff < 0) throw new RuntimeException("Negative power!")
+    if (oldVal + diff == 0) map - key
+    else map updated (key, oldVal + diff)
+  }
+
+  implicit object ProductNumeric extends Numeric[Product] {
+    override def compare(a: Product, b: Product) = a compare b
+    override def plus(x: Product, y: Product): Product = x + y
+    override def minus(x: Product, y: Product): Product = x - y
+    override def times(x: Product, y: Product): Product = x * y
+    override def negate(x: Product): Product = -x
+    override def fromInt(x: Int): Product = Product(x)
+    override def toInt(x: Product): Int = x.intValue
+    override def toLong(x: Product): Long = x.longValue
+    override def toFloat(x: Product): Float = x.floatValue
+    override def toDouble(x: Product): Double = x.doubleValue
+  }
 
 }
