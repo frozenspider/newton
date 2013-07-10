@@ -12,12 +12,14 @@ import scala.math.ScalaNumericConversions
  * <p>
  * Only supports multiplication and power operations.
  */
-class Product(val signum: Int, val underlying: Map[Int, Int])
+case class Product(val signum: Int, val underlying: Map[Int, Int])
     extends ScalaNumber
     with ScalaNumericConversions
     with Ordered[Product] {
   require((-1 to 1) contains signum, "Sign should be -1, 0 or 1")
   require(if (signum == 0) underlying.isEmpty else true, "For zero product, powers should be empty")
+
+  def isZero = signum == 0
 
   def *(that: BigInt): Product = {
     require(that.isValidInt, "Value is too large")
@@ -71,13 +73,20 @@ class Product(val signum: Int, val underlying: Map[Int, Int])
   def bigIntValue =
     if (signum == 0) BigInt(0) else signum * toNumber(BigInt(1))(_ * _)(_ pow _)
 
-  override def hashCode = this.underlying.hashCode * 17
   override def toString = {
-    val strRep = (this.underlying map (pair => pair._1 + "^" + pair._2) mkString (" * "))
-    val str = signum match {
-      case 0  => "0"
-      case 1  => strRep
-      case -1 => "-1 * " + strRep
+    val str = if (this.underlying.isEmpty) {
+      signum match {
+        case 0  => "0"
+        case 1  => "1"
+        case -1 => "-1"
+      }
+    } else {
+      val strRep = (this.underlying map (pair => pair._1 + "^" + pair._2) mkString (" * "))
+      signum match {
+        case 0  => "0"
+        case 1  => strRep
+        case -1 => "-1 * " + strRep
+      }
     }
     "Product(" + str + ")"
   }
