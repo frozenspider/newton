@@ -16,6 +16,7 @@ case class BigFrac(val underlying: BigFraction)
     with Serializable {
   val num = new BigInt(this.underlying.getNumerator)
   val den = new BigInt(this.underlying.getDenominator)
+  lazy val signum = num.signum
   lazy val quotient = num / den
   lazy val remainder = num % den
   /** Behaves exactly as {@link Math#round(double)}.  */
@@ -41,6 +42,8 @@ case class BigFrac(val underlying: BigFraction)
   def max(that: BigFrac) = if (this >= that) this else that
 
   def unary_- = new BigFrac(this.underlying.negate)
+  
+  def pow(that: Int) = new BigFrac(this.underlying pow that)
 
   override def compare(that: BigFrac): Int = this.underlying compareTo that.underlying
 

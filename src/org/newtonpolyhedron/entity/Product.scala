@@ -17,49 +17,49 @@ case class Product(val signum: Int, val underlying: Map[Int, Int])
     with ScalaNumericConversions
     with Ordered[Product] {
   require((-1 to 1) contains signum, "Sign should be -1, 0 or 1")
-  require(if (signum == 0) underlying.isEmpty else true, "For zero product, powers should be empty")
+  require(if (signum == 0) underlying.isEmpty else true, "For zero product, multipliers should be empty")
 
   def isZero = signum == 0
-
-  def *(that: BigInt): Product = {
-    require(that.isValidInt, "Value is too large")
-    this * that.toInt
-  }
-
-  def *(that: Int): Product = {
-    if (this.signum == 0 || that == 0) Product.ZERO
-    else {
-      val factors = Product.factorize(that.abs)
-      new Product(this.signum * that.signum, mergePowers(this.underlying, factors))
-    }
-  }
 
   def *(that: Product): Product =
     if (this.signum == 0 || that.signum == 0) Product.ZERO
     else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying))
+  def *(that: BigInt): Product = this * Product(that)
+  def *(that: BigFrac): Product = this * Product(that)
+  def *(that: Int): Product = this * Product(that)
+
+  def /(that: Product): Product = {
+    require(that.signum != 0, "Divide by zero")
+    if (this.signum == 0) Product.ZERO
+    else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying map (p => (p._1, -p._2))))
+  }
+  def /(that: BigInt): Product = this / Product(that)
+  def /(that: BigFrac): Product = this / Product(that)
+  def /(that: Int): Product = this / Product(that)
 
   def +(that: Product): Product = {
     val (commonFactors, thisFactors, thatFactors) = extractCommonFactors(this.underlying, that.underlying)
     val common = new Product(1, commonFactors)
     val part1 = new Product(this.signum, thisFactors)
     val part2 = new Product(that.signum, thatFactors)
-    val partSum = Product(part1.bigIntValue + part2.bigIntValue)
+    val partSum = Product(part1.fracValue + part2.fracValue)
     val res = common * partSum
     res
   }
   def +(that: Int): Product = this + Product(that)
+  def +(that: BigFrac): Product = this + Product(that)
   def -(that: Product): Product = this + -that
   def -(that: Int): Product = this + Product(-that)
+  def -(that: BigFrac): Product = this + Product(-that)
   def unary_- : Product = new Product(-signum, underlying)
 
   def pow(p: Int): Product = {
-    require(p >= 0, "Can only raise to non-negative powers")
     if (this.signum == 0 && p == 0) Product.ONE
     else new Product(this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
   }
 
   /** Very ineffective! */
-  override def compare(that: Product): Int = this.bigIntValue compare that.bigIntValue
+  override def compare(that: Product): Int = this.fracValue compare that.fracValue
 
   override def isWhole = true
   override def doubleValue =
@@ -70,8 +70,14 @@ case class Product(val signum: Int, val underlying: Map[Int, Int])
     if (signum == 0) 0L else signum * toNumber(1L)(_ * _)((v, p) => math.pow(v.toDouble, p).toLong)
   override def intValue =
     if (signum == 0) 0 else signum * toNumber(1)(_ * _)((v, p) => math.pow(v.toDouble, p).toInt)
-  def bigIntValue =
-    if (signum == 0) BigInt(0) else signum * toNumber(BigInt(1))(_ * _)(_ pow _)
+  def fracValue =
+    if (signum == 0) BigFrac.ZERO else signum * toNumber(BigFrac.ONE)(_ * _)(_ pow _)
+
+  private def toNumber[T](identity: T)(mul: (T, T) => T)(pow: (BigFrac, Int) => T): T = {
+    (underlying foldLeft identity) {
+      case (acc, (v, p)) => mul(acc, pow(v, p))
+    }
+  }
 
   override def toString = {
     val str = if (this.underlying.isEmpty) {
@@ -89,12 +95,6 @@ case class Product(val signum: Int, val underlying: Map[Int, Int])
       }
     }
     "Product(" + str + ")"
-  }
-
-  private def toNumber[T](identity: T)(mul: (T, T) => T)(pow: (BigInt, Int) => T): T = {
-    (underlying foldLeft identity) {
-      case (acc, (v, p)) => mul(acc, pow(v, p))
-    }
   }
 
   private def mergePowers(main: Map[Int, Int], other: Map[Int, Int]): Map[Int, Int] = {
@@ -144,6 +144,20 @@ object Product {
     Product(v.toInt)
   }
 
+  def apply(v: BigFrac): Product = {
+    require(v.num.isValidInt, "Numerator is too large")
+    require(v.den.isValidInt, "Denomiator is too large")
+    if (v.num == 0) ZERO
+    else {
+      val numPows = factorize(v.num.toInt.abs)
+      val denPows = factorize(v.den.toInt.abs)
+      val powers = denPows.foldLeft(numPows) {
+        case (acc, (factor, power)) => changePower(acc, factor, -power)
+      }
+      Product(v.signum, powers)
+    }
+  }
+
   def factorize(v: Int): Map[Int, Int] = {
     require(v > 0, "Can only factorize positive numbers")
     import MathUtils._
@@ -160,7 +174,7 @@ object Product {
         else
           rec(v, primes.tail, acc)
       }
-    rec(v, primesUpTo(sqrt(v)), Map.empty)
+    rec(v, primesUpTo(sqrt(v)), Map.empty) filter (_._1 != 1)
   }
 
   def incPower(map: Map[Int, Int], key: Int): Map[Int, Int] =
@@ -168,7 +182,6 @@ object Product {
 
   def changePower(map: Map[Int, Int], key: Int, diff: Int): Map[Int, Int] = {
     val oldVal = map.getOrElse(key, 0)
-    if (oldVal + diff < 0) throw new RuntimeException("Negative power!")
     if (oldVal + diff == 0) map - key
     else map updated (key, oldVal + diff)
   }
