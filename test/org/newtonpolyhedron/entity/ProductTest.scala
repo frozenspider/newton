@@ -1,5 +1,6 @@
 package org.newtonpolyhedron.entity
 
+import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
@@ -9,7 +10,6 @@ class ProductTest extends FunSuite {
 
   private def p(i: Int) = Product(i)
   private def p(n: Int, d: Int) = Product(BigFrac(n, d))
-  private def bf(n: Int, d: Int) = BigFrac(n, d)
 
   test("standard corner cases") {
     assert(Product.ZERO.intValue === 0)
@@ -61,7 +61,7 @@ class ProductTest extends FunSuite {
     assert((p(3, 4) / p(1, 8)).fracValue === 6)
   }
 
-  test("power") {
+  test("power, integer") {
     assert((p(0) pow 3).intValue === 0)
     assert((p(1) pow 3).intValue === 1)
     assert((p(0) pow 0).intValue === 1)
@@ -74,6 +74,24 @@ class ProductTest extends FunSuite {
     assert((p(8) pow 6).intValue === 262144)
     assert((p(1, 2) pow 3).fracValue === bf(1, 8))
     assert((p(3) pow -2).fracValue === bf(1, 9))
+  }
+
+  test("power, fractional, precise") {
+    assert((p(0) pow bf(3, 1)).intValue === 0)
+    assert((p(1) pow bf(3, 1)).intValue === 1)
+    assert((p(0) pow bf(0, 1)).intValue === 1)
+    assert((p(1) pow bf(1, 1)).intValue === 1)
+    assert((p(1) pow bf(10, 1)).intValue === 1)
+    assert((p(4) pow bf(1, 2)).intValue === 2)
+    assert((p(65536) pow bf(1, 4)).intValue === 16)
+    assert((p(8) pow bf(1, 3)).intValue === 2)
+  }
+
+  test("power, fractional, appx") {
+    assert((p(8) pow bf(1, 2)) =~= 2.828427125)
+    intercept[ArithmeticException] {
+      (p(8) pow bf(1, 2)).fracValue
+    }
   }
 
   test("addition, subtraction") {
@@ -97,6 +115,7 @@ class ProductTest extends FunSuite {
     assert(p(12).underlying === Map(2 -> 2, 3 -> 1))
     assert(p(17).underlying === Map(17 -> 1))
     assert(p(51).underlying === Map(3 -> 1, 17 -> 1))
+    assert(p(1, 1).underlying === Map.empty)
     assert(p(1, 32).underlying === Map(2 -> -5))
   }
 }

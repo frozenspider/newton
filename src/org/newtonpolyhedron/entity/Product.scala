@@ -12,7 +12,7 @@ import scala.math.ScalaNumericConversions
  * <p>
  * Only supports multiplication and power operations.
  */
-case class Product(val signum: Int, val underlying: Map[Int, Int])
+case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     extends ScalaNumber
     with ScalaNumericConversions
     with Ordered[Product] {
@@ -53,31 +53,36 @@ case class Product(val signum: Int, val underlying: Map[Int, Int])
   def -(that: BigFrac): Product = this + Product(-that)
   def unary_- : Product = new Product(-signum, underlying)
 
-  def pow(p: Int): Product = {
+  def pow(p: BigFrac): Product = {
     if (this.signum == 0 && p == 0) Product.ONE
     else new Product(this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
   }
+  def pow(p: Int): Product = this pow BigFrac(p)
 
   /** Very ineffective! */
   override def compare(that: Product): Int = this.fracValue compare that.fracValue
 
+  /** Whether or not this product can be represented as a precise fraction value */
+  def isValidFraction = underlying forall (_._2.den == 1)
   override def isWhole = true
-  override def doubleValue =
-    if (signum == 0) 0.0d else signum * toNumber(1.0d)(_ * _)((v, p) => math.pow(v.toDouble, p))
-  override def floatValue =
-    if (signum == 0) 0.0f else signum * toNumber(1.0f)(_ * _)((v, p) => math.pow(v.toDouble, p).toFloat)
-  override def longValue =
-    if (signum == 0) 0L else signum * toNumber(1L)(_ * _)((v, p) => math.pow(v.toDouble, p).toLong)
-  override def intValue =
-    if (signum == 0) 0 else signum * toNumber(1)(_ * _)((v, p) => math.pow(v.toDouble, p).toInt)
+  override def longValue = fracValue.toLong
+  override def intValue = fracValue.toInt
   def fracValue =
-    if (signum == 0) BigFrac.ZERO else signum * toNumber(BigFrac.ONE)(_ * _)(_ pow _)
-
-  private def toNumber[T](identity: T)(mul: (T, T) => T)(pow: (BigFrac, Int) => T): T = {
-    (underlying foldLeft identity) {
-      case (acc, (v, p)) => mul(acc, pow(v, p))
+    if (signum == 0) BigFrac.ZERO else {
+      if (!isValidFraction) throw new ArithmeticException("Not a valid fraction")
+      val folded = (underlying foldLeft BigFrac.ONE) {
+        case (acc, (v, p)) => acc * (BigFrac(v) pow p.num.toInt)
+      }
+      signum * folded
     }
-  }
+  override def floatValue = doubleValue.toFloat
+  override def doubleValue =
+    if (signum == 0) 0.0d else {
+      val folded = (underlying foldLeft 1.0d) {
+        case (acc, (v, p)) => acc * math.pow(v, p.doubleValue)
+      }
+      signum * folded
+    }
 
   override def toString = {
     val str = if (this.underlying.isEmpty) {
@@ -97,7 +102,7 @@ case class Product(val signum: Int, val underlying: Map[Int, Int])
     "Product(" + str + ")"
   }
 
-  private def mergePowers(main: Map[Int, Int], other: Map[Int, Int]): Map[Int, Int] = {
+  private def mergePowers(main: Map[Int, BigFrac], other: Map[Int, BigFrac]): Map[Int, BigFrac] = {
     if (other.isEmpty) main
     else {
       val (headPrime, headPow) = other.head
@@ -106,12 +111,12 @@ case class Product(val signum: Int, val underlying: Map[Int, Int])
     }
   }
 
-  private def extractCommonFactors(one: Map[Int, Int],
-                                   two: Map[Int, Int]): (Map[Int, Int], Map[Int, Int], Map[Int, Int]) = {
+  private def extractCommonFactors(one: Map[Int, BigFrac],
+                                   two: Map[Int, BigFrac]): (Map[Int, BigFrac], Map[Int, BigFrac], Map[Int, BigFrac]) = {
     def extract(keys: Seq[Int],
-                acc: Map[Int, Int],
-                one: Map[Int, Int],
-                two: Map[Int, Int]): (Map[Int, Int], Map[Int, Int], Map[Int, Int]) = {
+                acc: Map[Int, BigFrac],
+                one: Map[Int, BigFrac],
+                two: Map[Int, BigFrac]): (Map[Int, BigFrac], Map[Int, BigFrac], Map[Int, BigFrac]) = {
       if (keys.isEmpty) (acc, one, two)
       else {
         val key = keys.head
@@ -158,10 +163,10 @@ object Product {
     }
   }
 
-  def factorize(v: Int): Map[Int, Int] = {
+  def factorize(v: Int): Map[Int, BigFrac] = {
     require(v > 0, "Can only factorize positive numbers")
     import MathUtils._
-    def rec(v: Int, primes: Seq[Int], acc: Map[Int, Int]): Map[Int, Int] =
+    def rec(v: Int, primes: Seq[Int], acc: Map[Int, BigFrac]): Map[Int, BigFrac] =
       if (primes.isEmpty) // v is prime itself
         incPower(acc, v)
       else if (v == 1) acc
@@ -177,11 +182,11 @@ object Product {
     rec(v, primesUpTo(sqrt(v)), Map.empty) filter (_._1 != 1)
   }
 
-  def incPower(map: Map[Int, Int], key: Int): Map[Int, Int] =
+  def incPower(map: Map[Int, BigFrac], key: Int): Map[Int, BigFrac] =
     changePower(map, key, 1)
 
-  def changePower(map: Map[Int, Int], key: Int, diff: Int): Map[Int, Int] = {
-    val oldVal = map.getOrElse(key, 0)
+  def changePower(map: Map[Int, BigFrac], key: Int, diff: BigFrac): Map[Int, BigFrac] = {
+    val oldVal = map.getOrElse(key, BigFrac.ZERO)
     if (oldVal + diff == 0) map - key
     else map updated (key, oldVal + diff)
   }

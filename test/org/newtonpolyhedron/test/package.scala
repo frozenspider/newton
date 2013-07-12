@@ -1,20 +1,25 @@
 package org.newtonpolyhedron
 
 import java.util.Comparator
+import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.BigIntFielded
 import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.Surface
-import scala.collection.immutable.SortedSet
+import org.scalatest.Suite
+import org.scalatest.FailureMessages
+import org.scalatest.Resources
 
 /**
  * Contains test shortcuts
  */
 package object test {
+  type DoubleConvertible = Any { def toDouble: Double }
+
   def matrInt(content: Array[Array[Int]]): Matrix[BigIntFielded] = {
     Matrix(content map (_ map (x => BigIntFielded(x))))
   }
@@ -69,5 +74,15 @@ package object test {
         addToMap(newAcc, dim - 1, remaining.head, remaining.tail)
     }
     addToMap(Map(), points.size - 1, points.head, points.tail)
+  }
+
+  implicit def toDoubleApproximateEquals[T1 <: DoubleConvertible](thisDouble: T1) = new {
+    val eps = 0.000001
+
+    /** This approximately equals that */
+    def =~=[T2 <: DoubleConvertible](that: T2): Option[String] = {
+      if ((thisDouble.toDouble - that.toDouble).abs < eps) None
+      else Some(s"$thisDouble is not close to $that")
+    }
   }
 }
