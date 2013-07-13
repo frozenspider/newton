@@ -1,10 +1,9 @@
 package org.newtonpolyhedron.solve.changevars
 
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.PolynomialWrapper._
 import org.newtonpolyhedron.entity.Term
 
 trait ChangerOfVariables {
-  type Polynomial = IndexedSeq[Term]
   type Polys = IndexedSeq[Polynomial]
 
   /**
@@ -21,7 +20,7 @@ trait ChangerOfVariables {
   }
 
   /**
-   * Executes the change-of-variables operations, substituting each variable in each term in original
+   * Executes the change-of-variables operations, substituting each variable in each term of original
    * polynomial with corresponding polynomial in substitution polynomials, thus expressing original variables
    * via their polynomial expansion.
    * <p>

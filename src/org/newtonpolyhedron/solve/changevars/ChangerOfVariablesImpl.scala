@@ -1,10 +1,9 @@
 package org.newtonpolyhedron.solve.changevars
-
 import scala.collection.IndexedSeq
+
+import org.newtonpolyhedron.entity.PolynomialWrapper._
 import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.vector.IntMathVec
-import scala.collection.immutable.SortedSet
 
 class ChangerOfVariablesImpl extends ChangerOfVariables {
   private val s = IndexedSeq
@@ -36,7 +35,7 @@ class ChangerOfVariablesImpl extends ChangerOfVariables {
     require(poly forall (_.powers.dim == substs.size), "Original polynomial terms dimension should be" +
       "equal to replacement polynomials count")
     val changedVarsPolyWithDup: Polynomial = poly flatMap changeVarInTerm(substs)
-    val changedVarsPoly: Polynomial = collapseDups(changedVarsPolyWithDup)
+    val changedVarsPoly: Polynomial = changedVarsPolyWithDup.collapseDups
     changedVarsPoly sorted
   }
 
@@ -44,40 +43,13 @@ class ChangerOfVariablesImpl extends ChangerOfVariables {
     assert(substs.size == term.powers.dim)
     val powered: Polys = (substs zip term.powers.elements) map {
       case (changeVarPoly, pow) => {
-        require(pow.isValidInt, "Power is too large!")
-        raisePolyToPower(changeVarPoly, pow.toInt)
+        require(pow.isValidInt, "Power is either too large or fractional!")
+        changeVarPoly pow pow.toInt
       }
-    } map skipZeroTerms filter (_.size > 0) map collapseDups
-    val crossMultiplied = powered reduceLeft multiplyPolys
+    } map (_.collapseDups) filter (_.size > 0)
+    val crossMultiplied = powered reduceLeft (_ * _)
     // Mutiply by original term coefficient
     val scaled = crossMultiplied map (t => t withCoeff (t.coeff * term.coeff))
     scaled
   }
-
-  def multiplyPolys(poly1: Polynomial, poly2: Polynomial): Polynomial = {
-    val preRes = for {
-      Term(c1, p1) <- poly1
-      Term(c2, p2) <- poly2
-    } yield Term(c1 * c2, p1 + p2)
-    collapseDups(skipZeroTerms(preRes))
-  }
-
-  def raisePolyToPower(poly: Polynomial, pow: Int): Polynomial = {
-    require(pow >= 0, "Can't reaise polynomial to negative power")
-    if (pow == 0) s(Term.zero(poly.head.powers.dim))
-    else if (pow == 1) poly
-    else {
-      // TODO: Use Newton Binomial
-      Seq.fill(pow)(poly) reduce multiplyPolys
-    }
-  }
-
-  def collapseDups(poly: Polynomial): Polynomial = {
-    val res = poly groupBy (_.powers) map (group => group._2) map (_.reduceLeft((t1, t2) => t1 withCoeff (t1.coeff + t2.coeff)))
-    skipZeroTerms(res.toIndexedSeq)
-  }
-
-  def skipZeroTerms(poly: Polynomial): Polynomial =
-    poly filterNot (_.coeff.isZero)
-
 }
