@@ -2,17 +2,13 @@ package org.newtonpolyhedron
 
 import java.util.Comparator
 import scala.collection.immutable.SortedSet
-import org.fs.utils.collection.table.KeyTable
-import org.fs.utils.collection.table.KeyTables
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.BigIntFielded
-import org.newtonpolyhedron.entity.Matrix
-import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.fs.utils.collection.table._
+import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.vector._
 import org.scalatest.Suite
 import org.scalatest.FailureMessages
 import org.scalatest.Resources
+import org.newtonpolyhedron.entity.Term
 
 /**
  * Contains test shortcuts
@@ -42,6 +38,9 @@ package object test {
 
   def bf(n: Int) = BigFrac(n, 1)
   def bf(n: Int, d: Int) = BigFrac(n, d)
+
+  def makePoly(components: (Int, Seq[Int])*): Polynomial =
+    components map { case (coeff, pows) => Term(Product(coeff), fv(pows: _*)) } toIndexedSeq
 
   val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
 

@@ -1,10 +1,10 @@
 package org.newtonpolyhedron.solve.changevars
 
-import org.newtonpolyhedron.entity.PolynomialWrapper._
+import org.newtonpolyhedron.Polynomial
+import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.Term
 
 trait ChangerOfVariables {
-  type Polys = IndexedSeq[Polynomial]
 
   /**
    * Ordered by

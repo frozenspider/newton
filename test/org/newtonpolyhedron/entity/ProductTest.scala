@@ -69,6 +69,7 @@ class ProductTest extends FunSuite {
     assert((p(1) pow 10).intValue === 1)
     assert((p(10) pow 1).intValue === 10)
     assert((p(10) pow 0).intValue === 1)
+    assert((p(-10) pow 0).intValue === 1)
     assert((p(2) pow 16).intValue === 65536)
     assert((p(6) pow 3).intValue === 216)
     assert((p(8) pow 6).intValue === 262144)

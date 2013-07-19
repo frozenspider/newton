@@ -55,7 +55,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
 
   def pow(p: BigFrac): Product = {
     if (this.signum == 0 && p == 0) Product.ONE
-    else new Product(this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
+    else new Product(if (p == 0) 1 else this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
   }
   def pow(p: Int): Product = this pow BigFrac(p)
 
@@ -63,13 +63,13 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
   override def compare(that: Product): Int = this.fracValue compare that.fracValue
 
   /** Whether or not this product can be represented as a precise fraction value */
-  def isValidFraction = underlying forall (_._2.den == 1)
+  lazy val isRational = underlying forall (_._2.den == 1)
   override def isWhole = true
   override def longValue = fracValue.toLong
   override def intValue = fracValue.toInt
   def fracValue =
     if (signum == 0) BigFrac.ZERO else {
-      if (!isValidFraction) throw new ArithmeticException("Not a valid fraction")
+      if (!isRational) throw new ArithmeticException("Not a valid fraction")
       val folded = (underlying foldLeft BigFrac.ONE) {
         case (acc, (v, p)) => acc * (BigFrac(v) pow p.num.toInt)
       }

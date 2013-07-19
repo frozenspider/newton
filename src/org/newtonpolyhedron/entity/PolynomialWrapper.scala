@@ -1,7 +1,8 @@
 package org.newtonpolyhedron.entity
 
+import org.newtonpolyhedron.Polynomial
+
 object PolynomialWrapper {
-  type Polynomial = IndexedSeq[Term]
 
   /**
    * Contains some basic polynomial-related operations - multiplication, raising to powers, etc.
@@ -20,9 +21,9 @@ object PolynomialWrapper {
 
     def *(that: Polynomial): Polynomial = {
       val preRes = for {
-        Term(c1, p1) <- poly
-        Term(c2, p2) <- that
-      } yield Term(c1 * c2, p1 + p2)
+        t1 <- poly
+        t2 <- that
+      } yield t1 * t2
       preRes.collapseDups
     }
 

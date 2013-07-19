@@ -4,25 +4,11 @@ import org.junit.runner.RunWith
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.Product
-import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.BigFrac
 
 @RunWith(classOf[JUnitRunner])
 class ChangerOfVariablesImplTest extends FunSuite {
 
-  type Polynomial = IndexedSeq[Term]
-  type Polys = IndexedSeq[Polynomial]
-
   val changer = new ChangerOfVariablesImpl
-
-  private def makePoly(components: (Int, Seq[Int])*): Polynomial =
-    components map { case (coeff, pows) => Term(Product(coeff), veci(pows)) } toIndexedSeq
-  private def veci(s: Seq[Int]) = FracMathVec.fromInts(s: _*)
-  private def veci(s: Seq[BigInt]) = FracMathVec.fromInts(s.map(_.toInt): _*)
-  private def vecf(s: Seq[BigFrac]) = FracMathVec(s: _*)
 
   test("artificial example 1") {
     // Verified via Wolfram Alpha

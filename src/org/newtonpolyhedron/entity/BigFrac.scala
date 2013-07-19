@@ -42,8 +42,10 @@ case class BigFrac(val underlying: BigFraction)
   def max(that: BigFrac) = if (this >= that) this else that
 
   def unary_- = new BigFrac(this.underlying.negate)
-  
+
   def pow(that: Int) = new BigFrac(this.underlying pow that)
+
+  def inv = BigFrac(den, num)
 
   override def compare(that: BigFrac): Int = this.underlying compareTo that.underlying
 

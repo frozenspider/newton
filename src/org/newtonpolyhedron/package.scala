@@ -1,25 +1,28 @@
 package org
-
+import java.math.BigInteger
+import scala.Numeric.Implicits._
+import scala.Ordering.Implicits._
 import scala.collection.JavaConversions._
-import org.newtonpolyhedron.entity.vector._
-import Ordering.Implicits._
-import Numeric.Implicits._
-import org.apache.commons.math3.fraction.BigFraction
-import org.newtonpolyhedron.entity.BigFrac
-import org.apache.commons.math3.linear.FieldMatrix
-import org.apache.commons.math3.FieldElement
+import scala.collection.immutable.SortedSet
 import org.apache.commons.math3.Field
-import org.newtonpolyhedron.entity.BigFrac.BigFracField
+import org.apache.commons.math3.FieldElement
+import org.apache.commons.math3.fraction.BigFraction
 import org.apache.commons.math3.fraction.BigFractionField
-import org.fs.utils.structure.wrap.Pair
-import org.newtonpolyhedron.entity.Matrix
+import org.apache.commons.math3.linear.FieldMatrix
 import org.fs.utils.collection.list.SortedArrayList
 import org.fs.utils.collection.set.IndexedSet
+import org.fs.utils.structure.wrap.Pair
+import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.BigFrac.BigFracField
 import org.newtonpolyhedron.entity.BigIntFielded
-import java.math.BigInteger
-import scala.collection.immutable.SortedSet
+import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron.entity.vector._
+import org.newtonpolyhedron.entity.Term
 
 package object newtonpolyhedron {
+
+  type Polynomial = IndexedSeq[Term]
+  type Polys = IndexedSeq[Polynomial]
 
   // Collections
   implicit def coll2seq[T](coll: java.util.Collection[T]): IndexedSeq[T] =
