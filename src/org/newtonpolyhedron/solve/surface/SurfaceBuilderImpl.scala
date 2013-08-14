@@ -28,13 +28,15 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
     recurse(dim - 1, Map.empty, Set.empty)
   }
 
-  def extactLookupTableData(lookup: KeyTable[IntMathVec, Int, Boolean]): Seq[Seq[Int]] =
+  def extactLookupTableData(lookup: KeyTable[IntMathVec, Int, Boolean]): Seq[Seq[Int]] = {
+    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     for {
       point <- lookup.rowKeyList
     } yield for {
       colKey <- scala.collection.JavaConversions.asScalaBuffer(lookup.colKeyList)
       if lookup.get(point, colKey)
     } yield colKey
+  }
 
   /**
    * Finds the common surfaces of a lesser dimension

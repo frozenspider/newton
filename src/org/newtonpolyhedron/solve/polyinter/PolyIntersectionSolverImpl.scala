@@ -90,6 +90,7 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
    * @return { polyIdx, vector -> [ points giving this vector for this poly when intersecting ] }
    */
   def reverseTableMeaning(ptsForVectors: Map[IntMathVec, Seq[IndexedSeq[Int]]]): KeyTable[Int, IntMathVec, SortedSet[Int]] = {
+    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     var vectPtTable = new ArrayListKeyTable[Int, IntMathVec, SortedSet[Int]]
     for ((vector, indicesSeq) <- ptsForVectors) {
       for (indices <- indicesSeq) {

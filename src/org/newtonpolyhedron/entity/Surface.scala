@@ -1,8 +1,7 @@
 package org.newtonpolyhedron.entity
 
-import org.newtonpolyhedron._
-import scala.math.Ordered
 import scala.collection.immutable.SortedSet
+import scala.math.Ordered
 
 class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Surface])
     extends Ordered[Surface] {
@@ -11,10 +10,6 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
 
   def this(pointIndices: Seq[Int]) =
     this(pointIndices, IndexedSeq.empty)
-
-  def this(pointIndices: java.util.List[java.lang.Integer], upperSurfaces: java.util.List[Surface]) = {
-    this(coll2seq(pointIndices) map (_.intValue), upperSurfaces)
-  }
 
   val size = pointIndices.size
 

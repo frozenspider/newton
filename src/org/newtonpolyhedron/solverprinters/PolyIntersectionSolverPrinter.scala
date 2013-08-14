@@ -37,6 +37,7 @@ class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
   }
 
   private def printTable(vectorPointTable: KeyTable[Int, IntMathVec, SortedSet[Int]], output: PrintWriter): Unit = {
+    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     var strTable = new ArrayListKeyTable[Int, IntMathVec, String]
     for {
       r <- vectorPointTable.rowKeyList()

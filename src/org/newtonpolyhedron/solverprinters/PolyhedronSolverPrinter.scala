@@ -72,6 +72,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
 
   private def printLookupTable(lookupTable: KeyTable[IntMathVec, Int, Boolean],
                                output: PrintWriter) = {
+    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     var strTable = new ArrayListKeyTable[String, String, String]
     var rowIdx = 0
     for (rowKey <- lookupTable.rowKeyList) {
