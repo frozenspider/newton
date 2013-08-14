@@ -8,15 +8,31 @@ import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Product
 
-class SimpleEqSystemSolverImpl extends SimpleEqSystemSolver {
+/**
+ * Is only capable of solving *simple* equation systems.
+ * <p>
+ * "Simple" here means that each equation should be a polynomial consisting of exactly two terms.
+ */
+class SimpleEqSystemSolverImpl extends EqSystemSolver {
 
   private type Replacement = Map[Int, Product]
 
-  def solveSimpleEqSys(system: Polys): FracMathVec = {
-    require(system.flatMap(poly => poly map (term => term.powers.dim)).distinct.size == 1, "Terms have different dimensions")
+  def whyCantSolve(system: Polys): Option[String] = {
+    if (system.flatMap(poly => poly map (term => term.powers.dim)).distinct.size != 1)
+      Some("Terms have different dimensions")
+    else {
+      val varsCounts = system.head.head.powers.dim
+      if (system.size < varsCounts)
+        Some("Not enough equations (${system.size}) for ${varsCounts} variables")
+      else if (system exists (_.size != 2))
+        Some("Each equation should consist of exactly two terms")
+      else None
+    }
+  }
+
+  def solve(system: Polys): FracMathVec = {
+    require(canSolve(system))
     val varsCounts = system.head.head.powers.dim
-    require(system.size >= varsCounts, s"Not enough equations (${system.size}) for ${varsCounts} variables")
-    require(system forall (_.size == 2), "Each equation should consist of exactly two terms")
     val replacements = solveSimpleEqSysFor(system, (0 until varsCounts), Map.empty)
     val res = replacements.foldLeft(IndexedSeq.fill(varsCounts)(BigFrac.ZERO)) {
       case (acc, (idx, value)) => acc.updated(idx, value.fracValue)
@@ -61,7 +77,7 @@ class SimpleEqSystemSolverImpl extends SimpleEqSystemSolver {
         val currRepl = -(reducedS / reducedM) pow powDiff.inv
         val restReplaced = restEqs map representThrough(replFor, currRepl)
         val solutionForRest = solveSimpleEqSysFor(restReplaced, termIndicesToReplace.tail, replacements)
-        val unrolledValue = currRepl.powers.elements.zipWithIndex map {
+        val unrolledValue = currRepl.powers.elements.zipWithIndex.map {
           case (pow, idx) => if (pow == 0) Product.ONE else solutionForRest(idx) pow pow
         }
         val reduced = unrolledValue.reduce(_ * _) * currRepl.coeff

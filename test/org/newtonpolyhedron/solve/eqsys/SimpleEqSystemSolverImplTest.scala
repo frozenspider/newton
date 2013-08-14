@@ -23,7 +23,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
         (-1, s(+0, +0)),
         (-1, s(+0, +1)))
     )
-    val actual = solver.solveSimpleEqSys(eqSys)
+    val actual = solver.solve(eqSys)
 
     val expected = s(1, -1) map bf
 
@@ -39,7 +39,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
         (-1, s(+0, +0)),
         (-1, s(+4, +1)))
     )
-    val actual = solver.solveSimpleEqSys(eqSys)
+    val actual = solver.solve(eqSys)
 
     val expected = s(1, -1) map bf
 
@@ -55,7 +55,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
         (-1, s(+0, +0)),
         (-1, s(+4, +1)))
     )
-    val actual = solver.solveSimpleEqSys(eqSys)
+    val actual = solver.solve(eqSys)
 
     val expected = s(bf(2), bf(-1, 16))
 
@@ -78,7 +78,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
         (+3, s(-1, +0, +0)),
         (+1, s(+0, +1, +0)))
     )
-    val actual = solver.solveSimpleEqSys(eqSys)
+    val actual = solver.solve(eqSys)
 
     val expected = s(-1, 3, 2) map bf
 
