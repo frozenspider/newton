@@ -27,7 +27,8 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
 
     val expected = s(1, -1) map bf
 
-    assert(expected === actual.elements)
+    assert(actual.tail.isEmpty)
+    assert(expected === actual.head.elements)
   }
 
   test("simplest 2d example 2") {
@@ -43,7 +44,8 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
 
     val expected = s(1, -1) map bf
 
-    assert(expected === actual.elements)
+    assert(actual.tail.isEmpty)
+    assert(expected === actual.head.elements)
   }
 
   test("simple 2d example 1") {
@@ -59,7 +61,8 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
 
     val expected = s(bf(2), bf(-1, 16))
 
-    assert(expected === actual.elements)
+    assert(actual.tail.isEmpty)
+    assert(expected === actual.head.elements)
   }
 
   test("simple 3d example 1") {
@@ -82,6 +85,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
 
     val expected = s(-1, 3, 2) map bf
 
-    assert(expected === actual.elements)
+    assert(actual.tail.isEmpty)
+    assert(expected === actual.head.elements)
   }
 }

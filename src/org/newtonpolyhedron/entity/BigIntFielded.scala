@@ -1,4 +1,5 @@
 package org.newtonpolyhedron.entity
+
 import java.math.BigInteger
 
 import org.apache.commons.math3.Field
@@ -17,6 +18,15 @@ class BigIntFielded(underlying: BigInteger)
   def *(that: BigIntFielded): BigIntFielded = this.underlying multiply that.underlying
   def /(that: BigIntFielded): BigIntFielded = this.underlying divide that.underlying
   def gcd(that: BigIntFielded): BigIntFielded = this.underlying gcd that.underlying
+  def factorial: BigIntFielded = {
+    import BigIntFielded._
+    this match {
+      case ZERO         => 1
+      case ONE          => 1
+      case i if i > ONE => (2 to this) reduce (_ * _)
+      case _            => throw new IllegalArgumentException("Factorial of non-positive number " + this)
+    }
+  }
 
   override def add(that: BigIntFielded): BigIntFielded = this + that
   override def subtract(that: BigIntFielded): BigIntFielded = this - that

@@ -30,14 +30,14 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
     }
   }
 
-  def solve(system: Polys): FracMathVec = {
+  def solve(system: Polys): Seq[FracMathVec] = {
     require(canSolve(system))
     val varsCounts = system.head.head.powers.dim
     val replacements = solveSimpleEqSysFor(system, (0 until varsCounts), Map.empty)
     val res = replacements.foldLeft(IndexedSeq.fill(varsCounts)(BigFrac.ZERO)) {
       case (acc, (idx, value)) => acc.updated(idx, value.fracValue)
     }
-    res
+    Seq(res)
   }
 
   def solveSimpleEqSysFor(unsolved: Polys, termIndicesToReplace: Seq[Int], replacements: Replacement): Replacement = {

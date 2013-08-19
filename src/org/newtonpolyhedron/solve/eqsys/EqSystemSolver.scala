@@ -12,5 +12,5 @@ trait EqSystemSolver {
   def whyCantSolve(system: Polys): Option[String]
 
   /** Solves the given equation system */
-  def solve(system: Polys): FracMathVec
+  def solve(system: Polys): Seq[FracMathVec]
 }

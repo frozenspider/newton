@@ -59,6 +59,7 @@ case class BigFrac(val underlying: BigFraction)
   override def getField = BigFrac.BigFracField
 
   val isInt = den == 1
+  def isZero = num == 0
   override def isWhole = true
   override def doubleValue = this.underlying.doubleValue
   override def floatValue = this.underlying.floatValue
@@ -74,7 +75,11 @@ case class BigFrac(val underlying: BigFraction)
     case _                => false
   }
   override def hashCode = this.underlying.hashCode
-  override def toString = this.underlying.toString
+  override def toString = {
+    if (isInt) num.toString
+    else if (isZero) "0"
+    else num + "/" + den
+  }
 }
 
 object BigFrac {

@@ -53,9 +53,10 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
   def -(that: BigFrac): Product = this + Product(-that)
   def unary_- : Product = new Product(-signum, underlying)
 
+  def sqrt = this pow BigFrac(1, 2)
   def pow(p: BigFrac): Product = {
     if (this.signum == 0 && p == 0) Product.ONE
-    else new Product(if (p == 0) 1 else this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
+    else new Product(if (p == 0 || p.num % 2 == 0) 1 else this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
   }
   def pow(p: Int): Product = this pow BigFrac(p)
 
@@ -85,6 +86,11 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     }
 
   override def toString = {
+    if (isRational) fracValue.toString
+    else toStructuredString
+  }
+
+  def toStructuredString = {
     val str = if (this.underlying.isEmpty) {
       signum match {
         case 0  => "0"
@@ -99,7 +105,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
         case -1 => "-1 * " + strRep
       }
     }
-    "Product(" + str + ")"
+    str
   }
 
   private def mergePowers(main: Map[Int, BigFrac], other: Map[Int, BigFrac]): Map[Int, BigFrac] = {
