@@ -68,7 +68,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
   override def isWhole = true
   override def longValue = fracValue.toLong
   override def intValue = fracValue.toInt
-  def fracValue =
+  lazy val fracValue =
     if (signum == 0) BigFrac.ZERO else {
       if (!isRational) throw new ArithmeticException("Not a valid fraction")
       val folded = (underlying foldLeft BigFrac.ONE) {
@@ -77,7 +77,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
       signum * folded
     }
   override def floatValue = doubleValue.toFloat
-  override def doubleValue =
+  override lazy val doubleValue =
     if (signum == 0) 0.0d else {
       val folded = (underlying foldLeft 1.0d) {
         case (acc, (v, p)) => acc * math.pow(v, p.doubleValue)
