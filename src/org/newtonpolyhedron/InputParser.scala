@@ -10,6 +10,8 @@ import org.newtonpolyhedron.entity.Matrix
 import org.apache.commons.math3.FieldElement
 import org.newtonpolyhedron.entity.vector.MathVector
 import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.entity.Product
 
 object InputParser {
   private type Vec[C, V <: Vec[C, V]] = MathVector[C, V]
@@ -27,9 +29,7 @@ object InputParser {
   // General
   //
   /** Parses file by given parsers */
-  def genParseFile[C, V <: Vec[C, V], R](file: File,
-                                         format: VecFmt[C, V])(
-                                           read: Lines => R): R = {
+  def genParseFile[R](file: File)(read: Lines => R): R = {
     val lines = {
       val src = Source.fromFile(file)
       val lines = src.getLines.toIndexedSeq
@@ -40,7 +40,7 @@ object InputParser {
   }
 
   /** Parsing function envelop, that reads dimension and strips comment */
-  def genParseLines[C, V <: Vec[C, V], R](lines: Lines, emptyRes: R)(read: (Int, Lines) => R): R =
+  def genParseLines[R](lines: Lines, emptyRes: => R)(read: (Int, Lines) => R): R =
     if (lines.isEmpty)
       emptyRes
     else {
@@ -83,7 +83,7 @@ object InputParser {
   /** @return pointList, commonLimits, basis */
   def parsePolyFromFile[C, V <: Vec[C, V]](file: File,
                                            format: VecFmt[C, V]): (ISeq[V], ISeq[IV], ISeq[IV]) =
-    genParseFile(file, format)(parsePolyFromLines(format))
+    genParseFile(file)(parsePolyFromLines(format))
 
   /** @return pointList, commonLimits, basis */
   def parsePolyFromLines[C, V <: Vec[C, V]](format: VecFmt[C, V])(lines: Lines) = {
@@ -122,7 +122,7 @@ object InputParser {
   /** @return (poly1, poly2, ...; dim) */
   def parsePolysFromFile[C, V <: Vec[C, V]](file: File,
                                             format: VecFmt[C, V]): (ISeq[ISeq[V]], Int) =
-    genParseFile(file, format)(parsePolysFromLines(format))
+    genParseFile(file)(parsePolysFromLines(format))
 
   /** @return (poly1, poly2, ...; dim) */
   def parsePolysFromLines[C, V <: Vec[C, V]](format: VecFmt[C, V])(lines: Lines): (ISeq[ISeq[V]], Int) = {
@@ -150,7 +150,7 @@ object InputParser {
   def parseMatrixFromFile[C, V <: Vec[C, V], R <: El[R]](file: File,
                                                          format: VecFmt[C, V],
                                                          fabric: Seq[V] => Matrix[R]): Matrix[R] = {
-    val res = genParseFile(file, format)(parseMatrixFromLines(format, fabric))
+    val res = genParseFile(file)(parseMatrixFromLines(format, fabric))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
@@ -168,7 +168,7 @@ object InputParser {
   def parseMatrixWithSkipFromFile[C, V <: Vec[C, V], R <: El[R]](file: File,
                                                                  format: VecFmt[C, V],
                                                                  fabric: Seq[V] => Matrix[R]): (Matrix[R], Int, Int) = {
-    val res = genParseFile(file, format)(parseMatrixWithSkipFromLines(format, fabric))
+    val res = genParseFile(file)(parseMatrixWithSkipFromLines(format, fabric))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
@@ -183,5 +183,36 @@ object InputParser {
       val vecs = parseVectors(dim)(format, travLines.tail)
       Some((fabric(vecs), skipRow, skipCol))
     }
+  }
+
+  def parsePowerTransfBaseFromFile(file: File): (Polynomial, Polynomial, Int, Int, Int, Int) = {
+    genParseFile(file)(parsePowerTransfBaseFromLines)
+  }
+
+  def parsePowerTransfBaseFromLines(lines: Lines): (Polynomial, Polynomial, Int, Int, Int, Int) = {
+    def empty = throw new WrongFormatException("File was empty")
+    genParseLines(lines, empty)(parsePowerTransfBaseFromRefLines)
+  }
+
+  def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Polynomial, Polynomial, Int, Int, Int, Int) = {
+    val parts = lines.splitBySkippingDelim(_ == "%")
+    if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
+    if (parts.size != dim) throw new WrongFormatException("Incorrect file format or wrong number of sections")
+    val poly1 = parsePowerTransfBasePoly(dim, parts(0))
+    val poly2 = parsePowerTransfBasePoly(dim, parts(1))
+    val indices = parts(2) flatMap (_ split ' ') map (Integer.parseInt)
+    (poly1, poly2, indices(0), indices(1), indices(2), indices(3))
+  }
+
+  def parsePowerTransfBasePoly(dim: Int, lines: Lines): Polynomial = {
+    val fmt = FracMathVec.FracMathVecFormat
+    val res = lines map { line =>
+      val split = line split ' '
+      if (!split.head.endsWith(",")) throw new WrongFormatException(s"Incorrect line format '$line'")
+      val coeff = Integer.parseInt(split.head.dropRight(1).trim)
+      val powers = fmt.makeVector(split.tail map (fmt.parseElement))
+      new Term(Product(coeff), powers)
+    }
+    res.toIndexedSeq
   }
 }

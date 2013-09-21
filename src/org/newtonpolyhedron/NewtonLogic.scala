@@ -3,7 +3,6 @@ package org.newtonpolyhedron
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.PrintWriter
-
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.MatrixSupport
@@ -19,6 +18,9 @@ import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
 import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
+import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
+import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
+import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl
 
 class NewtonLogic {
 
@@ -61,6 +63,7 @@ class NewtonLogic {
       case WorkingMode.MATRIX_INVERSE            => launchMatrixInverse(file, writer)
       case WorkingMode.MATRIX_UNIMODULAR_ALPHA   => launchMatrixUniAlpha(file, writer)
       case WorkingMode.MATRIX_LAST_ROW_MINOR_GCD => launchMatrixMinorGCD(file, writer)
+      case WorkingMode.POWER_TRANSFORMATION      => launchPowerTransformation(file, writer)
       case _                                     => throw new UnknownModeException(mode)
     }
     return new Thread(new ExecutorRunnable(solver, writer), "MainSolver")
@@ -118,5 +121,20 @@ class NewtonLogic {
     val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
     new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
+  }
+
+  def launchPowerTransformation(file: File,
+                                writer: PrintWriter): SolverPrinter[_] = {
+    val (poly1, poly2, p1i1, p1i2, p2i1, p2i2) = InputParser.parsePowerTransfBaseFromFile(file)
+    val powTransfSolver = new PowerTransformationSolverImpl(
+      new UnimodularMatrixMakerImpl,
+      new SimpleEqSystemSolverImpl
+    )
+    new PowerTransformationSolverPrinter(
+      powTransfSolver, new ChangerOfVariablesImpl,
+      poly1, poly2,
+      p1i1, p1i2, p2i1, p2i2,
+      writer
+    )
   }
 }
