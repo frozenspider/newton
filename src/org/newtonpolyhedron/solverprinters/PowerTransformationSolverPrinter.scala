@@ -21,9 +21,11 @@ class PowerTransformationSolverPrinter(solver: PowerTransformationSolver,
   private def s = IndexedSeq
 
   private def polyToStr(poly: Polynomial): String = {
-    poly map (term => "(" + term.coeff.fracValue + ") * " + term.powers.elements.zipWithIndex.map {
-      case (pow, i) => s"x${i + 1}^($pow)"
-    }.mkString(" * ")) mkString ("", " + ", " = 0")
+    poly map (term => "(" +
+      term.coeff.fracValue +
+      ") * " +
+      term.powers.elements.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
+    ) mkString ("", " + ", " = 0")
   }
 
   override def solveFor(solver: PowerTransformationSolver,

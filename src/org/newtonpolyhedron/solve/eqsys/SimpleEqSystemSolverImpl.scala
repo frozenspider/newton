@@ -46,8 +46,10 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
       replacements
     } else {
       val replFor = termIndicesToReplace.head
-      def replPowsAreEqual =
-        (eq: Polynomial) => eq(0).powers(replFor) == eq(1).powers(replFor)
+      def replPowsAreEqual(eq: Polynomial) =
+        eq(0).powers(replFor) == eq(1).powers(replFor)
+      def excludeElementByIdx(xs: Polys, i: Int) =
+        xs.zipWithIndex.filterNot(_._2 == i).unzip._1
       // This will also include zero-powers (since 0 == 0)
       if (unsolved forall replPowsAreEqual) {
         // Variable isn't used, can just put anything. Zero is the easiest choice
@@ -56,7 +58,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
         val (chosenEq, restEqs) = {
           val foundIdx = unsolved.indexWhere(!replPowsAreEqual(_))
           assert(foundIdx >= 0)
-          (unsolved(foundIdx), unsolved.zipWithIndex.filterNot(_._2 == foundIdx).unzip._1)
+          (unsolved(foundIdx), excludeElementByIdx(unsolved, foundIdx))
         }
         val (mainTerm, secTerm) = {
           val (t1, t2) = (chosenEq(0), chosenEq(1))
@@ -77,8 +79,8 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
         val currRepl = -(reducedS / reducedM) pow powDiff.inv
         val restReplaced = restEqs map representThrough(replFor, currRepl)
         val solutionForRest = solveSimpleEqSysFor(restReplaced, termIndicesToReplace.tail, replacements)
-        val unrolledValue = currRepl.powers.elements.zipWithIndex.map {
-          case (pow, idx) => if (pow == 0) Product.ONE else solutionForRest(idx) pow pow
+        val unrolledValue = currRepl.powers.elements.mapWithIndex { (pow, idx) =>
+          if (pow == 0) Product.ONE else solutionForRest(idx) pow pow
         }
         val reduced = unrolledValue.reduce(_ * _) * currRepl.coeff
         require(reduced.isRational, s"Irratinal replacement for ${replFor + 1}'st term: ${reduced}")
