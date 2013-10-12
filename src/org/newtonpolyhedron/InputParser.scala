@@ -185,23 +185,24 @@ object InputParser {
     }
   }
 
-  def parsePowerTransfBaseFromFile(file: File): (Polynomial, Polynomial, Int, Int, Int, Int) = {
+  def parsePowerTransfBaseFromFile(file: File): (Seq[Polynomial], Seq[Seq[Int]]) = {
     genParseFile(file)(parsePowerTransfBaseFromLines)
   }
 
-  def parsePowerTransfBaseFromLines(lines: Lines): (Polynomial, Polynomial, Int, Int, Int, Int) = {
+  def parsePowerTransfBaseFromLines(lines: Lines): (Seq[Polynomial], Seq[Seq[Int]]) = {
     def empty = throw new WrongFormatException("File was empty")
     genParseLines(lines, empty)(parsePowerTransfBaseFromRefLines)
   }
 
-  def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Polynomial, Polynomial, Int, Int, Int, Int) = {
+  def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Seq[Polynomial], Seq[Seq[Int]]) = {
     val parts = lines.splitBySkippingDelim(_ == "%")
     if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
     if (parts.size != dim) throw new WrongFormatException("Incorrect file format or wrong number of sections")
-    val poly1 = parsePowerTransfBasePoly(dim, parts(0))
-    val poly2 = parsePowerTransfBasePoly(dim, parts(1))
-    val indices = parts(2) flatMap (_ split ' ') map (Integer.parseInt)
-    (poly1, poly2, indices(0), indices(1), indices(2), indices(3))
+    val polys = parts dropRight 1 map (part => parsePowerTransfBasePoly(dim, part))
+    val indices = parts.last map { line =>
+      (line split ' ' map Integer.parseInt).toSeq
+    }
+    (polys, indices)
   }
 
   def parsePowerTransfBasePoly(dim: Int, lines: Lines): Polynomial = {

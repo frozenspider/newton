@@ -21,16 +21,44 @@ class PowerTransformationSolverImpl(
   private def vec = FracMathVec
   private def vecf(s: Seq[BigFrac]) = vec(s: _*)
 
-  def alphaFromTermSubtractionPairs(termPairs: Seq[(Term, Term)]): Matrix[BigFrac] = {
-    val dim = termPairs.size + 1
-    require(termPairs forall {
-      case (term1, term2) => term1.powers.dim == dim && term2.powers.dim == dim
-    }, "Each term should have the same dimension: number of pairs + 1")
-    val matrixBase = (termPairs map { case (term1, term2) => term1.powers - term2.powers }) :+ vec.zero(3)
-    val matrix = Matrix[BigFrac, FracMathVec](matrixBase)
-    val alpha = umm unimodularFrom matrix
-    assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
-    alpha
+  override def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): (Matrix[BigFrac], IndexedSeq[(Term, Term)]) = {
+    val dim = termSeqs.size + 1
+    require(termSeqs forall (_ forall (_.powers.dim == dim)), "Each term should have the same dimension: number of pairs + 1")
+    def pairsStream = choosePairs(termSeqs)
+    val pairsWithAlphasStream: Stream[(Matrix[BigFrac], Seq[(Term, Term)])] =
+      pairsStream map { pairs =>
+        val matrixBase = (pairs map {
+          case (term1, term2) => term1.powers - term2.powers
+        }) :+ vec.zero(dim)
+        val matrix = Matrix[BigFrac, FracMathVec](matrixBase)
+        val alpha = umm unimodularFrom matrix
+        assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
+        (alpha, pairs)
+      }
+    val res = pairsWithAlphasStream find {
+      case (alpha, pairs) => alpha.det == 1
+    }
+    res.map(v => (v._1, v._2.toIndexedSeq)).get
+  }
+
+  def choosePairs[T](termSeqs: Seq[Seq[T]]): Stream[Seq[(T, T)]] = {
+    def recursion(input: Seq[Stream[(T, T)]]): Stream[Seq[(T, T)]] = {
+      if (input.tail.isEmpty) {
+        // Base case
+        input.head map (stream => Seq(stream))
+      } else {
+        // Induction step
+        val h = input.head
+        val rest = recursion(input.tail)
+        val r = h flatMap (x => rest map (xs => x +: xs))
+        r
+      }
+    }
+    def slidingPairs[A](s: Seq[A]): Stream[(A, A)] = {
+      s.sliding(2).toStream map (seq => (seq.head, seq.tail.head))
+    }
+    val pairsStream = termSeqs map slidingPairs
+    recursion(pairsStream)
   }
 
   //
@@ -48,7 +76,7 @@ class PowerTransformationSolverImpl(
   private def getLowestPowers(powers: Powers) =
     vecf(powers map (_.elements) reduce ((_, _).zipped map (_ min _)))
 
-  def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial = {
+  override def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial = {
     require(alpha.isSquare, "Alpha matrix should be square")
     val alphaInvByRows = matrixByRows(inverse(alpha))
     val rawPows =
@@ -64,7 +92,7 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  def solveShortSubstitutesSystem(simpleSys: Polys): FracMathVec = {
+  override def solveShortSubstitutesSystem(simpleSys: Polys): FracMathVec = {
     require(simpleSys forall (_ forall (t => t.powers.elements.last == 0)))
     // Remove last (zero) component
     val truncatedSimpleSys = simpleSys map (_ map (_.mapPowers(_.elements.dropRight(1))))
@@ -77,7 +105,7 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  def varChangeFromShortSubsSolution(vecs: FracMathVec): Polys = {
+  override def varChangeFromShortSubsSolution(vecs: FracMathVec): Polys = {
     val dim = vecs.dim
     val zeroVec = vec.zero(dim)
     def zeroOneVec(i: Int) = zeroVec updated (i, 1)

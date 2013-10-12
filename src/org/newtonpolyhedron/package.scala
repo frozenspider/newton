@@ -74,6 +74,12 @@ package object newtonpolyhedron {
       {
         iter.zipWithIndex map (x => f(x._1, x._2))
       }
+
+    def eachWithIndex[U, That <: GenTraversableLike[(A, Int), _]](f: (A, Int) => U)(
+      implicit bf1: CanBuildFrom[Repr, (A, Int), That]): Unit =
+      {
+        iter.zipWithIndex foreach (x => f(x._1, x._2))
+      }
   }
 
   implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {

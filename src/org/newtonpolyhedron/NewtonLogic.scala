@@ -125,16 +125,13 @@ class NewtonLogic {
 
   def launchPowerTransformation(file: File,
                                 writer: PrintWriter): SolverPrinter[_] = {
-    val (poly1, poly2, p1i1, p1i2, p2i1, p2i2) = InputParser.parsePowerTransfBaseFromFile(file)
+    val (polys, pts) = InputParser.parsePowerTransfBaseFromFile(file)
     val powTransfSolver = new PowerTransformationSolverImpl(
       new UnimodularMatrixMakerImpl,
       new SimpleEqSystemSolverImpl
     )
     new PowerTransformationSolverPrinter(
-      powTransfSolver, new ChangerOfVariablesImpl,
-      poly1, poly2,
-      p1i1, p1i2, p2i1, p2i2,
-      writer
+      powTransfSolver, new ChangerOfVariablesImpl, polys, pts, writer
     )
   }
 }

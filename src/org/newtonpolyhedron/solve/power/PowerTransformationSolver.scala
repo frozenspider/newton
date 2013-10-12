@@ -7,7 +7,7 @@ import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.vector.FracMathVec
 
 trait PowerTransformationSolver {
-  def alphaFromTermSubtractionPairs(termPairs: Seq[(Term, Term)]): Matrix[BigFrac]
+  def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): (Matrix[BigFrac], IndexedSeq[(Term, Term)])
 
   def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial
 
