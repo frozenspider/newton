@@ -55,8 +55,14 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
 
   def sqrt = this pow BigFrac(1, 2)
   def pow(p: BigFrac): Product = {
-    if (this.signum == 0 && p == 0) Product.ONE
-    else new Product(if (p == 0 || p.num % 2 == 0) 1 else this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
+    // Everything raised to 0th power (including 0) yields 1
+    if (p == 0) Product.ONE
+    // 0 in non-0 power yields 0
+    else if (this.signum == 0) Product.ZERO
+    else new Product(
+      if (p == 0 || p.num % 2 == 0) 1 else this.signum,
+      for ((factor, pow) <- this.underlying) yield (factor, pow * p)
+    )
   }
   def pow(p: Int): Product = this pow BigFrac(p)
 

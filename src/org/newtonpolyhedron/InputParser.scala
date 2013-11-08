@@ -75,7 +75,11 @@ object InputParser {
 
   /** Normalizes spacing, trims, removes empty lines */
   def refineLines(lines: Seq[String]) =
-    lines map (_ replaceAll ("[\\s]+", " ") trim) filterNot (_.isEmpty)
+    for {
+      l <- lines
+      refined = l.replaceAll("[\\s]+", " ").trim
+      if (!refined.isEmpty)
+    } yield refined
 
   //
   // Poly and Cone

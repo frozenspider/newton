@@ -17,8 +17,8 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
   private type Replacement = Map[Int, Product]
 
   def whyCantSolve(system: Polys): Option[String] = {
-    val dimensions = system flatMap (poly => poly map (term => term.powers.dim))
-    if (dimensions.distinct.size != 1)
+    val dims = for (poly <- system; term <- poly) yield term.powers.dim
+    if (dims.distinct.size != 1)
       Some("Terms have different dimensions")
     else {
       val varsCounts = system.head.head.powers.dim
@@ -51,7 +51,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
       def replPowsAreUnequal(eq: Polynomial) =
         !replPowsAreEqual(eq)
       def excludeElementByIdx(xs: Polys, i: Int) =
-        xs.zipWithIndex.filterNot(_._2 == i).unzip._1
+        for ((x, idx) <- xs.zipWithIndex if idx != i) yield x
       // This will also include zero-powers (since 0 == 0)
       if (unsolved forall replPowsAreEqual) {
         // Variable isn't used, can just put anything. Zero is the easiest choice

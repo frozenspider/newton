@@ -1,5 +1,7 @@
 package org.newtonpolyhedron.solve.surface
 
+import org.newtonpolyhedron._
+
 import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.table.KeyTable
@@ -105,13 +107,14 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
                                             upperLevelSurfaces: Set[Surface],
                                             tagetDim: Int,
                                             polyDim: Int): Set[Surface] = {
-    surfaces map { currentSurface =>
+    val surfaceOpts = surfaces map { currentSurface =>
       val superior = surfacesConatiningGiven(currentSurface, upperLevelSurfaces)
       if (tagetDim == 0 && (superior.size < polyDim - 1))
         None
       else
         Some(currentSurface.addUpperSurfaces(superior))
-    } filter (_.isDefined) map (_.get)
+    }
+    surfaceOpts.yieldDefined
   }
 
   /**

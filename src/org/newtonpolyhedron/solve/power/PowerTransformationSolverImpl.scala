@@ -38,7 +38,8 @@ class PowerTransformationSolverImpl(
     val res = pairsWithAlphasStream find {
       case (alpha, pairs) => alpha.det == 1
     }
-    res.map(v => (v._1, v._2.toIndexedSeq)).get
+    val (alpha, pairs) = res.get
+    (alpha, pairs.toIndexedSeq)
   }
 
   def choosePairs[T](termSeqs: Seq[Seq[T]]): Stream[Seq[(T, T)]] = {
@@ -48,9 +49,11 @@ class PowerTransformationSolverImpl(
         input.head map (stream => Seq(stream))
       } else {
         // Induction step
-        val h = input.head
         val rest = recursion(input.tail)
-        val r = h flatMap (x => rest map (xs => x +: xs))
+        val r = for {
+          x <- input.head
+          xs <- rest
+        } yield x +: xs
         r
       }
     }

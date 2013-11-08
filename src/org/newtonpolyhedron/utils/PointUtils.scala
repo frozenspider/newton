@@ -29,7 +29,11 @@ object PointUtils {
                              idxToSubs: Int): IndexedSeq[IntMathVec] = {
     require(points.size > idxToSubs, "Index to big for a collection: " + idxToSubs + " in " + points)
     val toSub = points(idxToSubs)
-    val result = points map (pt => IntMathVec.fromFrac(pt - toSub)) filter (!_.isZero)
+    val result = for {
+      pt <- points
+      sub = IntMathVec.fromFrac(pt - toSub)
+      if !sub.isZero
+    } yield sub
     result
   }
 }

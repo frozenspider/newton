@@ -81,6 +81,12 @@ package object newtonpolyhedron {
         iter.zipWithIndex foreach (x => f(x._1, x._2))
       }
   }
+  
+  implicit class OptionsIterable[A, Repr](iter: IterableLike[Option[A], Repr]) {
+    def yieldDefined[Repr2 <: IterableLike[A, Repr2]](implicit bf: CanBuildFrom[Repr, A, Repr2]): Repr2 = {
+      for (o <- iter if o.isDefined) yield o.get
+    }
+  }
 
   implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
     SortedSet.empty[T] ++ t
