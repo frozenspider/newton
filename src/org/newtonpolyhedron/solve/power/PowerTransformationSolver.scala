@@ -7,6 +7,12 @@ import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.vector.FracMathVec
 
 trait PowerTransformationSolver {
+  
+  /**
+   * Generate alpha-matrix given polyhedron intersection
+   * 
+   * @param termSeq one border per polyhedron
+   */
   def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): (Matrix[BigFrac], IndexedSeq[(Term, Term)])
 
   def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial

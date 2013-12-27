@@ -20,7 +20,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     extends Function2[Int, Int, T]
     with Serializable {
 
-  implicit private val field = this.matrix.getField
+  implicit protected[entity] val field = this.matrix.getField
 
   val rowNum = this.matrix.getRowDimension
   val colNum = this.matrix.getColumnDimension
@@ -251,10 +251,12 @@ object Matrix {
    */
   def toDiagonal(m: Matrix[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
     require(m.isSquare, "Non-square matrix")
-    val iden = idenitiy(m.rowNum)(m.field)
-    val rowOnes = iden.contentCopy
-    val colOnes = iden.contentCopy
-    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowNum)
+     import MatrixExt._
+     m.toDiagonal
+//    val iden = idenitiy(m.rowNum)(m.field)
+//    val rowOnes = iden.contentCopy
+//    val colOnes = iden.contentCopy
+//    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowNum)
   }
 
   private def toDiagonalFormInternal(m: FieldMatrix[BigFrac],
@@ -286,7 +288,7 @@ object Matrix {
               recurse(i + 1, corner, fail)
             }
           } else {
-            val div = current.divide(corner)
+            val div = current / corner
             if (div.remainder != 0) {
               subtractMultiplied(m, cornerIdx, i, BigFrac(div.quotient))
               swap(m, cornerIdx, i)
