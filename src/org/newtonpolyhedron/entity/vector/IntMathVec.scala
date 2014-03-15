@@ -5,9 +5,9 @@ import Numeric.Implicits._
 import java.math.BigInteger
 import org.newtonpolyhedron.entity.BigFrac
 
-class IntMathVec(elements: IndexedSeq[BigInt]) extends MathVector[BigInt, IntMathVec](elements) {
-
-  override protected def create(elements: IndexedSeq[BigInt]) = new IntMathVec(elements)
+class IntMathVec(els: Seq[BigInt]) extends MathVector[BigInt, IntMathVec](els.toIndexedSeq) {
+  
+  override protected def create(elements: Seq[BigInt]) = new IntMathVec(elements.toIndexedSeq)
 
   def *(n: BigInt) =
     create(elements map (_ * n))

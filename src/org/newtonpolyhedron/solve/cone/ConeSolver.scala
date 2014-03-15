@@ -20,8 +20,8 @@ trait ConeSolver {
    * @throws InterruptedException
    *             if execution was interrupted
    */
-  def solve(inequations: IndexedSeq[IntMathVec],
-            basis: IndexedSeq[IntMathVec],
+  def solve(inequations: Seq[IntMathVec],
+            basis: Seq[IntMathVec],
             spaceDimension: Int,
-            output: PrintWriter): IndexedSeq[IntMathVec]
+            output: PrintWriter): Seq[IntMathVec]
 }

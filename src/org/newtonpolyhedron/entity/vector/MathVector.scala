@@ -14,7 +14,7 @@ abstract case class MathVector[T, SELF <: MathVector[T, SELF]](val elements: Ind
   lazy val head = elements.head
   lazy val tail = create(elements.tail)
 
-  protected def create(elements: IndexedSeq[T]): SELF
+  protected def create(elements: Seq[T]): SELF
 
   def +(that: SELF) = {
     require(this.dim == that.dim, "Dimension of other vector was different")

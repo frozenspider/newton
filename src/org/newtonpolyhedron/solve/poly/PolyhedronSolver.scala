@@ -7,8 +7,8 @@ import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
 
 trait PolyhedronSolver {
-  def solve(points: IndexedSeq[FracMathVec],
-            commonLimits: IndexedSeq[IntMathVec],
-            wishfulBasis: IndexedSeq[IntMathVec],
+  def solve(points: Seq[FracMathVec],
+            commonLimits: Seq[IntMathVec],
+            wishfulBasis: Seq[IntMathVec],
             output: PrintWriter): KeyTable[IntMathVec, Int, Boolean]
 }

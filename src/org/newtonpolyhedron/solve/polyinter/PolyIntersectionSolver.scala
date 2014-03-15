@@ -15,6 +15,6 @@ trait PolyIntersectionSolver {
    *            polyhedron dimensions
    * @return { polyIdx, vector -> [ points giving this vector for this poly when intersecting ] }
    */
-  def solve(polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
+  def solve(polyhedrons: Seq[IndexedSeq[FracMathVec]],
             dim: Int): KeyTable[Int, IntMathVec, SortedSet[Int]]
 }

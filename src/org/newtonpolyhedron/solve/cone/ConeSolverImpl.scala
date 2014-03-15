@@ -6,14 +6,14 @@ import org.newtonpolyhedron.entity.vector.IntMathVec
 
 class ConeSolverImpl extends ConeSolver {
 
-  override def solve(ineqs: IndexedSeq[IntMathVec],
-                     basis: IndexedSeq[IntMathVec],
+  override def solve(ineqs: Seq[IntMathVec],
+                     basis: Seq[IntMathVec],
                      dim: Int,
-                     output: PrintWriter): IndexedSeq[IntMathVec] = {
+                     output: PrintWriter): Seq[IntMathVec] = {
     require(ineqs forall (_.dim == dim), "Inequation vector with incorrect dimension")
     require(basis forall (_.dim == dim), "Basis vector with incorrect dimension")
     val basis2 = if (!basis.isEmpty) basis else initialBasis(dim)
-    val fundamentalSolution = solveInner(ineqs, basis2, dim, output)
+    val fundamentalSolution = solveInner(ineqs.toIndexedSeq, basis2.toIndexedSeq, dim, output)
     // val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(proxyList(ineqs)))
     // val result = withoutZeroProductSolutions(ineqs, rank)(basis)
     fundamentalSolution
@@ -61,8 +61,8 @@ class ConeSolverImpl extends ConeSolver {
     }
   }
 
-  private def solveRec(eqSysPrev: IndexedSeq[IntMathVec],
-                       eqSysRemn: IndexedSeq[IntMathVec],
+  private def solveRec(eqSysPrev: Seq[IntMathVec],
+                       eqSysRemn: Seq[IntMathVec],
                        basis: IndexedSeq[IntMathVec],
                        fundSol: IndexedSeq[IntMathVec],
                        dim: Int,
@@ -101,7 +101,7 @@ class ConeSolverImpl extends ConeSolver {
 
     // Pre-calculate values of l(u) and reverse vector of an old basis
     val (l, tempBasis) = calculateLAndTempBasis(currEq, basis)
-    
+
     val activeIdx = l.elements indexWhere (_ != 0)
     assert(activeIdx != -1)
 
@@ -111,11 +111,9 @@ class ConeSolverImpl extends ConeSolver {
 
     // Add new basis line
     val newBasis = for {
-      i <- 0 until tempBasis.size if i != activeIdx
-      val basisCurr = tempBasis(i)
-      val lCurr = l(i)
+      (basisCurr, i) <- tempBasis.zipWithIndex if i != activeIdx
       /* Should we use basisActive2 ? */
-    } yield ((basisCurr * lActive) - (basisActive * lCurr)).reduced
+    } yield ((basisCurr * lActive) - (basisActive * l(i))).reduced
 
     // Add new fundamental solution line
     val newFundSolsTemp = fundSol map (curr => {
@@ -124,7 +122,7 @@ class ConeSolverImpl extends ConeSolver {
     })
 
     val newFundSols = wrap(basisActive +: newFundSolsTemp)
-    (newBasis, newFundSols)
+    (newBasis.toIndexedSeq, newFundSols.toIndexedSeq)
   }
 
   /**
@@ -137,7 +135,7 @@ class ConeSolverImpl extends ConeSolver {
    * @return l(u[i]) vector and modified basis to be used with it
    */
   private def calculateLAndTempBasis(currEq: IntMathVec,
-                                     basis: IndexedSeq[IntMathVec]): (IntMathVec, IndexedSeq[IntMathVec]) = {
+                                     basis: Seq[IntMathVec]): (IntMathVec, Seq[IntMathVec]) = {
     val nonInverted = basis map (v => (v *+ currEq, v))
     val (l, tempBasis) = (nonInverted map {
       case (l, v) => if (l <= 0) (l, v) else (-l, -v)
@@ -161,8 +159,8 @@ class ConeSolverImpl extends ConeSolver {
    * @return new fundamental solution
    */
   private def solveEqSysWithoutBasis(currEq: IntMathVec,
-                                     eqSysPart: IndexedSeq[IntMathVec],
-                                     fundSol: IndexedSeq[IntMathVec],
+                                     eqSysPart: Seq[IntMathVec],
+                                     fundSol: Seq[IntMathVec],
                                      dim: Int): IndexedSeq[IntMathVec] = {
     def shouldCombine(v1: IntMathVec, v2: IntMathVec) = {
       // Our original "zero"-equations are the past equations giving zero for both v+ and v-
@@ -197,7 +195,7 @@ class ConeSolverImpl extends ConeSolver {
   }
 
   def valudateSolution(cVec: IntMathVec,
-                       solution: IndexedSeq[IntMathVec]): ValidationResult = {
+                       solution: Seq[IntMathVec]): ValidationResult = {
     // We don't need to skip leading [0,0,0] vector
     if (solution forall (_ *+ cVec <= 0)) CONFORMS_POS
     else if (solution forall (_ *+ -cVec <= 0)) CONFORMS_NEG
@@ -205,11 +203,11 @@ class ConeSolverImpl extends ConeSolver {
   }
 
   /** Removes duplicates and zero vectors. */
-  private def wrap(vecList: IndexedSeq[IntMathVec]) =
-    vecList.distinct filter (!_.isZero)
+  private def wrap(vecList: Seq[IntMathVec]): IndexedSeq[IntMathVec] =
+    vecList.distinct.filterNot(_.isZero).toIndexedSeq
 
-  private def fundSolAndBasisOutput(basis: IndexedSeq[IntMathVec],
-                                    fundSol: IndexedSeq[IntMathVec],
+  private def fundSolAndBasisOutput(basis: Seq[IntMathVec],
+                                    fundSol: Seq[IntMathVec],
                                     output: PrintWriter): Unit = {
     def printSeq[A](xs: Seq[A]): Unit =
       if (xs.isEmpty) output.println(" (none)")

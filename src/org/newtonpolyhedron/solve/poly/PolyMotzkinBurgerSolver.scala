@@ -14,18 +14,18 @@ import org.newtonpolyhedron.utils.PointUtils
 
 class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolver {
 
-  override def solve(points: IndexedSeq[FracMathVec],
-                     commonLimits: IndexedSeq[IntMathVec],
-                     wishfulBasis: IndexedSeq[IntMathVec],
+  override def solve(points: Seq[FracMathVec],
+                     commonLimits: Seq[IntMathVec],
+                     wishfulBasis: Seq[IntMathVec],
                      output: PrintWriter): KeyTable[IntMathVec, Int, Boolean] = {
     val allSolutions = solveForEachPoint(points, commonLimits, wishfulBasis, output)
     fillTableWith(allSolutions)
   }
 
-  def solveForEachPoint(points: IndexedSeq[FracMathVec],
-                        commonLimits: IndexedSeq[IntMathVec],
-                        wishfulBasis: IndexedSeq[IntMathVec],
-                        output: PrintWriter): IndexedSeq[IndexedSeq[IntMathVec]] = {
+  def solveForEachPoint(points: Seq[FracMathVec],
+                        commonLimits: Seq[IntMathVec],
+                        wishfulBasis: Seq[IntMathVec],
+                        output: PrintWriter): Seq[Seq[IntMathVec]] = {
     val dim = points.head.dim
     val allSolutions = for (currPtIdx <- 0 until points.size) yield {
       // Forming equations by substracting current point, plus common limits - if any
@@ -40,12 +40,11 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
     override def compare(o1: Int, o2: Int) = o1 compare o2
   }
 
-  def fillTableWith(allSolutions: IndexedSeq[IndexedSeq[IntMathVec]]): KeyTable[IntMathVec, Int, Boolean] = {
+  def fillTableWith(allSolutions: Seq[Seq[IntMathVec]]): KeyTable[IntMathVec, Int, Boolean] = {
     val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, allSolutions.size)
     for {
-      i <- 0 until allSolutions.size
-      val coneSols = allSolutions(i)
+      (coneSols, i) <- allSolutions.zipWithIndex
       sol <- coneSols
     } lookupTable.put(sol, i, true)
     KeyTables.sortByRowHeaders(lookupTable, true)

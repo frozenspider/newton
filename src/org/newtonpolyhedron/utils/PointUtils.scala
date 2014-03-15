@@ -25,8 +25,8 @@ object PointUtils {
    *            index of point to subtract and exclude.
    * @return vector list of size {@code n-1}, with {@code i}'th point subtracted from all other.
    */
-  def copySubtractPointAsInt(points: IndexedSeq[FracMathVec],
-                             idxToSubs: Int): IndexedSeq[IntMathVec] = {
+  def copySubtractPointAsInt(points: Seq[FracMathVec],
+                             idxToSubs: Int): Seq[IntMathVec] = {
     require(points.size > idxToSubs, "Index to big for a collection: " + idxToSubs + " in " + points)
     val toSub = points(idxToSubs)
     val result = for {

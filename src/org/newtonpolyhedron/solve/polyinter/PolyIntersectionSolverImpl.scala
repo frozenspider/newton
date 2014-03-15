@@ -13,11 +13,11 @@ import org.newtonpolyhedron.utils.PointUtils
 
 class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyIntersectionSolver {
 
-  override def solve(polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
+  override def solve(polyhedrons: Seq[IndexedSeq[FracMathVec]],
                      dim: Int): KeyTable[Int, IntMathVec, SortedSet[Int]] = {
     require(dim >= 3, "No intersections are possible below 3-dimension")
     require(polyhedrons.size >= dim - 1, "Not enough polyhedrons for intersecting at dimension " + dim)
-    val polySizes = polyhedrons map (_.size)
+    val polySizes = polyhedrons.map(_.size).toIndexedSeq
     val initialIndices = IndexedSeq.fill(polyhedrons.size)(0).updated(polyhedrons.size - 1, -1)
     val indices = indicesStream(initialIndices, polySizes)
     val ptsForVectors = fillPtsForVectorsMap(indices, polyhedrons, dim)
@@ -27,20 +27,18 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
 
   /** @return { vector : [ point indices list per polyhedron ] } */
   def fillPtsForVectorsMap(indicesSeq: Seq[IndexedSeq[Int]],
-                           polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
-                           dim: Int): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]] = {
+                           polyhedrons: Seq[IndexedSeq[FracMathVec]],
+                           dim: Int): Map[IntMathVec, Seq[IndexedSeq[Int]]] = {
     def fillMapRecursive(indicesSeq: Seq[IndexedSeq[Int]],
-                         prevMap: Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]]): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]] =
+                         prevMap: Map[IntMathVec, Seq[IndexedSeq[Int]]]): Map[IntMathVec, Seq[IndexedSeq[Int]]] =
       if (indicesSeq.isEmpty) prevMap
       else {
         val indices = indicesSeq.head
         // ++ Construct a system
-        val eqSystems =
-          for {
-            i <- 0 until polyhedrons.size
-            val poly = polyhedrons(i)
-            val idx = indices(i)
-          } yield PointUtils.copySubtractPointAsInt(poly, idx)
+        val eqSystems = polyhedrons mapWithIndex { (poly, i) =>
+          val idx = indices(i)
+          PointUtils.copySubtractPointAsInt(poly, idx)
+        }
         val commonEqSys = eqSystems.flatten
         // -- Construct a system
 
@@ -51,9 +49,9 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     fillMapRecursive(indicesSeq, Map.empty)
   }
 
-  def withSoluionsToIndices(prevMap: Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]],
-                            solutions: IndexedSeq[IntMathVec],
-                            indices: IndexedSeq[Int]): Map[IntMathVec, IndexedSeq[IndexedSeq[Int]]] =
+  def withSoluionsToIndices(prevMap: Map[IntMathVec, Seq[IndexedSeq[Int]]],
+                            solutions: Seq[IntMathVec],
+                            indices: IndexedSeq[Int]): Map[IntMathVec, Seq[IndexedSeq[Int]]] =
     solutions.headOption match {
       case None => prevMap
       case Some(sol) => {
@@ -82,7 +80,7 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     else Stream.empty
   }
 
-  def isIntersectingSol(equationSystems: IndexedSeq[IndexedSeq[IntMathVec]])(solution: IntMathVec): Boolean =
+  def isIntersectingSol(equationSystems: Seq[Seq[IntMathVec]])(solution: IntMathVec): Boolean =
     equationSystems forall (_ exists (_ *+ solution == 0))
 
   /**

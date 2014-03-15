@@ -20,19 +20,19 @@ class ConeSolverPrinter(solver: ConeSolver,
     val rank = Matrix(inequations).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
-    for (i <- 0 until inequations.size) {
-      output.println(MessageFormat.format(" c{0} = {1}", int2Integer(i + 1), inequations(i)))
+    inequations eachWithIndex { (currIneq, i) =>
+      output.println(MessageFormat.format(" c{0} = {1}", int2Integer(i + 1), currIneq))
     }
     val dim = inequations(0).dim
     val solved = solver.solve(inequations, basis, dim, output)
     coneFinalSolutionOutput(solved, output)
   }
 
-  private def coneFinalSolutionOutput(testing: IndexedSeq[IntMathVec],
+  private def coneFinalSolutionOutput(testing: Seq[IntMathVec],
                                       output: PrintWriter) = {
     output.println(header("FINAL SOLUTIONS:"))
-    for (i <- 0 until testing.size) {
-      val str = testing(i).toString
+    testing eachWithIndex { (currTesting, i) =>
+      val str = currTesting.toString
       val len = str.length
       output.print(str + "\t")
       if (len < 10) {

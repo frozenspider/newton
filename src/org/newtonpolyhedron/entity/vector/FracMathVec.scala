@@ -6,9 +6,9 @@ import org.newtonpolyhedron.entity.BigFrac
 import org.apache.commons.math3.fraction.BigFraction
 import org.newtonpolyhedron.utils.BigFracFormat
 
-class FracMathVec(elements: IndexedSeq[BigFrac]) extends MathVector[BigFrac, FracMathVec](elements) {
+class FracMathVec(els: Seq[BigFrac]) extends MathVector[BigFrac, FracMathVec](els.toIndexedSeq) {
 
-  override protected def create(elements: IndexedSeq[BigFrac]) = new FracMathVec(elements)
+  override protected def create(elements: Seq[BigFrac]) = new FracMathVec(elements.toIndexedSeq)
 
   def *(n: BigInt) =
     create(elements map (_ * n))

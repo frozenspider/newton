@@ -15,7 +15,7 @@ import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.solve.polyinter.PolyIntersectionSolver
 
 class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
-                                    val polyhedrons: IndexedSeq[IndexedSeq[FracMathVec]],
+                                    val polyhedrons: Seq[IndexedSeq[FracMathVec]],
                                     val dim: Int,
                                     output: PrintWriter)
     extends SolverPrinter[PolyIntersectionSolver](solver, output) {
@@ -24,9 +24,8 @@ class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
                         output: PrintWriter) = {
     output.println(title("Polyhedron intersection"))
     output.println(header("Original points:"))
-    for (i <- 0 until polyhedrons.size) {
+    polyhedrons eachWithIndex { (poly, i) =>
       output.println(subheader("Poly " + i))
-      val poly = polyhedrons(i)
       for (j <- 0 until poly.size) {
         output.println(MessageFormat.format(" Q{0} = {1}", int2Integer(j), poly(j)))
       }
