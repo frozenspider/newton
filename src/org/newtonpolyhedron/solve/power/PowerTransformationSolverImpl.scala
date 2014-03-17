@@ -21,25 +21,24 @@ class PowerTransformationSolverImpl(
   private def vec = FracMathVec
   private def vecf(s: Seq[BigFrac]) = vec(s: _*)
 
-  override def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): (Matrix[BigFrac], IndexedSeq[(Term, Term)]) = {
+  override def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): Matrix[BigFrac] = {
+    // TODO: Make sure this works for more than 2 polys
     val dim = termSeqs.size + 1
     require(termSeqs forall (_ forall (_.powers.dim == dim)), "Each term should have the same dimension: number of pairs + 1")
     def pairsStream = choosePairs(termSeqs)
-    val pairsWithAlphasStream: Stream[(Matrix[BigFrac], Seq[(Term, Term)])] =
+    val alphasStream: Stream[Matrix[BigFrac]] =
       pairsStream map { pairs =>
         val matrixBase = (pairs map {
           case (term1, term2) => term1.powers - term2.powers
         }) :+ vec.zero(dim)
-        val matrix = Matrix[BigFrac, FracMathVec](matrixBase)
+        Matrix[BigFrac, FracMathVec](matrixBase)
+      } filter (_.det != 0) map { matrix =>
         val alpha = umm unimodularFrom matrix
         assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
-        (alpha, pairs)
+        assert(alpha.det == 1)
+        alpha
       }
-    val res = pairsWithAlphasStream find {
-      case (alpha, pairs) => alpha.det == 1
-    }
-    val (alpha, pairs) = res.get
-    (alpha, pairs.toIndexedSeq)
+    alphasStream.head
   }
 
   def choosePairs[T](termSeqs: Seq[Seq[T]]): Stream[Seq[(T, T)]] = {

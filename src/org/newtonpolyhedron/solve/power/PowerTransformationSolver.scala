@@ -13,7 +13,7 @@ trait PowerTransformationSolver {
    * 
    * @param termSeq one border per polyhedron
    */
-  def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): (Matrix[BigFrac], IndexedSeq[(Term, Term)])
+  def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): Matrix[BigFrac]
 
   def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial
 

@@ -17,5 +17,5 @@ class UnimodularMatrixMakerImpl extends UnimodularMatrixMaker {
     assert(matrix == rowOnesInv * matrixDiag * colOnesInv)
 
     rowOnesInv * colOnesInv
-  }
+  } ensuring (_.det == 1)
 }

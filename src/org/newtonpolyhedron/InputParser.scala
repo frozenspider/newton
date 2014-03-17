@@ -1,17 +1,13 @@
 package org.newtonpolyhedron
-import scala.util.matching.Regex
-import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.MathVector
-import org.newtonpolyhedron.entity.vector.VectorFormat
-import scala.io.Source
+
 import java.io.File
-import org.newtonpolyhedron.ex.WrongFormatException
-import org.newtonpolyhedron.entity.Matrix
+
+import scala.io.Source
+
 import org.apache.commons.math3.FieldElement
-import org.newtonpolyhedron.entity.vector.MathVector
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.Product
+import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.vector._
+import org.newtonpolyhedron.ex.WrongFormatException
 
 object InputParser {
   private type Vec[C, V <: Vec[C, V]] = MathVector[C, V]
@@ -189,16 +185,16 @@ object InputParser {
     }
   }
 
-  def parsePowerTransfBaseFromFile(file: File): (Seq[Polynomial], Seq[Seq[Int]]) = {
+  def parsePowerTransfBaseFromFile(file: File): (Polys, Seq[Seq[Int]]) = {
     genParseFile(file)(parsePowerTransfBaseFromLines)
   }
 
-  def parsePowerTransfBaseFromLines(lines: Lines): (Seq[Polynomial], Seq[Seq[Int]]) = {
+  def parsePowerTransfBaseFromLines(lines: Lines): (Polys, Seq[Seq[Int]]) = {
     def empty = throw new WrongFormatException("File was empty")
     genParseLines(lines, empty)(parsePowerTransfBaseFromRefLines)
   }
 
-  def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Seq[Polynomial], Seq[Seq[Int]]) = {
+  def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Polys, Seq[Seq[Int]]) = {
     val parts = lines.splitBySkippingDelim(_ == "%")
     if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
     if (parts.size != dim) throw new WrongFormatException("Incorrect file format or wrong number of sections")

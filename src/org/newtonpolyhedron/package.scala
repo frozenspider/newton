@@ -20,8 +20,17 @@ package object newtonpolyhedron {
   type Polynomial = IndexedSeq[Term]
   type Polys = IndexedSeq[Polynomial]
 
-  implicit class ExtInt(val n: Int) extends AnyVal {
+  implicit class ExtPoly(val p: Polynomial) {
+    def toPlainString: String = {
+      p map (term => "(" +
+        term.coeff.fracValue +
+        ") * " +
+        term.powers.elements.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
+      ) mkString ("", " + ", " = 0")
+    }
+  }
 
+  implicit class ExtInt(val n: Int) extends AnyVal {
     def factorial: Int = {
       val res = BigIntFielded(2).factorial
       if (!res.isValidInt) throw new IllegalArgumentException(s"${n}! is too large")
@@ -81,7 +90,7 @@ package object newtonpolyhedron {
         iter.zipWithIndex foreach (x => f(x._1, x._2))
       }
   }
-  
+
   implicit class OptionsIterable[A, Repr](iter: IterableLike[Option[A], Repr]) {
     def yieldDefined[Repr2 <: IterableLike[A, Repr2]](implicit bf: CanBuildFrom[Repr, A, Repr2]): Repr2 = {
       for (o <- iter if o.isDefined) yield o.get
