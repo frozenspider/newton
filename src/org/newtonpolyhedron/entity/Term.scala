@@ -34,4 +34,5 @@ case class Term(val coeff: Product, val powers: FracMathVec) {
 object Term {
   def apply(pair: (Product, FracMathVec)): Term = Term(pair._1, pair._2)
   def zero(dim: Int): Term = Term(Product.ZERO, FracMathVec.zero(dim))
+  def one(dim: Int): Term = Term(Product.ONE, FracMathVec.zero(dim))
 }

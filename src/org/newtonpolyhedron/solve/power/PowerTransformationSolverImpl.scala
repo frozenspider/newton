@@ -16,7 +16,8 @@ class PowerTransformationSolverImpl(
   val eqSysSolver: EqSystemSolver)
     extends PowerTransformationSolver {
 
-  private type Powers = IndexedSeq[FracMathVec]
+  private type Powers = Seq[FracMathVec]
+  private type Coeffs = Seq[Product]
 
   private def vec = FracMathVec
   private def vecf(s: Seq[BigFrac]) = vec(s: _*)
@@ -25,7 +26,7 @@ class PowerTransformationSolverImpl(
     // TODO: Make sure this works for more than 2 polys
     val dim = termSeqs.size + 1
     require(termSeqs forall (_ forall (_.powers.dim == dim)), "Each term should have the same dimension: number of pairs + 1")
-    def pairsStream = choosePairs(termSeqs)
+    def pairsStream: Stream[Seq[(Term, Term)]] = choosePairs(termSeqs)
     val alphasStream: Stream[Matrix[BigFrac]] =
       pairsStream map { pairs =>
         val matrixBase = (pairs map {
@@ -97,8 +98,8 @@ class PowerTransformationSolverImpl(
   override def solveShortSubstitutesSystem(simpleSys: Polys): FracMathVec = {
     require(simpleSys forall (_ forall (t => t.powers.elements.last == 0)))
     // Remove last (zero) component
-    val truncatedSimpleSys = simpleSys map (_ map (_.mapPowers(_.elements.dropRight(1))))
-    val sol = eqSysSolver.solve(truncatedSimpleSys)
+    val truncatedSimpleSys: Polys = simpleSys map (_ map (_.mapPowers(_.elements.dropRight(1))))
+    val sol: Powers = eqSysSolver.solve(truncatedSimpleSys)
     assert(sol.tail.isEmpty)
     // Add it back
     sol.head.elements :+ BigFrac.ZERO
@@ -114,10 +115,13 @@ class PowerTransformationSolverImpl(
     // 0,0,0  1,0,0
     // 0,0,0  0,1,0
     // 0,0,0  0,0,1
-    val one = Product.ONE
-    val zPows = (0 until dim) map (i => IndexedSeq(zeroVec, zeroOneVec(i)))
-    val coeffRows = vecs.elements map (solVal => IndexedSeq(Product(solVal), one))
-    val tPolys = (coeffRows, zPows).zipped map ((coeffs, zRows) => (coeffs zip zRows) map Term.apply)
+    val coeffsSeq: Seq[Coeffs] = vecs.elements map (solVal => Seq(Product(solVal), Product.ONE))
+    val powersSeq: Seq[Powers] = (0 until dim) map (i => Seq(zeroVec, zeroOneVec(i)))
+    val tPolys: Polys = (coeffsSeq, powersSeq).zipped.toIndexedSeq map coeffRowsSeqToPoly
     tPolys map (_.skipZeroTerms)
+  }
+
+  private def coeffRowsSeqToPoly(coeffs: Coeffs, powers: Powers): Polynomial = {
+    (coeffs zip powers).toIndexedSeq map Term.apply
   }
 }

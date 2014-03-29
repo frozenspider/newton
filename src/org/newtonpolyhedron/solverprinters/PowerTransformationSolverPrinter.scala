@@ -21,19 +21,20 @@ class PowerTransformationSolverPrinter(solver: PowerTransformationSolver,
                         output: PrintWriter) = {
     output.println(title("Solving equation system"))
 
-    val shotPolys: Polys = (polys zip intersectionPtsIndices).toIndexedSeq map {
-      case (poly, polyIndices) => polyIndices.toIndexedSeq map poly
-    }
+    val shotPolys: Polys =
+      (polys zip intersectionPtsIndices).toIndexedSeq map {
+        case (poly, polyIndices) => polyIndices.toIndexedSeq map poly
+      }
 
     val alpha = solver.generateAlphaFromTerms(shotPolys)
-    //    val alpha = matrFromVecs(s(s(-1, -1, 5), s(2, -1, 0), s(-1, 0, 2)) map vec.fromInts)
-    def substituteAllIn(polynomials: Polys) = {
-      polynomials map (solver.substitute(_, alpha))
-    }
+    //  val alpha = matrFromVecs(s(s(-1, -1, 5), s(2, -1, 0), s(-1, 0, 2)) map vec.fromInts)
+    def substituteAllIn(polynomials: Polys) = polynomials map (solver.substitute(_, alpha))
+
     val shortSubs = substituteAllIn(shotPolys)
     shortSubs eachWithIndex { (shortSubs, i) =>
       output.println(s"Short substituted p${i + 1}: $shortSubs")
     }
+
     val fullSubs = substituteAllIn(polys)
     fullSubs eachWithIndex { (subs, i) =>
       output.println(s"Full substituted p${i + 1}:  $subs")
