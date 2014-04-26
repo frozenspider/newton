@@ -25,6 +25,9 @@ class PowerTransformationSolverImpl(
   override def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): Matrix[BigFrac] = {
     // TODO: Make sure this works for more than 2 polys
     val dim = termSeqs.size + 1
+    def lastRowMinors(m: Matrix[BigFrac]): Seq[BigFrac] = {
+      (0 until m.colNum) map { c => m.minor(m.rowNum - 1, c) }
+    }
     require(termSeqs forall (_ forall (_.powers.dim == dim)), "Each term should have the same dimension: number of pairs + 1")
     def pairsStream: Stream[Seq[(Term, Term)]] = choosePairs(termSeqs)
     val alphasStream: Stream[Matrix[BigFrac]] =
@@ -33,7 +36,9 @@ class PowerTransformationSolverImpl(
           case (term1, term2) => term1.powers - term2.powers
         }) :+ vec.zero(dim)
         Matrix[BigFrac, FracMathVec](matrixBase)
-      } filter (_.det != 0) map { matrix =>
+      } filter { matrix =>
+        !lastRowMinors(matrix).contains(0)
+      } map { matrix =>
         val alpha = umm unimodularFrom matrix
         assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
         assert(alpha.det == 1)

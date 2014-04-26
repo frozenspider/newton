@@ -16,8 +16,14 @@ case class Term(val coeff: Product, val powers: FracMathVec) {
   def *(that: Term): Term =
     new Term(this.coeff * that.coeff, this.powers + that.powers)
 
+  def *(that: Product): Term =
+    new Term(this.coeff * that, this.powers)
+
   def /(that: Term): Term =
     new Term(this.coeff / that.coeff, this.powers - that.powers)
+
+  def /(that: Product): Term =
+    new Term(this.coeff / that, this.powers)
 
   def unary_- : Term = withCoeff(-coeff)
 
