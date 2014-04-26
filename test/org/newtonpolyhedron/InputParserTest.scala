@@ -237,7 +237,7 @@ class InputParserTest extends FunSuite {
       """
     val matrix = InputParser.parseMatrixFromLines(FracMathVecFormat, MatrixSupport.fromFracs)(toLines(str)).get
     assert(matrix.isSquare === true)
-    assert(matrix.rowNum === 4)
+    assert(matrix.rowCount === 4)
     assert(matrix === matrFrac(
       a(
         a(9, 0, 0, 1),
@@ -256,8 +256,8 @@ class InputParserTest extends FunSuite {
       """
     val matrix = InputParser.parseMatrixFromLines(IntMathVecFormat, MatrixSupport.fromInts)(toLines(str)).get
     assert(matrix.isSquare === true)
-    assert(matrix.rowNum === 3)
-    assert(matrix.colNum === 3)
+    assert(matrix.rowCount === 3)
+    assert(matrix.colCount === 3)
     assert(matrix === matrInt(
       a(
         a(9, 0, 0),
@@ -280,8 +280,8 @@ class InputParserTest extends FunSuite {
     assert(r === 1)
     assert(c === 2)
     assert(matrix.isSquare === true)
-    assert(matrix.rowNum === 3)
-    assert(matrix.colNum === 3)
+    assert(matrix.rowCount === 3)
+    assert(matrix.colCount === 3)
     assert(matrix === matrInt(
       a(
         a(9, 0, 0),

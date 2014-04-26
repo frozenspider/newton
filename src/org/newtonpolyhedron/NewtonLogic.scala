@@ -109,8 +109,8 @@ class NewtonLogic {
       val m = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
       // Add all-zero row if necessary
       if (m.isSquare) m
-      else if (m.rowNum != m.colNum - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
-      else m addRow (Seq.fill(m.colNum)(BigFrac.ZERO))
+      else if (m.rowCount != m.colCount - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
+      else m addRow (Seq.fill(m.colCount)(BigFrac.ZERO))
     }
     val uniMatrixMaker = new UnimodularMatrixMakerImpl
     new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer)

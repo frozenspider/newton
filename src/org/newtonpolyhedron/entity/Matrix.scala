@@ -22,15 +22,15 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
 
   implicit protected[entity] val field = this.matrix.getField
 
-  val rowNum = this.matrix.getRowDimension
-  val colNum = this.matrix.getColumnDimension
+  val rowCount = this.matrix.getRowDimension
+  val colCount = this.matrix.getColumnDimension
   val isSquare = this.matrix.isSquare
 
   def apply(row: Int, col: Int) = this.matrix.getEntry(row, col)
   def +(that: Matrix[T]) = new Matrix(this.matrix add that.matrix)
   def -(that: Matrix[T]) = new Matrix(this.matrix subtract that.matrix)
   def *(that: Matrix[T]) = new Matrix(this.matrix multiply that.matrix)
-  def unary_- = Matrix.zero(rowNum, colNum) - this
+  def unary_- = Matrix.zero(rowCount, colCount) - this
 
   /** Inverse */
   def inv = {
@@ -41,18 +41,18 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
   def minor(skipRow: Int, skipCol: Int) =
     minorMatrix(skipRow, skipCol).det
   def minorMatrix(skipRow: Int, skipCol: Int) = {
-    val rows = ((0 until rowNum) filter (_ != skipRow)).toArray[Int]
-    val cols = ((0 until colNum) filter (_ != skipCol)).toArray[Int]
+    val rows = ((0 until rowCount) filter (_ != skipRow)).toArray[Int]
+    val cols = ((0 until colCount) filter (_ != skipCol)).toArray[Int]
     new Matrix(matrix.getSubMatrix(rows, cols))
   }
 
   lazy val det: T = {
     require(isSquare, "Non-square matrix")
-    if (rowNum == 1) this(0, 0)
+    if (rowCount == 1) this(0, 0)
     else {
       // FieldLUDecomposition uses division, which is not acceptable for integer matrix
       // new FieldLUDecomposition[T](matrix).getDeterminant
-      val additiveMinors = for (c <- 0 until colNum) yield this(0, c) multiply minor(0, c)
+      val additiveMinors = for (c <- 0 until colCount) yield this(0, c) multiply minor(0, c)
       val last = if (additiveMinors.size % 2 != 0) additiveMinors.last else field.getZero
       additiveMinors.grouped(2) map { s =>
         if (s.size == 1) s(0)
@@ -63,25 +63,25 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
 
   lazy val rank = {
     // TODO: Delegate to library
-    require(rowNum != 0, "0-row matrix")
-    require(colNum != 0, "0-column matrix")
+    require(rowCount != 0, "0-row matrix")
+    require(colCount != 0, "0-column matrix")
     val zero = field.getZero
     // Zero matrix check
     val zeroMatrix = elementsByRow.forall(_._3 == zero)
     if (zeroMatrix) 0
     else {
       val triangle = this.triangleForm._1
-      val dim = rowNum min colNum
+      val dim = rowCount min colCount
       val diagonal = for (n <- 0 until dim) yield triangle(n, n)
       diagonal prefixLength (_ != zero)
     }
   }
 
   def map[B <: FieldElement[B]](f: T => B)(implicit field: Field[B]) = {
-    val mapped = Matrix.zero[B](rowNum, colNum)
+    val mapped = Matrix.zero[B](rowCount, colCount)
     for {
-      r <- 0 until rowNum
-      c <- 0 until colNum
+      r <- 0 until rowCount
+      c <- 0 until colCount
     } mapped.matrix setEntry (r, c, f(this.matrix getEntry (r, c)))
     mapped
   }
@@ -108,7 +108,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
    * @return matrix and {@code 1} or {@code -1} depending on whether or not determinant sign was reversed
    */
   def triangleForm: (Matrix[T], Int) = {
-    val minDim = rowNum min colNum
+    val minDim = rowCount min colCount
     val zero = field.getZero
     var mutableCopy = contentCopy
 
@@ -116,7 +116,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
       val currElement = mutableCopy.getEntry(row, col)
       if (currElement != zero)
         Some((currElement, row))
-      else if (row + 1 < rowNum)
+      else if (row + 1 < rowCount)
         getSwapRow(row + 1, col)
       else None
     }
@@ -139,7 +139,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
           }
 
           val currRow = mutableCopy.getRowVector(currIdx)
-          for (i <- (currIdx + 1) until rowNum) {
+          for (i <- (currIdx + 1) until rowCount) {
             val row = mutableCopy.getRowVector(i)
             val coeff = row.getEntry(currIdx) divide currRow.getEntry(currIdx)
             val otherRow = row subtract currRow.mapMultiply(coeff)
@@ -160,28 +160,28 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
   /** @return stream of (row, col, element) */
   def elementsByRow: Stream[(Int, Int, T)] = {
     def elementsStrartingFrom(row: Int, col: Int): Stream[(Int, Int, T)] = {
-      if (row >= rowNum || (row == rowNum - 1 && col >= colNum)) Stream.empty
-      else if (col < colNum) (row, col, this(row, col)) #:: elementsStrartingFrom(row, col + 1)
+      if (row >= rowCount || (row == rowCount - 1 && col >= colCount)) Stream.empty
+      else if (col < colCount) (row, col, this(row, col)) #:: elementsStrartingFrom(row, col + 1)
       else elementsStrartingFrom(row + 1, 0)
     }
     elementsStrartingFrom(0, 0)
   }
 
   def addRow(row: Traversable[T]) = {
-    require(row.size == colNum, "Wrong row size")
-    val res = Matrix.zero[T](rowNum + 1, colNum)
+    require(row.size == colCount, "Wrong row size")
+    val res = Matrix.zero[T](rowCount + 1, colCount)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
     val rowSeq = row.toIndexedSeq
-    for (i <- 0 until colNum) res.matrix setEntry (rowNum, i, rowSeq(i))
+    for (i <- 0 until colCount) res.matrix setEntry (rowCount, i, rowSeq(i))
     res
   }
 
   def addCol(col: Traversable[T]) = {
-    require(col.size == rowNum, "Wrong col size")
-    val res = Matrix.zero[T](rowNum, colNum + 1)
+    require(col.size == rowCount, "Wrong col size")
+    val res = Matrix.zero[T](rowCount, colCount + 1)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
     val colSeq = col.toIndexedSeq
-    for (i <- 0 until rowNum) res.matrix setEntry (i, colNum, colSeq(i))
+    for (i <- 0 until rowCount) res.matrix setEntry (i, colCount, colSeq(i))
     res
   }
 
@@ -191,16 +191,16 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
   }
   override def hashCode = this.matrix.hashCode
   override def toString = {
-    val colsWidth = Array.ofDim[Int](colNum)
+    val colsWidth = Array.ofDim[Int](colCount)
     for {
-      row <- 0 until rowNum
-      col <- 0 until colNum
+      row <- 0 until rowCount
+      col <- 0 until colCount
     } {
       colsWidth(col) = colsWidth(col) max this(row, col).toString.length
     }
     val result = new StringBuilder
-    for (row <- 0 until rowNum) {
-      for (col <- 0 until colNum) {
+    for (row <- 0 until rowCount) {
+      for (col <- 0 until colCount) {
         result ++= String.format("%1$" + colsWidth(col) + "s ", this(row, col).toString)
       }
       result += '\n'
@@ -238,8 +238,8 @@ object Matrix {
   def zero[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(field, dim, dim))
 
-  def zero[T <: FieldElement[T]](rowNum: Int, colNum: Int)(implicit field: Field[T]): Matrix[T] =
-    new Matrix(MatrixUtils.createFieldMatrix(field, rowNum, colNum))
+  def zero[T <: FieldElement[T]](rowCount: Int, colCount: Int)(implicit field: Field[T]): Matrix[T] =
+    new Matrix(MatrixUtils.createFieldMatrix(field, rowCount, colCount))
 
   def empty[T <: FieldElement[T]](implicit field: Field[T]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(field, 0, 0))
@@ -253,10 +253,10 @@ object Matrix {
     require(m.isSquare, "Non-square matrix")
      import MatrixExt._
      m.toDiagonal
-//    val iden = idenitiy(m.rowNum)(m.field)
+//    val iden = idenitiy(m.rowCount)(m.field)
 //    val rowOnes = iden.contentCopy
 //    val colOnes = iden.contentCopy
-//    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowNum)
+//    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowCount)
   }
 
   private def toDiagonalFormInternal(m: FieldMatrix[BigFrac],

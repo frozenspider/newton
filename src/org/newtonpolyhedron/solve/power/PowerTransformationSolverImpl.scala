@@ -26,7 +26,7 @@ class PowerTransformationSolverImpl(
     // TODO: Make sure this works for more than 2 polys
     val dim = termSeqs.size + 1
     def lastRowMinors(m: Matrix[BigFrac]): Seq[BigFrac] = {
-      (0 until m.colNum) map { c => m.minor(m.rowNum - 1, c) }
+      (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
     require(termSeqs forall (_ forall (_.powers.dim == dim)), "Each term should have the same dimension: number of pairs + 1")
     def pairsStream: Stream[Seq[(Term, Term)]] = choosePairs(termSeqs)
@@ -73,7 +73,7 @@ class PowerTransformationSolverImpl(
   // =========================
   //
   private def matrixByRows(m: Matrix[BigFrac]): Seq[FracMathVec] =
-    m.elementsByRow map (_._3) grouped (m.colNum) map vecf toIndexedSeq
+    m.elementsByRow map (_._3) grouped (m.colCount) map vecf toIndexedSeq
 
   private def inverse(m: Matrix[BigFrac]): Matrix[BigFrac] = {
     val inv = m.inv

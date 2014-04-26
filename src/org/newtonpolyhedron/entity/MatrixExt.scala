@@ -81,7 +81,7 @@ object MatrixExt {
      */
     def toDiagonal: MatrixTriple = {
       require(mt.isSquare, "Non-square matrix")
-      val iden = Matrix.idenitiy(mt.rowNum)(mt.field)
+      val iden = Matrix.idenitiy(mt.rowCount)(mt.field)
       val rowOnes = new Matrix(iden.contentCopy)
       val colOnes = new Matrix(iden.contentCopy)
       FunctionalMatrixCompanion.toDiagonalTriple((mt, rowOnes, colOnes))
@@ -179,7 +179,7 @@ object MatrixExt {
     }
 
     private def toDiagonalTriple(mts: MatrixTriple, cornerIdx: Int): MatrixTriple = {
-      val dim = mts.main.rowNum
+      val dim = mts.main.rowCount
       if (cornerIdx == dim - 1) mts
       else {
         // Put GCD into corner
@@ -218,7 +218,7 @@ object MatrixExt {
     }
 
     private def tryPutGCDIntoCorner(mts: MatrixTriple, orientation: Orientation, cornerIdx: Int): (MatrixTriple, Boolean) = {
-      val dim = mts.main.rowNum
+      val dim = mts.main.rowCount
       if (cornerIdx == dim - 1) {
         (mts, false)
       } else {
@@ -230,7 +230,7 @@ object MatrixExt {
                                         cornerIdx: Int)(mts: MatrixTriple, currIdx: Int, hadRemainder: Boolean): (MatrixTriple, Boolean) = {
       @tailrec
       def recurse(mts: MatrixTriple, currIdx: Int, hadRemainder: Boolean): (MatrixTriple, Boolean) = {
-        val dim = mts.main.rowNum
+        val dim = mts.main.rowCount
         val corner = mts.main(cornerIdx, cornerIdx)
         if (currIdx == dim) {
           (mts, hadRemainder)

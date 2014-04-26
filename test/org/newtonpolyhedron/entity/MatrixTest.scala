@@ -11,8 +11,8 @@ class MatrixTest extends FunSuite {
     val mat = matrInt(a(
       a(1, 2, 3),
       a(2, 4, 6)))
-    assert(mat.rowNum === 2)
-    assert(mat.colNum === 3)
+    assert(mat.rowCount === 2)
+    assert(mat.colCount === 3)
     assert(mat(0, 0) === BigIntFielded(1))
     assert(mat(1, 2) === BigIntFielded(6))
     intercept[IllegalArgumentException] { mat(-1, 0) }
