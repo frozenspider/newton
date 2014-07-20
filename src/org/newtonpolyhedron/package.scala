@@ -1,14 +1,13 @@
 package org
+
 import java.math.BigInteger
 import scala.Numeric.Implicits._
 import scala.Ordering.Implicits._
 import scala.collection.JavaConversions._
-import org.newtonpolyhedron.entity.BigIntFielded
-import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.equation._
 import org.newtonpolyhedron.entity.vector._
 import scala.collection.immutable.SortedSet
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.BigIntFielded
 import scala.collection.TraversableLike
 import scala.collection.SeqLike
 import scala.collection.IterableLike
@@ -19,6 +18,10 @@ package object newtonpolyhedron {
 
   type Polynomial = IndexedSeq[Term]
   type Polys = IndexedSeq[Polynomial]
+  type Equations = IndexedSeq[Equation]
+
+  def zeroPoly(dim: Int): Polynomial =
+    IndexedSeq(Term(Product.ZERO, FracMathVec.zero(dim)))
 
   implicit class ExtPoly(val p: Polynomial) {
     def toPlainString: String = {

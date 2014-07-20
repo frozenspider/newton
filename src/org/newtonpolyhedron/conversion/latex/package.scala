@@ -1,0 +1,84 @@
+package org.newtonpolyhedron.conversion
+
+import scala.xml._
+import org.newtonpolyhedron._
+import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.equation._
+
+package object latex {
+
+  sealed trait LatexStringMixin
+
+  type LatexString = String with LatexStringMixin
+
+  private implicit def stringToLatex(s: String) = s.asInstanceOf[LatexString]
+
+  def fracToLatex(frac: BigFrac): LatexString = {
+    if (frac.isInt) {
+      frac.num.toString
+    } else {
+      val fracVal = "\\frac{" + (frac.num.abs) + "}{" + frac.den + "}"
+      (if (frac.signum < 0) "-" else "") + fracVal
+    }
+  }
+
+  def productToLatex(coeff: Product): LatexString =
+    if (coeff.isRational) {
+      fracToLatex(coeff.fracValue)
+    } else {
+      ???
+    }
+
+  def signToLatex(sign: EquationSign): LatexString = sign match {
+    case EquationSign.Equals    => "="
+    case EquationSign.Greater   => ">"
+    case EquationSign.GreaterEq => "\\leq"
+    case EquationSign.Less      => "<"
+    case EquationSign.LessEq    => "\\geq"
+  }
+
+  private def powersToHtml(varName: String)(pows: Seq[BigFrac]): LatexString = {
+    val opts = pows mapWithIndex { (power, i) =>
+      if (power.isZero)
+        None
+      else
+        Some(
+          varName + "_{" + (i + 1) + "}^{" + fracToLatex(power) + "}"
+        )
+    }
+    opts.yieldDefined.mkString
+  }
+
+  def polynomialToLatex(varName: String)(poly: Polynomial): LatexString = {
+    if (poly.isEmpty) {
+      ""
+    } else {
+      val termsSignedStrings = poly map { term =>
+        (
+          term.coeff.signum,
+          productToLatex(term.coeff * term.coeff.signum) + powersToHtml(varName)(term.powers.elements)
+        )
+      }
+      val (headCoeff, headTermAbsString) = termsSignedStrings.head
+      val restTermsString = termsSignedStrings.tail.foldLeft("") {
+        case (start, (coeff, termAbsString)) if coeff < 0 => start + "-" + termAbsString
+        case (start, (coeff, termAbsString))              => start + "+" + termAbsString
+      }
+      val termsString = headCoeff match {
+        case x if x < 0 => "-" + headTermAbsString + restTermsString
+        case x          => headTermAbsString + restTermsString
+      }
+      termsString
+    }
+  }
+
+  def equationToLatex(varName1: String, varName2: String)(eq: Equation): LatexString = {
+    val lhs = polynomialToLatex(varName1)(eq.lhs)
+    val rhs = polynomialToLatex(varName2)(eq.rhs)
+    val sign = signToLatex(eq.sign)
+    lhs + sign + rhs
+  }
+
+  def equationsToLatex(eqs: Equations, varName1: String, varName2: String): LatexString =
+    (eqs map equationToLatex(varName1, varName2)) mkString ("\\begin{cases}", "\\\\", "\\end{cases}")
+}

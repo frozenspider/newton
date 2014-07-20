@@ -1,6 +1,5 @@
 package org.newtonpolyhedron.entity
 
-import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.vector.FracMathVec
 
 case class Term(val coeff: Product, val powers: FracMathVec) {
