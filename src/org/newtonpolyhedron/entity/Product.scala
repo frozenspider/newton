@@ -4,6 +4,7 @@ import scala.math.ScalaNumber
 import org.newtonpolyhedron.utils.MathUtils
 import scala.collection.immutable.SortedSet
 import scala.math.ScalaNumericConversions
+import scala.collection.immutable.ListMap
 
 /**
  * Represents a number as a product of powers of its prime factors.
@@ -84,6 +85,35 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
       }
       signum * folded
     }
+
+  /**
+   * This product represented as a product of base-N roots.
+   *
+   * @return rational part along with (RootBase -> RootedValue) map
+   */
+  lazy val rootedForm: (BigInt, Map[Int, BigInt]) = {
+    import org.newtonpolyhedron._
+    val (rationalMultipliers, irrationalMultipliers) = {
+      val unzip = (underlying.toSeq collect {
+        case (base, power) if power.isInt => (Some((base, power.intValue)), None)
+        case (base, power) if power < 1   => (None, (Some((base, power))))
+        case (base, power)                => (Some((base, power.quotient.intValue)), Some((base, power - power.quotient)))
+      }).unzip
+      (unzip._1.yieldDefined, unzip._2.yieldDefined)
+    }
+    val rational = (rationalMultipliers.map(p => p._1 pow p._2) :+ BigInt(1)).product
+    val irrationalMultipliersGroups = irrationalMultipliers.groupBy(_._2.den).toSeq sortBy (_._1)
+    val roots = irrationalMultipliersGroups map {
+      case (rootBase, irratMultipliers) =>
+        (rootBase.intValue, (irratMultipliers.map({
+          case (base, power) =>
+            val multipliedPower = power * rootBase
+            assert(multipliedPower.isInt)
+            base pow multipliedPower.intValue
+        }) :+ BigInt(1)).product)
+    }
+    (rational, ListMap(roots: _*))
+  }
 
   override def toString = {
     if (isRational) fracValue.toString

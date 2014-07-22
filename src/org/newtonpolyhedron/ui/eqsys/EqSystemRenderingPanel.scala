@@ -45,6 +45,9 @@ object EqSystemRenderingPanel extends SimpleSwingApplication {
     contents = subj
   }
 
+  val tricky = Product(1, Map(2 -> BigFrac(15), 3 -> BigFrac(3), 5 -> BigFrac(8))).pow(BigFrac(1, 6))
+  println(tricky.toStructuredString)
+
   val eqs: Equations = IndexedSeq[Equation](
     Equation(
       IndexedSeq(
@@ -55,7 +58,7 @@ object EqSystemRenderingPanel extends SimpleSwingApplication {
       EquationSign.Equals,
       IndexedSeq(
         new Term(Product(1), FracMathVec(1, 2, 3)),
-        new Term(Product(2).pow(BigFrac(1, 2)), FracMathVec(1, 2, 3)),
+        new Term(tricky, FracMathVec(1, 2, 3)),
         new Term(Product(4), FracMathVec(0, 0, 0))
       )
     ),
