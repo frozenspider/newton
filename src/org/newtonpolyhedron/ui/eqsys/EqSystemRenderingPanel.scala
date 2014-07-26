@@ -1,19 +1,9 @@
 package org.newtonpolyhedron.ui.eqsys
 
-import scala.swing._
+import scala.swing.BorderPanel
+
 import org.newtonpolyhedron.Equations
-import org.newtonpolyhedron.conversion.latex.equationsToLatex
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.BigFrac.int2bigFrac
-import org.newtonpolyhedron.entity.Product
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.equation.Equation
-import org.newtonpolyhedron.entity.equation.EquationSign
-import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.ui.LatexRenderingComponent
-import org.newtonpolyhedron.zeroPoly
-import scala.IndexedSeq
-import scala.swing.BorderPanel.Position.Center
 
 class EqSystemRenderingPanel extends BorderPanel {
   import BorderPanel.Position._
@@ -33,12 +23,12 @@ class EqSystemRenderingPanel extends BorderPanel {
   }
 }
 
-object EqSystemRenderingPanel extends SimpleSwingApplication {
-  import org.newtonpolyhedron.entity.equation.Equation
+object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
+  import scala.swing.MainFrame
   import org.newtonpolyhedron._
   import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector._
-  import org.newtonpolyhedron.entity.equation.EquationSign
+  import org.newtonpolyhedron.entity.equation._
 
   val subj = new EqSystemRenderingPanel
   def top = new MainFrame {
@@ -46,7 +36,6 @@ object EqSystemRenderingPanel extends SimpleSwingApplication {
   }
 
   val tricky = Product(1, Map(2 -> BigFrac(15), 3 -> BigFrac(3), 5 -> BigFrac(8))).pow(BigFrac(1, 6))
-  println(tricky.toStructuredString)
 
   val eqs: Equations = IndexedSeq[Equation](
     Equation(

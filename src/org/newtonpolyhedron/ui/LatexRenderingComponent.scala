@@ -2,6 +2,7 @@ package org.newtonpolyhedron.ui
 
 import scala.swing.Component
 
+import org.newtonpolyhedron.conversion.latex.LatexString
 import org.scilab.forge.jlatexmath.TeXConstants
 import org.scilab.forge.jlatexmath.TeXFormula
 
@@ -11,13 +12,13 @@ class LatexRenderingComponent extends Component {
 
   override lazy val peer = new JLabel
 
-  private var latexString: String = ""
-
   var fontSize = 16.0f
 
-  def content: String = latexString
+  private var latexString: LatexString = "".asInstanceOf[LatexString]
 
-  def content_=(latex: String): Unit = {
+  def content: LatexString = latexString
+
+  def content_=(latex: LatexString): Unit = {
     this.latexString = latex
     val formula = new TeXFormula(latexString)
     val icon = (new formula.TeXIconBuilder)
