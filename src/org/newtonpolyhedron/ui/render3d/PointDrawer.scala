@@ -83,7 +83,7 @@ class PointDrawer extends Shape3D {
       } else {
         Seq(
           c3f(z, clbr, clbr),
-          c3f(clbr, z, clbr)) flatMap (Seq.fill(06)(_))
+          c3f(clbr, z, clbr)) flatMap (Seq.fill(6)(_))
       }
     axisGeom.setColors(0, colors.toArray[Color3f])
     axisGeom

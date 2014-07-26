@@ -1,8 +1,8 @@
 package org.newtonpolyhedron.utils
+
 import scala.Numeric.Implicits._
 import scala.Ordering.Implicits._
 import scala.collection.JavaConversions._
-import scala.collection.immutable.SortedSet
 
 import org.apache.commons.math3.Field
 import org.apache.commons.math3.FieldElement
@@ -21,7 +21,7 @@ object ScalaJavaConversionUtils {
 
   // Collections conversion
   implicit def coll2seq[T](coll: java.util.Collection[T]): IndexedSeq[T] =
-    if (coll != null) asScalaIterable(coll).toIndexedSeq
+    if (coll != null) collectionAsScalaIterable(coll).toIndexedSeq
     else Vector.empty
 
   implicit def set2immset[T](set: java.util.Set[T]): Set[T] =
