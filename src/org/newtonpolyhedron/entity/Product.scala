@@ -43,6 +43,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     val common = new Product(1, commonFactors)
     val part1 = new Product(this.signum, thisFactors)
     val part2 = new Product(that.signum, thatFactors)
+    require(part1.isRational && part2.isRational, "Can't sum these non-rational products (not in general case)")
     val partSum = Product(part1.fracValue + part2.fracValue)
     val res = common * partSum
     res
@@ -53,11 +54,20 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
   def -(that: Int): Product = this + Product(-that)
   def -(that: BigFrac): Product = this + Product(-that)
   def unary_- : Product = new Product(-signum, underlying)
+  def abs: Product = this * signum
 
   def sqrt = this pow BigFrac(1, 2)
   def pow(p: BigFrac): Product = {
-    if (this.signum == 0 && p == 0) Product.ONE
-    else new Product(if (p == 0 || p.num % 2 == 0) 1 else this.signum, this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0))
+    if (this.signum == 0) p match {
+      case x if x == 0 => Product.ONE
+      case x if x > 0  => Product.ZERO
+      case _           => throw new IllegalArgumentException("Can't raise zero to negative power")
+    }
+    else {
+      val newSignum = if (p == 0 || p.num % 2 == 0) 1 else this.signum
+      val newUnderlying = this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0)
+      new Product(newSignum, newUnderlying)
+    }
   }
   def pow(p: Int): Product = this pow BigFrac(p)
 
