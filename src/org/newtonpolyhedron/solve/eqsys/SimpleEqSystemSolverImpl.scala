@@ -8,7 +8,7 @@ import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.vector.FracMathVec
 
 /**
- * Is only capable of solving *simple* equation systems.
+ * Solver, only capable of solving *simple* systems of equations.
  * <p>
  * "Simple" here means that each equation should be a polynomial consisting of exactly two terms.
  */

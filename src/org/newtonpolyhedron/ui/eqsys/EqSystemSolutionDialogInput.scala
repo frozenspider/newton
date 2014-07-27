@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.ui
+package org.newtonpolyhedron.ui.eqsys
 
 import scala.swing.BorderPanel
 import scala.swing.Button
@@ -13,21 +13,21 @@ import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
-import org.newtonpolyhedron.ui.eqsys.EqSystemRenderingPanel
+import org.newtonpolyhedron.ui.LatexRenderingComponent
 
-class EqSystemSolverDialogInput extends EqSystemSolutionInput {
+class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
   import org.newtonpolyhedron.conversion.latex._
 
-  private val varName = "x"
+  override val varName = "x"
 
   //
   // UI
   //
   private lazy val inputDialog = new Dialog {
-    def resetDialog(headerText: String, inputPanels: Seq[Panel], eqSys: Equations) = {
+    def resetDialog(headerText: LatexString, inputPanels: Seq[Panel], eqSys: Equations) = {
       ok = false
-      header.text = headerText
+      header.content = headerText
       inputsContainer.contents.clear()
       inputsContainer.contents ++= inputPanels
       eqSysRenderer.render(eqSys, varName)
@@ -37,13 +37,17 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
     var ok = false
     modal = true
     title = "Manual solver"
-    private val header = new Label
+    private val header = new LatexRenderingComponent {
+      fontSize = 30
+    }
     private val inputsContainer = new FlowPanel
     private val eqSysRenderer = new EqSystemRenderingPanel
     private val okBtn = new Button("OK")
     private val cnBtn = new Button("Cancel")
     contents = new BorderPanel {
-      layout(header) = North
+      layout(new FlowPanel {
+        contents += header
+      }) = North
       layout(eqSysRenderer) = Center
       layout(new BorderPanel {
         layout(inputsContainer) = Center
@@ -80,15 +84,22 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
 
   private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial, EquationSign.Equals, zeroPoly(dim))
 
-  override def getInputFor(system: Polys, headerTextOption: Option[String]): Option[Seq[String]] = {
+  override def getInputFor(system: Polys,
+                           initialValuesOption: Option[Seq[String]],
+                           headerTextOption: Option[LatexString]): Option[Seq[String]] = {
     val dim = system collectFirst {
       case poly if !poly.isEmpty => poly.head.powers.dim
     } getOrElse (throw new IllegalArgumentException("Can't get dimension of polys"))
 
     val (inputs, inputPanels) = createInputComponents(dim)
+    initialValuesOption foreach { initialValues =>
+      (initialValues zip inputs) map {
+        case (value, input) => input.text = value
+      }
+    }
 
     inputDialog.resetDialog(
-      headerText = headerTextOption getOrElse s"Please solve for $varName:",
+      headerText = headerTextOption getOrElse latex(textToLatex(s"Please solve for ") + varName + ":"),
       inputPanels = inputPanels,
       eqSys = system map asEqualsZeroEquation(dim)
     )
@@ -104,13 +115,13 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
 
 }
 
-object EqSystemSolverDialogInput extends App {
+object EqSystemSolutionDialogInput extends App {
   import org.newtonpolyhedron._
   import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector._
   import org.newtonpolyhedron.entity.equation._
 
-  val s = new EqSystemSolverDialogInput
+  val s = new EqSystemSolutionDialogInput
 
   val tricky = EqSystemRenderingPanel.tricky
 
@@ -126,5 +137,5 @@ object EqSystemSolverDialogInput extends App {
     )
   )
 
-  println(s.getInputFor(eqs, None))
+  println(s.getInputFor(eqs, None, None))
 }

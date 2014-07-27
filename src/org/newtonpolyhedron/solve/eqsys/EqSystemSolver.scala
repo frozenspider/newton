@@ -3,6 +3,9 @@ package org.newtonpolyhedron.solve.eqsys
 import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.vector.FracMathVec
 
+/**
+ * Solver for system of polynomial equations
+ */
 trait EqSystemSolver {
 
   /** Checks whether or not the system can be solved by this solver */

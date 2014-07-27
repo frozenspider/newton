@@ -3,6 +3,7 @@ package org.newtonpolyhedron
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.PrintWriter
+
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.MatrixSupport
@@ -11,18 +12,20 @@ import org.newtonpolyhedron.entity.vector.FracMathVec
 import org.newtonpolyhedron.entity.vector.IntMathVec
 import org.newtonpolyhedron.ex.UnknownModeException
 import org.newtonpolyhedron.ex.WrongFormatException
+import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
 import org.newtonpolyhedron.solve.cone._
+import org.newtonpolyhedron.solve.eqsys._
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
 import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
+import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
 import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
-import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
-import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
-import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl
+import org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
 
 class NewtonLogic {
+  import NewtonLogic._
 
   val intFmt = IntMathVec.IntMathVecFormat
   val fracFmt = FracMathVec.FracMathVecFormat
@@ -128,10 +131,17 @@ class NewtonLogic {
     val (polys, pts) = InputParser.parsePowerTransfBaseFromFile(file)
     val powTransfSolver = new PowerTransformationSolverImpl(
       new UnimodularMatrixMakerImpl,
-      new SimpleEqSystemSolverImpl
+      systemOfEqSolverChain
     )
     new PowerTransformationSolverPrinter(
       powTransfSolver, new ChangerOfVariablesImpl, polys, pts, writer
     )
   }
+}
+
+object NewtonLogic {
+  lazy val systemOfEqSolverChain = new EqSystemChainSolver(Seq(
+    new SimpleEqSystemSolverImpl,
+    new ManualEqSystemSolver(new EqSystemSolutionDialogInput)
+  ))
 }

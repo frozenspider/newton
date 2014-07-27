@@ -9,10 +9,13 @@ package object latex {
   sealed trait LatexStringMixin
 
   type LatexString = String with LatexStringMixin
-  
+
   def latex(s: String) = stringToLatex(s)
 
   private implicit def stringToLatex(s: String) = s.asInstanceOf[LatexString]
+
+  def textToLatex(plaintext: String): LatexString =
+    "\\text{" + plaintext + "}"
 
   def fracToLatex(frac: BigFrac): LatexString = {
     if (frac.isInt) {
@@ -73,17 +76,21 @@ package object latex {
           productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers.elements)
         )
       }
-      val (headCoeff, headTermAbsString) = termsSignedStrings.head
-      val restTermsString = termsSignedStrings.tail.foldLeft("") {
-        case (start, (coeff, termAbsString)) if coeff < 0 => start + "-" + termAbsString
-        case (start, (coeff, termAbsString))              => start + "+" + termAbsString
-      }
-      val termsString = headCoeff match {
-        case x if x < 0 => "-" + headTermAbsString + restTermsString
-        case x          => headTermAbsString + restTermsString
-      }
-      termsString
+      signedAbsSeqToLatex(termsSignedStrings)
     }
+  }
+
+  def signedAbsSeqToLatex(seq: Seq[(Int, String)]): LatexString = {
+    val (headCoeff, headTermAbsString) = seq.head
+    val restTermsString = seq.tail.foldLeft("") {
+      case (start, (coeff, termAbsString)) if coeff < 0 => start + "-" + termAbsString
+      case (start, (coeff, termAbsString))              => start + "+" + termAbsString
+    }
+    val termsString = headCoeff match {
+      case x if x < 0 => "-" + headTermAbsString + restTermsString
+      case x          => headTermAbsString + restTermsString
+    }
+    termsString
   }
 
   def equationToLatex(varName1: String, varName2: String)(eq: Equation): LatexString = {
