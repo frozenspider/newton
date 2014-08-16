@@ -87,6 +87,7 @@ class ProductTest extends FunSuite {
     assert((p(4) pow bf(1, 2)).intValue === 2)
     assert((p(65536) pow bf(1, 4)).intValue === 16)
     assert((p(8) pow bf(1, 3)).intValue === 2)
+    assert((p(8) pow bf(-1, 3)).fracValue === bf(1, 2))
   }
 
   test("power, fractional, appx") {

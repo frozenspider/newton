@@ -101,7 +101,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
    *
    * @return rational part along with (RootBase -> RootedValue) map
    */
-  lazy val rootedForm: (BigInt, Map[Int, BigInt]) = {
+  lazy val rootedForm: (BigInt, Map[Int, BigFrac]) = {
     import org.newtonpolyhedron._
     val (rationalMultipliers, irrationalMultipliers) = {
       val unzip = (underlying.toSeq collect {
@@ -119,8 +119,8 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
           case (base, power) =>
             val multipliedPower = power * rootBase
             assert(multipliedPower.isInt)
-            base pow multipliedPower.intValue
-        }) :+ BigInt(1)).product)
+            BigFrac(base) pow multipliedPower.intValue
+        }) :+ BigFrac.ONE).product)
     }
     (rational, ListMap(roots: _*))
   }

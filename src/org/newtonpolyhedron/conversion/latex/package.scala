@@ -35,10 +35,16 @@ package object latex {
       val rationalString = if (rational == 1) "" else rational.toString
       val irrationalString = roots.toSeq sortBy (_._1) map {
         case (_, rooted) if rooted == 0 => ""
-        case (rootBase, rooted)         => s"\\sqrt[$rootBase]{$rooted}"
+        case (rootBase, rooted)         => rootToLatex(rootBase, rooted)
       }
       "(" + rationalString + irrationalString.mkString + ")"
     }
+
+  def rootToLatex(rootBase: BigFrac, rootedValue: BigFrac): LatexString = {
+    val rootBaseLatex = fracToLatex(rootBase)
+    val rootedValueLatex = fracToLatex(rootedValue)
+    s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"
+  }
 
   def signToLatex(sign: EquationSign): LatexString = sign match {
     case EquationSign.Equals    => "="
