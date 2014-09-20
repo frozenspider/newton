@@ -6,7 +6,7 @@ import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
 import org.junit.runner.RunWith
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl
 import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl

@@ -1,11 +1,11 @@
 package org.newtonpolyhedron.solve.surface
+
 import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.newtonpolyhedron.entity.Surface
 
@@ -23,7 +23,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	   N3 = [ 2 -2 1 ]  |  -    +    +    -    +    
 	   N5 = [ 2 2 1 ]   |  -    -    -    -    + 
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 5)
     val vecs = s(
       iv(0, 0, -1),
@@ -89,7 +89,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	   |N12 = [ 1 1 0 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | +  | +  | -  | +  | +  | +  | +  | -  | -  | -  | -  | -  |
 	   |N13 = [ -1 -1 1 ]| - | - | - | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | +  | -  | -  |
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 25)
     val vecs = s(
       iv(-6, -4, 3),
@@ -197,7 +197,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	N3 = [ 1 0 ]  |  -    -    -    -    -    -    -    -    +    +    
 	N4 = [ 1 1 ]  |  -    -    +    -    -    -    -    -    +    -
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 9)
     val vecs = s(
       iv(-1, 0),
@@ -239,7 +239,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	N3 = [ 0 1 0  ] |  -    -    +    +    +    +    
 	N5 = [ 1 0 0  ] |  -    +    -    -    +    +  
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 5)
     val vecs = s(
       iv(0, -1, 1),
@@ -297,7 +297,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	   N3 = [ -1 -1 -2 ] |  +   +   +   -   -
 	   N4 = [  1  1  1 ] |  -   +   +   +   +
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 5)
     val vecs = s(
       iv(-2, -1, -1),
@@ -358,7 +358,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	|N13 = [ 0 0 -1 0 ]  | - | - | - | - | - | - | - | - | - | - | +  | -  |
 	|N14 = [ 0 0 0 -1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  |
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 12)
     val vecs = s(
       iv(-1, -1, -1, -1),
@@ -446,7 +446,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 	 |N14 = [ 1 1 1 -1 ]  | - | - | - | - | + | + | + | - | - | - | -  | +  |
 	 |N15 = [ 1 1 1 1 ]   | - | - | - | - | + | + | + | + | - | - | -  | -  |
 	 */
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 12)
     val vecs = s(
       iv(-1, -1, -1, -1),
@@ -583,7 +583,7 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("Bruno, unknown ex.") {
     // Some random vectors - I haven't found actual ones 
-    val lookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(lookupTable, 20)
     val vecs = s(
       iv(-1, 0, 0, 0),

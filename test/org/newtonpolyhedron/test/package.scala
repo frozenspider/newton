@@ -4,7 +4,7 @@ import java.util.Comparator
 import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table._
 import org.newtonpolyhedron.entity._
-import org.newtonpolyhedron.entity.vector._
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.scalatest.Suite
 import org.scalatest.FailureMessages
 import org.scalatest.Resources
@@ -17,11 +17,11 @@ package object test {
   type DoubleConvertible = Any { def toDouble: Double }
 
   def matrInt(content: Array[Array[Int]]): Matrix[BigIntFielded] = {
-    Matrix(content map (_ map (x => BigIntFielded(x))))
+    Matrix.fromArray(content map (_ map (x => BigIntFielded(x))))
   }
 
   def matrFrac(content: Array[Array[Int]]): Matrix[BigFrac] = {
-    Matrix(content map (_ map (x => BigFrac(x))))
+    Matrix.fromArray(content map (_ map (x => BigFrac(x))))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
@@ -32,9 +32,9 @@ package object test {
   def a(values: Array[BigFrac]*): Array[Array[BigFrac]] = Array(values: _*)
   def a(values: Array[Array[Int]]*): Array[Array[Array[Int]]] = Array(values: _*)
 
-  def iv(ints: Int*): IntMathVec = IntMathVec(ints: _*)
-  def fv(ints: Int*): FracMathVec = FracMathVec.fromInts(ints: _*)
-  def fv2(fracs: BigFrac*): FracMathVec = FracMathVec(fracs: _*)
+  def iv(ints: Int*): IntVec = IntVec((ints map BigInt.apply): _*)
+  def fv(ints: Int*): FracVec = FracVec((ints map BigFrac.apply): _*)
+  def fv2(fracs: BigFrac*): FracVec = FracVec(fracs: _*)
 
   def bf(n: Int) = BigFrac(n, 1)
   def bf(n: Int, d: Int) = BigFrac(n, d)
@@ -44,13 +44,13 @@ package object test {
 
   val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
 
-  def fillTableIdxKeys(lookupTable: KeyTable[IntMathVec, Int, Boolean],
+  def fillTableIdxKeys(lookupTable: KeyTable[IntVec, Int, Boolean],
                        upTo: Int): Unit = {
     for (i <- 0 until upTo)
       lookupTable.put(null, i, false)
     lookupTable.removeRow(null)
   }
-  def markInTable(lookupTable: KeyTable[IntMathVec, Int, Boolean])(rowKey: IntMathVec)(toMark: Seq[Int]): Unit = {
+  def markInTable(lookupTable: KeyTable[IntVec, Int, Boolean])(rowKey: IntVec)(toMark: Seq[Int]): Unit = {
     toMark map (lookupTable.put(rowKey, _, true))
     KeyTables.sortByColHeaders(lookupTable, intCmp, true)
   }

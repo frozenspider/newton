@@ -21,14 +21,14 @@ package object newtonpolyhedron {
   type Equations = IndexedSeq[Equation]
 
   def zeroPoly(dim: Int): Polynomial =
-    IndexedSeq(Term(Product.ZERO, FracMathVec.zero(dim)))
+    IndexedSeq(Term(Product.ZERO, IndexedSeq.fill[BigFrac](dim)(BigFrac.ZERO)))
 
   implicit class ExtPoly(val p: Polynomial) {
     def toPlainString: String = {
       p map (term => "(" +
         term.coeff.fracValue +
         ") * " +
-        term.powers.elements.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
+        term.powers.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
       ) mkString ("", " + ", " = 0")
     }
   }

@@ -1,15 +1,15 @@
 package org.newtonpolyhedron.solve.changevars
+
 import scala.collection.IndexedSeq
 
 import org.newtonpolyhedron.Polynomial
 import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.PolynomialWrapper._
 import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 class ChangerOfVariablesImpl extends ChangerOfVariables {
   private val s = IndexedSeq
-  private val imv = IntMathVec
 
   //  val lowerstPowersToTake = 4
   //
@@ -34,7 +34,7 @@ class ChangerOfVariablesImpl extends ChangerOfVariables {
   //    }
 
   def changeVars(poly: Polynomial, substs: Polys): Polynomial = {
-    require(poly forall (_.powers.dim == substs.size), "Original polynomial terms dimension should be" +
+    require(poly forall (_.powers.size == substs.size), "Original polynomial terms dimension should be" +
       "equal to replacement polynomials count")
     val changedVarsPolyWithDup: Polynomial = poly flatMap changeVarInTerm(substs)
     val changedVarsPoly: Polynomial = changedVarsPolyWithDup.collapseDups
@@ -42,8 +42,8 @@ class ChangerOfVariablesImpl extends ChangerOfVariables {
   }
 
   def changeVarInTerm(substs: Polys)(term: Term): Polynomial = {
-    assert(substs.size == term.powers.dim)
-    val powered: Polys = (substs zip term.powers.elements) map {
+    assert(substs.size == term.powers.size)
+    val powered: Polys = (substs zip term.powers) map {
       case (changeVarPoly, pow) => {
         require(pow.isValidInt, "Power is either too large or fractional!")
         changeVarPoly pow pow.toInt

@@ -1,20 +1,15 @@
 package org.newtonpolyhedron.entity
+
+import scala.collection.mutable.StringBuilder
+
 import org.apache.commons.math3.Field
 import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.linear.FieldLUDecomposition
 import org.apache.commons.math3.linear.FieldMatrix
-import org.apache.commons.math3.linear.MatrixUtils
-import scala.collection.mutable.StringBuilder
 import org.apache.commons.math3.linear.FieldVector
-import org.apache.commons.math3.linear.SingularValueDecomposition
-import scala.collection.mutable.ArraySeq
+import org.apache.commons.math3.linear.MatrixUtils
 import org.newtonpolyhedron._
-import org.newtonpolyhedron.entity.vector.MathVector
-import org.newtonpolyhedron.entity.vector.IntMathVec
-import org.newtonpolyhedron.entity.vector.MathVector
-import org.newtonpolyhedron.entity.vector.MathVector
-import org.newtonpolyhedron.entity.vector.MathVector
-import org.newtonpolyhedron.entity.vector.MathVector
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     extends Function2[Int, Int, T]
@@ -211,12 +206,16 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
 
 object Matrix {
 
-  def apply[T <: FieldElement[T]](elements: Array[Array[T]]): Matrix[T] =
+  def fromArray[T <: FieldElement[T]](elements: Array[Array[T]]): Matrix[T] =
     new Matrix(MatrixUtils.createFieldMatrix(elements))
 
-  def apply[T <: FieldElement[T], V <: MathVector[T, _]](elements: Iterable[V])(implicit field: Field[T]): Matrix[T] = {
+  def fromIntVectors(elements: Iterable[IntVec]): Matrix[BigIntFielded] = {
+    fromArray((elements map (x => (x map int2Fielded).toArray)).toArray)
+  }
+
+  def fromVectors[T <: FieldElement[T]](elements: Iterable[IndexedSeq[T]])(implicit field: Field[T]): Matrix[T] = {
     require(!elements.isEmpty, "Elements was empty")
-    val dim = elements.head.dim
+    val dim = elements.head.size
     val matrix = MatrixUtils.createFieldMatrix(field, elements.size, dim)
     val elsSeq = elements.toIndexedSeq
     for {
@@ -226,10 +225,6 @@ object Matrix {
       val value = vec(c)
     } matrix.setEntry(r, c, value)
     new Matrix(matrix)
-  }
-
-  def apply(elements: Iterable[IntMathVec]): Matrix[BigIntFielded] = {
-    this((elements map (x => (x.elements map int2Fielded).toArray)).toArray)
   }
 
   def idenitiy[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
@@ -251,12 +246,12 @@ object Matrix {
    */
   def toDiagonal(m: Matrix[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
     require(m.isSquare, "Non-square matrix")
-     import MatrixExt._
-     m.toDiagonal
-//    val iden = idenitiy(m.rowCount)(m.field)
-//    val rowOnes = iden.contentCopy
-//    val colOnes = iden.contentCopy
-//    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowCount)
+    import MatrixExt._
+    m.toDiagonal
+    //    val iden = idenitiy(m.rowCount)(m.field)
+    //    val rowOnes = iden.contentCopy
+    //    val colOnes = iden.contentCopy
+    //    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowCount)
   }
 
   private def toDiagonalFormInternal(m: FieldMatrix[BigFrac],

@@ -11,7 +11,7 @@ object PolynomialWrapper {
 
     def pow(pow: Int): Polynomial = {
       require(pow >= 0, "Can't raise polynomial to negative power")
-      if (pow == 0) IndexedSeq(Term.one(poly.headOption map (_.powers.dim) getOrElse 0))
+      if (pow == 0) IndexedSeq(Term.one(poly.headOption map (_.powers.size) getOrElse 0))
       else if (pow == 1) poly
       else {
         // TODO: Use Newton Binomial

@@ -1,13 +1,12 @@
 package org.newtonpolyhedron.entity
 
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 object MatrixSupport {
 
-  def fromFracs(seq: Seq[FracMathVec]): Matrix[BigFrac] =
-    Matrix[BigFrac, FracMathVec](seq)
+  def fromFracs(seq: Seq[FracVec]): Matrix[BigFrac] =
+    Matrix.fromVectors[BigFrac](seq)
 
-  def fromInts(seq: Seq[IntMathVec]): Matrix[BigIntFielded] =
-    Matrix(seq)
+  def fromInts(seq: Seq[IntVec]): Matrix[BigIntFielded] =
+    Matrix.fromIntVectors(seq)
 }
