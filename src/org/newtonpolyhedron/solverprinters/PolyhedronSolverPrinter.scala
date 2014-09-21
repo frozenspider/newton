@@ -105,8 +105,9 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     val lines = collectLineCorners(surfacesMap(1), points)
     val borderEdgesAlt = (lines map (_.pointIndices map points3d)).flatten
     val illustrFrames = Seq(
-      doDrawFrame(points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
-      doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2))
+      doDrawFrame("All-Vs-All", points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
+      doDrawFrame("Convex Hull", borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2)
+    )
     try {
       while (!Thread.interrupted()) {
         Thread.sleep(freq)
@@ -118,7 +119,8 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     }
   }
 
-  private def doDrawFrame(pts: Seq[Point3d],
+  private def doDrawFrame(title: String,
+                          pts: Seq[Point3d],
                           mode: Int,
                           positionX: Int,
                           positionY: Int,
@@ -127,6 +129,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                           is2d: Boolean): Frame = {
     val polyRenderer = new PolyRenderer(pts, mode, is2d)
     val frame = new MainFrame(polyRenderer, width, height)
+    frame.setTitle(title)
     frame.setLocation(positionX, positionY)
     frame
   }
