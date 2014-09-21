@@ -1,19 +1,19 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron._
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron.Polynomial
+import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.vector.FracMathVec
 
 trait PowerTransformationSolver {
-  
+
   /**
    * Generate alpha-matrix given polyhedron intersection
-   * 
-   * @param termSeq one border per polyhedron
+   *
+   * @param powersSeq one border per polyhedron
    */
-  def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): Matrix[BigFrac]
+  def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracMathVec]]): Matrix[BigFrac]
 
   def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial
 

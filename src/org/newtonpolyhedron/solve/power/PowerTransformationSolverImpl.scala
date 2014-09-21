@@ -22,23 +22,30 @@ class PowerTransformationSolverImpl(
   private def vec = FracMathVec
   private def vecf(s: Seq[BigFrac]) = vec(s: _*)
 
-  override def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): Matrix[BigFrac] = {
+  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracMathVec]]): Matrix[BigFrac] = {
     // TODO: Make sure this works for more than 2 polys
-    val dim = termSeqs.size + 1
+    val dim = powersSeqs.size + 1
     def lastRowMinors(m: Matrix[BigFrac]): Seq[BigFrac] = {
       (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
-    require(termSeqs forall (_ forall (_.powers.dim == dim)), "Each term should have the same dimension: number of pairs + 1")
-    def pairsStream: Stream[Seq[(Term, Term)]] = choosePairs(termSeqs)
+    require(powersSeqs forall (_ forall (_.dim == dim)),
+      "Each term should have the same dimension: number of pairs + 1")
+    val pairsStream: Stream[Seq[(FracMathVec, FracMathVec)]] = choosePairs(powersSeqs)
+    val matrices = pairsStream map { pairs =>
+      val matrixBase = (pairs map {
+        case (powers1, powers2) => powers1 - powers2
+      }) :+ vec.zero(dim)
+      Matrix[BigFrac, FracMathVec](matrixBase)
+    }
+    if (matrices.isEmpty)
+      throw new IllegalArgumentException("Pairs are not provided")
+    val nonZeroMatrices = matrices filter { matrix =>
+      !lastRowMinors(matrix).contains(0)
+    }
+    if (nonZeroMatrices.isEmpty)
+      throw new IllegalArgumentException("All pre-alpha matrices have zero minors")
     val alphasStream: Stream[Matrix[BigFrac]] =
-      pairsStream map { pairs =>
-        val matrixBase = (pairs map {
-          case (term1, term2) => term1.powers - term2.powers
-        }) :+ vec.zero(dim)
-        Matrix[BigFrac, FracMathVec](matrixBase)
-      } filter { matrix =>
-        !lastRowMinors(matrix).contains(0)
-      } map { matrix =>
+      nonZeroMatrices map { matrix =>
         val alpha = umm unimodularFrom matrix
         assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
         assert(alpha.det == 1)
