@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.ui
+package org.newtonpolyhedron.ui.eqsys
 
 import scala.swing.BorderPanel
 import scala.swing.Button
@@ -13,7 +13,7 @@ import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
-import org.newtonpolyhedron.ui.eqsys.EqSystemRenderingPanel
+import org.newtonpolyhedron.ui.LatexRenderingComponent
 
 class EqSystemSolverDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
