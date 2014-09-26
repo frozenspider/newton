@@ -10,6 +10,7 @@ import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariables
 import org.newtonpolyhedron.entity.Product
+import org.newtonpolyhedron.entity.MatrixSupport
 
 class PowerTransformationSolverImpl(
   val umm: UnimodularMatrixMaker,
@@ -34,7 +35,7 @@ class PowerTransformationSolverImpl(
         val matrixBase = (pairs map {
           case (term1, term2) => term1.powers - term2.powers
         }) :+ FracVec.zero(dim)
-        Matrix.fromVectors(matrixBase)
+        MatrixSupport.fromFracs(matrixBase)
       } filter { matrix =>
         !lastRowMinors(matrix).contains(0)
       } map { matrix =>

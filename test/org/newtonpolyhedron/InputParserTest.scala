@@ -250,62 +250,60 @@ class InputParserTest extends FunSuite {
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 4)
     assert(matrix === matrFrac(
-      a(
-        a(9, 0, 0, 1),
-        a(0, 8, 0, 2),
-        a(0, 0, 7, 3),
-        a(3, 2, 1, 4)
+      s(
+        s(9, 0, 0, 1),
+        s(0, 8, 0, 2),
+        s(0, 0, 7, 3),
+        s(3, 2, 1, 4)
       )
     ))
   }
 
   test("parse matrix - ints") {
-    fail("Repair me!")
-    //    val str =
-    //      """
-    //      3
-    //      9 0 0
-    //      0 8 0
-    //      0 0 7
-    //      """
-    //    val matrix = InputParser.parseMatrixFromLines(toLines(str))(MatrixSupport.fromInts, parseInt).get
-    //    assert(matrix.isSquare === true)
-    //    assert(matrix.rowCount === 3)
-    //    assert(matrix.colCount === 3)
-    //    assert(matrix === matrInt(
-    //      a(
-    //        a(9, 0, 0),
-    //        a(0, 8, 0),
-    //        a(0, 0, 7)
-    //      )
-    //    ))
+    val str =
+      """
+      3
+      9 0 0
+      0 8 0
+      0 0 7
+      """
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(MatrixSupport.fromInts, parseInt).get
+    assert(matrix.isSquare === true)
+    assert(matrix.rowCount === 3)
+    assert(matrix.colCount === 3)
+    assert(matrix === matrInt(
+      s(
+        s(9, 0, 0),
+        s(0, 8, 0),
+        s(0, 0, 7)
+      )
+    ))
   }
 
   test("parse matrix while skipping rows - ints") {
-    fail("Repair me!")
-    //    val str =
-    //      """
-    //      3
-    //      1 2
-    //      9 0 0
-    //      0 8 0
-    //      0 0 7
-    //      @
-    //      Comment!
-    //      """
-    //    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(MatrixSupport.fromInts, parseInt).get
-    //    assert(r === 1)
-    //    assert(c === 2)
-    //    assert(matrix.isSquare === true)
-    //    assert(matrix.rowCount === 3)
-    //    assert(matrix.colCount === 3)
-    //    assert(matrix === matrInt(
-    //      a(
-    //        a(9, 0, 0),
-    //        a(0, 8, 0),
-    //        a(0, 0, 7)
-    //      )
-    //    ))
+    val str =
+      """
+      3
+      1 2
+      9 0 0
+      0 8 0
+      0 0 7
+      @
+      Comment!
+      """
+    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(MatrixSupport.fromInts, parseInt).get
+    assert(r === 1)
+    assert(c === 2)
+    assert(matrix.isSquare === true)
+    assert(matrix.rowCount === 3)
+    assert(matrix.colCount === 3)
+    assert(matrix === matrInt(
+      s(
+        s(9, 0, 0),
+        s(0, 8, 0),
+        s(0, 0, 7)
+      )
+    ))
   }
 
 }

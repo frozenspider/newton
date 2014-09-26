@@ -33,14 +33,23 @@ package object newtonpolyhedron {
     }
   }
 
+  implicit class ExtBigInt(val n: BigInt) extends AnyVal {
+    def factorial: BigInt = {
+      if (n == 0) BigInt(1)
+      else if (n == 1) BigInt(1)
+      else if (n > 1) (BigInt(2) to n) reduce (_ * _)
+      else throw new IllegalArgumentException("Factorial of non-positive number " + n)
+    }
+  }
+
   implicit class ExtInt(val n: Int) extends AnyVal {
     def factorial: Int = {
-      val res = BigIntFielded(2).factorial
+      val res = BigInt(n).factorial
       if (!res.isValidInt) throw new IllegalArgumentException(s"${n}! is too large")
       res.toInt
     }
 
-    def !(): Int = ExtInt(n).factorial
+    def ! : Int = ExtInt(n).factorial
 
     def choose(k: Int): Int =
       if (k == 0 || n == k) 1
@@ -103,16 +112,6 @@ package object newtonpolyhedron {
   implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
     SortedSet.empty[T] ++ t
   }
-
-  // BigInt conversion
-  implicit def int2Fielded(bigInt: BigInt): BigIntFielded =
-    new BigIntFielded(bigInt.underlying)
-
-  implicit def int2Fielded(bigInt: BigInteger): BigIntFielded =
-    new BigIntFielded(bigInt)
-
-  implicit def int2Fielded(int: Int): BigIntFielded =
-    BigIntFielded(int)
 
   // Mapping helpers
   implicit def funOfTwo2funOfMonad[A1, A2, T](f: (A1, A2) => T): ((A1, A2)) => T =

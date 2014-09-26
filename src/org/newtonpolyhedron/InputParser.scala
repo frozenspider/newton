@@ -1,10 +1,10 @@
 package org.newtonpolyhedron
 
 import java.io.File
+
 import scala.io.Source
-import org.apache.commons.math3.FieldElement
+
 import org.newtonpolyhedron.entity._
-import org.newtonpolyhedron.entity.vector._
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
@@ -15,8 +15,7 @@ object InputParser {
   private type ISeqSeqSeq[E] = ISeq[ISeqSeq[E]]
   private type IV = ISeq[BigInt]
   private type FV = ISeq[BigFrac]
-  private type El[T] = FieldElement[T]
-  private type MatrixFactory[A <: FieldElement[A]] = (ISeqSeq[A] => Matrix[A])
+  private type MatrixFactory[A] = (ISeqSeq[A] => Matrix[A])
 
   //
   // General
@@ -137,14 +136,14 @@ object InputParser {
   // Matrix
   //
   /** @return matrix */
-  def parseMatrixFromFile[R <: El[R]](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): Matrix[R] = {
+  def parseMatrixFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): Matrix[R] = {
     val res = genParseFile(file)(lines => parseMatrixFromLines(lines)(mFactory, parseElement))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
 
   /** @return matrix */
-  def parseMatrixFromLines[R <: El[R]](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[Matrix[R]] = {
+  def parseMatrixFromLines[R](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[Matrix[R]] = {
     val empty: Option[Matrix[R]] = None
     genParseLines(lines, empty) { (dim, travLines) =>
       val vecs = parseVectors(dim)(travLines)(parseElement)
@@ -153,14 +152,14 @@ object InputParser {
   }
 
   /** @return (matrix, skipRow, skipCol) */
-  def parseMatrixWithSkipFromFile[R <: El[R]](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): (Matrix[R], Int, Int) = {
+  def parseMatrixWithSkipFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): (Matrix[R], Int, Int) = {
     val res = genParseFile(file)(lines => parseMatrixWithSkipFromLines(lines)(mFactory, parseElement))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
 
   /** @return (matrix, skipRow, skipCol) */
-  def parseMatrixWithSkipFromLines[R <: El[R]](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[(Matrix[R], Int, Int)] = {
+  def parseMatrixWithSkipFromLines[R](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[(Matrix[R], Int, Int)] = {
     val empty: Option[(Matrix[R], Int, Int)] = None
     genParseLines(lines, empty) { (dim, travLines) =>
       val firstLine = travLines.head split " " map (_.toInt)

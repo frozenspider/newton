@@ -1,7 +1,6 @@
 package org.newtonpolyhedron.entity
 
 import scala.collection.mutable.StringBuilder
-
 import org.apache.commons.math3.Field
 import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.linear.FieldLUDecomposition
@@ -10,18 +9,20 @@ import org.apache.commons.math3.linear.FieldVector
 import org.apache.commons.math3.linear.MatrixUtils
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.compatibility.FieldElementSupport._
 
-class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
+class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implicit wrapper: FieldElementWrapper[T])
     extends Function2[Int, Int, T]
     with Serializable {
+  import wrapper.numeric._
 
-  implicit protected[entity] val field = this.matrix.getField
+  implicit protected[entity] val field: FieldWrapped[T] = wrapper.field
 
-  val rowCount = this.matrix.getRowDimension
-  val colCount = this.matrix.getColumnDimension
-  val isSquare = this.matrix.isSquare
+  val rowCount: Int = this.matrix.getRowDimension
+  val colCount: Int = this.matrix.getColumnDimension
+  val isSquare: Boolean = this.matrix.isSquare
 
-  def apply(row: Int, col: Int) = this.matrix.getEntry(row, col)
+  def apply(row: Int, col: Int): T = this.matrix.getEntry(row, col).pure
   def +(that: Matrix[T]) = new Matrix(this.matrix add that.matrix)
   def -(that: Matrix[T]) = new Matrix(this.matrix subtract that.matrix)
   def *(that: Matrix[T]) = new Matrix(this.matrix multiply that.matrix)
@@ -47,12 +48,11 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     else {
       // FieldLUDecomposition uses division, which is not acceptable for integer matrix
       // new FieldLUDecomposition[T](matrix).getDeterminant
-      val additiveMinors = for (c <- 0 until colCount) yield this(0, c) multiply minor(0, c)
+      val additiveMinors = for (c <- 0 until colCount) yield this(0, c) * minor(0, c)
       val last = if (additiveMinors.size % 2 != 0) additiveMinors.last else field.getZero
       additiveMinors.grouped(2) map { s =>
-        if (s.size == 1) s(0)
-        else s(0) subtract s(1)
-      } reduce (_ add _)
+        if (s.size == 1) s(0) else s(0) - s(1)
+      } reduce (_ + _)
     }
   }
 
@@ -60,7 +60,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     // TODO: Delegate to library
     require(rowCount != 0, "0-row matrix")
     require(colCount != 0, "0-column matrix")
-    val zero = field.getZero
+    val zero = field.getZero.pure
     // Zero matrix check
     val zeroMatrix = elementsByRow.forall(_._3 == zero)
     if (zeroMatrix) 0
@@ -72,12 +72,12 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     }
   }
 
-  def map[B <: FieldElement[B]](f: T => B)(implicit field: Field[B]) = {
+  def map[B](f: T => B)(implicit wrapper2: FieldElementWrapper[B]) = {
     val mapped = Matrix.zero[B](rowCount, colCount)
     for {
       r <- 0 until rowCount
       c <- 0 until colCount
-    } mapped.matrix setEntry (r, c, f(this.matrix getEntry (r, c)))
+    } mapped.matrix setEntry (r, c, wrapper2(f(this.matrix.getEntry(r, c).pure)))
     mapped
   }
 
@@ -110,7 +110,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     def getSwapRow(row: Int, col: Int): Option[(T, Int)] = {
       val currElement = mutableCopy.getEntry(row, col)
       if (currElement != zero)
-        Some((currElement, row))
+        Some((currElement.pure, row))
       else if (row + 1 < rowCount)
         getSwapRow(row + 1, col)
       else None
@@ -166,7 +166,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     require(row.size == colCount, "Wrong row size")
     val res = Matrix.zero[T](rowCount + 1, colCount)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
-    val rowSeq = row.toIndexedSeq
+    val rowSeq = row.toIndexedSeq map wrapper.apply
     for (i <- 0 until colCount) res.matrix setEntry (rowCount, i, rowSeq(i))
     res
   }
@@ -175,7 +175,7 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
     require(col.size == rowCount, "Wrong col size")
     val res = Matrix.zero[T](rowCount, colCount + 1)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
-    val colSeq = col.toIndexedSeq
+    val colSeq = col.toIndexedSeq map wrapper.apply
     for (i <- 0 until rowCount) res.matrix setEntry (i, colCount, colSeq(i))
     res
   }
@@ -206,38 +206,36 @@ class Matrix[T <: FieldElement[T]](private val matrix: FieldMatrix[T])
 
 object Matrix {
 
-  def fromArray[T <: FieldElement[T]](elements: Array[Array[T]]): Matrix[T] =
-    new Matrix(MatrixUtils.createFieldMatrix(elements))
-
-  def fromIntVectors(elements: Iterable[IntVec]): Matrix[BigIntFielded] = {
-    fromArray((elements map (x => (x map int2Fielded).toArray)).toArray)
+  def fromArray[T](elements: Array[Array[T]])(implicit wrapper: FieldElementWrapper[T]): Matrix[T] = {
+    val wrapped = elements map (_ map (z => wrapper(z)))
+    new Matrix(MatrixUtils.createFieldMatrix(wrapped))
   }
 
-  def fromVectors[T <: FieldElement[T]](elements: Iterable[IndexedSeq[T]])(implicit field: Field[T]): Matrix[T] = {
+  def fromVectors[T](elements: Iterable[IndexedSeq[T]])(implicit wrapper: FieldElementWrapper[T]): Matrix[T] = {
     require(!elements.isEmpty, "Elements was empty")
     val dim = elements.head.size
-    val matrix = MatrixUtils.createFieldMatrix(field, elements.size, dim)
+    val matrix = MatrixUtils.createFieldMatrix(wrapper.field, elements.size, dim)
     val elsSeq = elements.toIndexedSeq
     for {
       r <- 0 until elsSeq.size
       c <- 0 until dim
       val vec = elsSeq(r)
       val value = vec(c)
-    } matrix.setEntry(r, c, value)
+    } matrix.setEntry(r, c, wrapper(value))
     new Matrix(matrix)
   }
 
-  def idenitiy[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
-    new Matrix(MatrixUtils.createFieldIdentityMatrix(field, dim))
+  def idenitiy[T](dim: Int)(implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+    new Matrix(MatrixUtils.createFieldIdentityMatrix(wrapper.field, dim))
 
-  def zero[T <: FieldElement[T]](dim: Int)(implicit field: Field[T]): Matrix[T] =
-    new Matrix(MatrixUtils.createFieldMatrix(field, dim, dim))
+  def zero[T](dim: Int)(implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+    new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, dim, dim))
 
-  def zero[T <: FieldElement[T]](rowCount: Int, colCount: Int)(implicit field: Field[T]): Matrix[T] =
-    new Matrix(MatrixUtils.createFieldMatrix(field, rowCount, colCount))
+  def zero[T](rowCount: Int, colCount: Int)(implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+    new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, rowCount, colCount))
 
-  def empty[T <: FieldElement[T]](implicit field: Field[T]): Matrix[T] =
-    new Matrix(MatrixUtils.createFieldMatrix(field, 0, 0))
+  def empty[T](implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+    new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, 0, 0))
 
   /**
    * Converts the matrix to diagonal form.
@@ -254,16 +252,19 @@ object Matrix {
     //    toDiagonalFormInternal(m.contentCopy, 0, rowOnes, colOnes, m.rowCount)
   }
 
-  private def toDiagonalFormInternal(m: FieldMatrix[BigFrac],
+  // TODO: Extract from here
+  private type InnerMatrix[T] = FieldMatrix[FieldElementWrapping[T]]
+  private type InnerVector[T] = FieldVector[FieldElementWrapping[T]]
+  private def toDiagonalFormInternal(m: InnerMatrix[BigFrac],
                                      cornerIdx: Int,
-                                     rowOnes: FieldMatrix[BigFrac],
-                                     colOnes: FieldMatrix[BigFrac],
-                                     dim: Int)(implicit field: Field[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
+                                     rowOnes: InnerMatrix[BigFrac],
+                                     colOnes: InnerMatrix[BigFrac],
+                                     dim: Int)(implicit wrapper: FieldElementWrapper[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
     def processCorner(getCurrent: (Int, Int) => BigFrac,
-                      ones: FieldMatrix[BigFrac],
-                      swap: (FieldMatrix[BigFrac], Int, Int) => Unit,
-                      inverse: (FieldMatrix[BigFrac], Int) => Unit,
-                      subtractMultiplied: (FieldMatrix[BigFrac], Int, Int, BigFrac) => Unit)(currIdx: Int,
+                      ones: InnerMatrix[BigFrac],
+                      swap: (InnerMatrix[BigFrac], Int, Int) => Unit,
+                      inverse: (InnerMatrix[BigFrac], Int) => Unit,
+                      subtractMultiplied: (InnerMatrix[BigFrac], Int, Int, BigFrac) => Unit)(currIdx: Int,
                                                                                              corner: BigFrac,
                                                                                              atLeastOneFails: Boolean): (BigFrac, Boolean) = {
       def recurse(i: Int, corner: BigFrac, fail: Boolean): (BigFrac, Boolean) = {
@@ -278,7 +279,7 @@ object Matrix {
               swap(ones, cornerIdx, i)
               inverse(ones, i)
 
-              recurse(i + 1, m.getEntry(cornerIdx, cornerIdx), true)
+              recurse(i + 1, m.getEntry(cornerIdx, cornerIdx).pure, true)
             } else {
               recurse(i + 1, corner, fail)
             }
@@ -293,7 +294,7 @@ object Matrix {
               swap(ones, cornerIdx, i)
               inverse(ones, i)
 
-              recurse(i, m.getEntry(cornerIdx, cornerIdx), true)
+              recurse(i, m.getEntry(cornerIdx, cornerIdx).pure, true)
             } else {
               recurse(i + 1, corner, fail)
             }
@@ -302,8 +303,8 @@ object Matrix {
       }
       recurse(currIdx, corner, atLeastOneFails)
     }
-    def getCurrCol = (curr: Int, corner: Int) => m.getEntry(corner, curr)
-    def getCurrRow = (curr: Int, corner: Int) => m.getEntry(curr, corner)
+    def getCurrCol = (curr: Int, corner: Int) => m.getEntry(corner, curr).pure
+    def getCurrRow = (curr: Int, corner: Int) => m.getEntry(curr, corner).pure
     def processCornerCol = processCorner(getCurrCol, colOnes, swapCols, inverseCol, subtractMultipliedCol)_
     def processCornerRow = processCorner(getCurrRow, rowOnes, swapRows, inverseRow, subtractMultipliedRow)_
     def processCornerFrom(corner: BigFrac): BigFrac = {
@@ -313,12 +314,12 @@ object Matrix {
       else processCornerFrom(corner2)
     }
     // Make corner element a GCD of it's row and column
-    val corner = processCornerFrom(m.getEntry(cornerIdx, cornerIdx))
+    val corner = processCornerFrom(m.getEntry(cornerIdx, cornerIdx).pure)
 
     // Subtract multiplied first row/column from others rows/columns
     // so that corner element remains only non-zero element in it's row/column
     for (colIdx <- (cornerIdx + 1) until dim) {
-      val current = m.getEntry(cornerIdx, colIdx)
+      val current = m.getEntry(cornerIdx, colIdx).pure
       val quotient = (current / corner).quotient
       if (quotient != 0) {
         subtractMultipliedCol(m, cornerIdx, colIdx, BigFrac(quotient))
@@ -326,7 +327,7 @@ object Matrix {
       }
     }
     for (rowIdx <- (cornerIdx + 1) until dim) {
-      val current = m.getEntry(rowIdx, cornerIdx)
+      val current = m.getEntry(rowIdx, cornerIdx).pure
       val quotient = (current / corner).quotient
       if (quotient != 0) {
         subtractMultipliedRow(m, cornerIdx, rowIdx, BigFrac(quotient))
@@ -342,57 +343,57 @@ object Matrix {
   }
 
   /** {@code dst = dst - src*quot} */
-  private def subtractMultipliedCol[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                                          srcColIdx: Int,
-                                                          dstColIdx: Int,
-                                                          quotient: T): Unit = {
+  private def subtractMultipliedCol[T](matrix: InnerMatrix[T],
+                                       srcColIdx: Int,
+                                       dstColIdx: Int,
+                                       quotient: T)(implicit wrapper: FieldElementWrapper[T]): Unit = {
     val srcCol = matrix.getColumnVector(srcColIdx)
     val dstCol = matrix.getColumnVector(dstColIdx)
-    val srcColMul = srcCol mapMultiply quotient
+    val srcColMul = srcCol mapMultiply wrapper(quotient)
     val dstColSub = dstCol subtract srcColMul
     matrix.setColumnVector(dstColIdx, dstColSub)
   }
 
   /** {@code dst = dst - src*quot} */
-  private def subtractMultipliedRow[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                                          srcRowIdx: Int,
-                                                          dstRowIdx: Int,
-                                                          quotient: T): Unit = {
+  private def subtractMultipliedRow[T](matrix: InnerMatrix[T],
+                                       srcRowIdx: Int,
+                                       dstRowIdx: Int,
+                                       quotient: T)(implicit wrapper: FieldElementWrapper[T]): Unit = {
     val srcRow = matrix.getRowVector(srcRowIdx)
     val dstRow = matrix.getRowVector(dstRowIdx)
-    val srcRowMul = srcRow mapMultiply quotient
+    val srcRowMul = srcRow mapMultiply wrapper(quotient)
     val dstRowSub = dstRow subtract srcRowMul
     matrix.setRowVector(dstRowIdx, dstRowSub)
   }
 
-  private def swapCols[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                             idx1: Int,
-                                             idx2: Int) = {
+  private def swapCols[T](matrix: InnerMatrix[T],
+                          idx1: Int,
+                          idx2: Int) = {
     val col1 = matrix.getColumnVector(idx1)
     val col2 = matrix.getColumnVector(idx2)
     matrix.setColumnVector(idx1, col2)
     matrix.setColumnVector(idx2, col1)
   }
 
-  private def swapRows[T <: FieldElement[T]](matrix: FieldMatrix[T],
-                                             idx1: Int,
-                                             idx2: Int) = {
+  private def swapRows[T](matrix: InnerMatrix[T],
+                          idx1: Int,
+                          idx2: Int) = {
     val row1 = matrix.getRowVector(idx1)
     val row2 = matrix.getRowVector(idx2)
     matrix.setRowVector(idx1, row2)
     matrix.setRowVector(idx2, row1)
   }
 
-  private def fieldRowOfZeros[T <: FieldElement[T]](size: Int)(implicit field: Field[T]): FieldVector[T] =
-    MatrixUtils.createFieldMatrix(field, size, 1).getColumnVector(0)
+  private def fieldRowOfZeros[T](size: Int)(implicit wrapper: FieldElementWrapper[T]): InnerVector[T] =
+    MatrixUtils.createFieldMatrix(wrapper.field, size, 1).getColumnVector(0)
 
-  private def inverseCol[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
+  private def inverseCol[T](m: InnerMatrix[T], idx: Int)(implicit wrapper: FieldElementWrapper[T]): Unit = {
     val vec = m.getColumnVector(idx)
     val zeros = fieldRowOfZeros(vec.getDimension)
     m.setColumnVector(idx, zeros subtract vec)
   }
 
-  private def inverseRow[T <: FieldElement[T]](m: FieldMatrix[T], idx: Int)(implicit field: Field[T]): Unit = {
+  private def inverseRow[T](m: InnerMatrix[T], idx: Int)(implicit wrapper: FieldElementWrapper[T]): Unit = {
     val vec = m.getRowVector(idx)
     val zeros = fieldRowOfZeros(vec.getDimension)
     m.setRowVector(idx, zeros subtract vec)

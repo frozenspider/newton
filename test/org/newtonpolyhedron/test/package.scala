@@ -16,21 +16,15 @@ import org.newtonpolyhedron.entity.Term
 package object test {
   type DoubleConvertible = Any { def toDouble: Double }
 
-  def matrInt(content: Array[Array[Int]]): Matrix[BigIntFielded] = {
-    Matrix.fromArray(content map (_ map (x => BigIntFielded(x))))
+  def matrInt(content: Seq[Seq[Int]]): Matrix[BigInt] = {
+    MatrixSupport.fromInts(content map (_.toIndexedSeq map BigInt.apply))
   }
 
-  def matrFrac(content: Array[Array[Int]]): Matrix[BigFrac] = {
-    Matrix.fromArray(content map (_ map (x => BigFrac(x))))
+  def matrFrac(content: Seq[Seq[Int]]): Matrix[BigFrac] = {
+    MatrixSupport.fromFracs(content map (_.toIndexedSeq map BigFrac.apply))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
-
-  def a(values: Int*): Array[Int] = Array(values: _*)
-  def a(values: BigFrac*): Array[BigFrac] = Array(values: _*)
-  def a(values: Array[Int]*): Array[Array[Int]] = Array(values: _*)
-  def a(values: Array[BigFrac]*): Array[Array[BigFrac]] = Array(values: _*)
-  def a(values: Array[Array[Int]]*): Array[Array[Array[Int]]] = Array(values: _*)
 
   def iv(ints: Int*): IntVec = IntVec((ints map BigInt.apply): _*)
   def fv(ints: Int*): FracVec = FracVec((ints map BigFrac.apply): _*)

@@ -4,8 +4,6 @@ import scala.Numeric.Implicits._
 import scala.Ordering.Implicits._
 import scala.collection.JavaConversions._
 
-import org.apache.commons.math3.Field
-import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.fraction.BigFraction
 import org.apache.commons.math3.fraction.BigFractionField
 import org.apache.commons.math3.linear.FieldMatrix
@@ -13,9 +11,10 @@ import org.fs.utils.collection.list.SortedArrayList
 import org.fs.utils.collection.set.IndexedSet
 import org.fs.utils.structure.wrap.Pair
 import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.BigFrac.BigFracField
 import org.newtonpolyhedron.entity.Matrix
-import org.newtonpolyhedron.entity.vector._
+import org.newtonpolyhedron.entity.MatrixSupport
+import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.compatibility.FieldElementSupport._
 
 object ScalaJavaConversionUtils {
 
@@ -39,30 +38,25 @@ object ScalaJavaConversionUtils {
   implicit def convertPair[T1, T2](pair: (T1, T2)) = Pair.make(pair._1, pair._2)
 
   // Matrices
-  private def createOfSizeAs[S <: FieldElement[S], T <: FieldElement[T]](src: FieldMatrix[S])(implicit field: Field[T]) =
-    org.apache.commons.math3.linear.MatrixUtils.createFieldMatrix(field,
-      src.getRowDimension,
-      src.getColumnDimension)
-
   implicit def matrixJava2Scala(src: FieldMatrix[BigFraction]) = {
-    val res = createOfSizeAs(src)
-    for {
-      ir <- 0 until src.getRowDimension
-      ic <- 0 until src.getColumnDimension
-    } {
-      res.setEntry(ir, ic, new BigFrac(src.getEntry(ir, ic)))
+    val res: Seq[FracVec] = for (ir <- 0 until src.getRowDimension) yield {
+      for (ic <- 0 until src.getColumnDimension) yield {
+        new BigFrac(src.getEntry(ir, ic))
+      }
     }
-    new Matrix(res)
+    MatrixSupport.fromFracs(res)
   }
 
   def matrixScala2Java(src: Matrix[BigFrac]) = {
     val content = src.contentCopy
-    val res = createOfSizeAs(content)(BigFractionField.getInstance)
+    val res = org.apache.commons.math3.linear.MatrixUtils.createFieldMatrix(BigFractionField.getInstance,
+      content.getRowDimension,
+      content.getColumnDimension)
     for {
       ir <- 0 until content.getRowDimension
       ic <- 0 until content.getColumnDimension
     } {
-      res.setEntry(ir, ic, content.getEntry(ir, ic).underlying)
+      res.setEntry(ir, ic, content.getEntry(ir, ic).pure.underlying)
     }
     res
   }
