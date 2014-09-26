@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.eqsys
 
 import org.newtonpolyhedron.Polys
-import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 trait EqSystemSolver {
 
@@ -12,5 +12,5 @@ trait EqSystemSolver {
   def whyCantSolve(system: Polys): Option[String]
 
   /** Solves the given equation system */
-  def solve(system: Polys): Seq[FracMathVec]
+  def solve(system: Polys): Seq[FracVec]
 }

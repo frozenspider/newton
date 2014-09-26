@@ -111,7 +111,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
       }).unzip
       (unzip._1.yieldDefined, unzip._2.yieldDefined)
     }
-    val rational = (rationalMultipliers.map(p => p._1 pow p._2) :+ BigInt(1)).product
+    val rational = (rationalMultipliers.map(p => BigInt(p._1) pow p._2) :+ BigInt(1)).product
     val irrationalMultipliersGroups = irrationalMultipliers.groupBy(_._2.den).toSeq sortBy (_._1)
     val roots = irrationalMultipliersGroups map {
       case (rootBase, irratMultipliers) =>
@@ -119,7 +119,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
           case (base, power) =>
             val multipliedPower = power * rootBase
             assert(multipliedPower.isInt)
-            base pow multipliedPower.intValue
+            BigInt(base) pow multipliedPower.intValue
         }) :+ BigInt(1)).product)
     }
     (rational, ListMap(roots: _*))

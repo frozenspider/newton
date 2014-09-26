@@ -5,8 +5,7 @@ import org.junit.runner.RunWith
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import java.io.PrintWriter
 import org.fs.utils.collection.table.KeyTables
 import org.fs.utils.collection.table.ArrayListKeyTable
@@ -18,9 +17,9 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 
   val solver = new PolyMotzkinBurgerSolver(new ConeSolverImpl)
 
-  def solve(points: IndexedSeq[FracMathVec],
-            commonLimits: IndexedSeq[IntMathVec],
-            wishfulBasis: IndexedSeq[IntMathVec]) =
+  def solve(points: IndexedSeq[FracVec],
+            commonLimits: IndexedSeq[IntVec],
+            wishfulBasis: IndexedSeq[IntVec]) =
     solver.solve(points, commonLimits, wishfulBasis, /* NullPrintWriter.instance */ new PrintWriter(System.out, true))
 
   test("Bruno, pages 19 to 30") {
@@ -37,7 +36,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	   N3 = [ -1 -1 -2 ] |  +   +   +   -   -
 	   N4 = [  1  1  1 ] |  -   +   +   +   +
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 5)
     val expectedVecs = s(
       iv(-2, -1, -1),
@@ -88,7 +87,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	|N14 = [ 1 1 1 -1 ]  | - | - | - | - | + | + | + | - | - | - | -  | +  |
 	|N15 = [ 1 1 1 1 ]   | - | - | - | - | + | + | + | + | - | - | -  | -  |
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 12)
     def mark = markInTable(expectedLookupTable)_
     val expectedVecs = s(
@@ -168,7 +167,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	|N13 = [ 0 0 -1 0 ]  | - | - | - | - | - | - | - | - | - | - | +  | -  |
 	|N14 = [ 0 0 0 -1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  |
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 12)
     val expectedVecs = s(
       iv(-1, -1, -1, -1),
@@ -223,7 +222,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	   N3 = [ 2 -2 1 ]  |  -    +    +    -    +    
 	   N5 = [ 2 2 1 ]   |  -    -    -    -    + 
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 5)
     val expectedVecs = s(
       iv(0, 0, -1),
@@ -287,7 +286,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	   |N12 = [ 1 1 0 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | +  | +  | -  | +  | +  | +  | +  | -  | -  | -  | -  | -  |
 	   |N13 = [ -1 -1 1 ]| - | - | - | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | +  | -  | -  |
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 25)
     val expectedVecs = s(
       iv(-6, -4, 3),
@@ -345,7 +344,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	N3 = [ 1 0 ]  |  -    -    -    -    -    -    -    -    +    +    
 	N4 = [ 1 1 ]  |  -    -    +    -    -    -    -    -    +    -
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 9)
     val expectedVecs = s(
       iv(-1, 0),
@@ -379,7 +378,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	N3 = [ 0 1 0  ] |  -    -    +    +    +    +    
 	N5 = [ 1 0 0  ] |  -    +    -    -    +    +  
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 5)
     val expectedVecs = s(
       iv(0, -1, 1),
@@ -415,7 +414,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	N3 = [ 0 1 0  ] |  -    -    +    +    +    +    
 	N5 = [ 1 0 0  ] |  -    +    -    -    +    +  
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 5)
     val expectedVecs = s(
       iv(0, -1, 1),
@@ -449,7 +448,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	 |[ 1 1 1 ]   |true|true|true|true|
 	 +------------+----+----+----+----+
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 4)
     val expectedVecs = s(
       iv(-1, -1, -1),
@@ -477,7 +476,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 	 |[ 1 1 1 ]   |true|true|true|true|
 	 +------------+----+----+----+----+
 	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntMathVec, Int, Boolean]
+    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
     fillTableIdxKeys(expectedLookupTable, 4)
     val expectedVecs = s(
       iv(-1, -1, -1),

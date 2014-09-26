@@ -70,7 +70,7 @@ package object latex {
       val termsSignedStrings = poly map { term =>
         (
           term.coeff.signum,
-          productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers.elements)
+          productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers)
         )
       }
       val (headCoeff, headTermAbsString) = termsSignedStrings.head

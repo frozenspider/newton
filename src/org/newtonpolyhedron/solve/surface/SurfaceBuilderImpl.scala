@@ -1,15 +1,14 @@
 package org.newtonpolyhedron.solve.surface
 
-import org.newtonpolyhedron._
-
 import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.table.KeyTable
+import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 class SurfaceBuilderImpl extends SurfaceBuilder {
-  override def surfaces(lookupTable: KeyTable[IntMathVec, Int, Boolean],
+  override def surfaces(lookupTable: KeyTable[IntVec, Int, Boolean],
                         dim: Int): Map[Int, SortedSet[Surface]] = {
     val lookupData = extactLookupTableData(lookupTable)
     val surfacesMap = gatherSurfacesMap(dim, lookupData)
@@ -30,7 +29,7 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
     recurse(dim - 1, Map.empty, Set.empty)
   }
 
-  def extactLookupTableData(lookup: KeyTable[IntMathVec, Int, Boolean]): Seq[Seq[Int]] = {
+  def extactLookupTableData(lookup: KeyTable[IntVec, Int, Boolean]): Seq[Seq[Int]] = {
     import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     for {
       point <- lookup.rowKeyList

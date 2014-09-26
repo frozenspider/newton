@@ -3,9 +3,10 @@ package org.newtonpolyhedron.solve.eqsys
 import org.newtonpolyhedron.Polynomial
 import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.BigFrac._
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 /**
  * Is only capable of solving *simple* equation systems.
@@ -17,11 +18,11 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
   private type Replacement = Map[Int, Product]
 
   def whyCantSolve(system: Polys): Option[String] = {
-    val dims = for (poly <- system; term <- poly) yield term.powers.dim
-    if (dims.distinct.size != 1)
+    val dimensions = for (poly <- system; term <- poly) yield term.powers.size
+    if (dimensions.distinct.size != 1)
       Some("Terms have different dimensions")
     else {
-      val varsCounts = system.head.head.powers.dim
+      val varsCounts = system.head.head.powers.size
       if (system.size < varsCounts)
         Some("Not enough equations (${system.size}) for ${varsCounts} variables")
       else if (system exists (_.size != 2))
@@ -30,9 +31,9 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
     }
   }
 
-  def solve(system: Polys): Seq[FracMathVec] = {
+  def solve(system: Polys): Seq[FracVec] = {
     require(canSolve(system))
-    val varsCounts = system.head.head.powers.dim
+    val varsCounts = system.head.head.powers.size
     val replacements = solveSimpleEqSysFor(system, (0 until varsCounts), Map.empty)
     val res = replacements.foldLeft(IndexedSeq.fill(varsCounts)(BigFrac.ZERO)) {
       case (acc, (idx, value)) => acc.updated(idx, value.fracValue)
@@ -76,12 +77,12 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
         }
         val powDiff = mainTerm.powers(replFor) - secTerm.powers(replFor)
         // Lets put secondary term to rhs and reduce
-        val reducedM = mainTerm mapPowers (powers => powers.updated(replFor, 0))
-        val reducedS = secTerm mapPowers (powers => powers.updated(replFor, 0))
+        val reducedM = mainTerm mapPowers (powers => powers.upd(replFor, 0))
+        val reducedS = secTerm mapPowers (powers => powers.upd(replFor, 0))
         val currRepl = -(reducedS / reducedM) pow powDiff.inv
         val restReplaced = restEqs map representThrough(replFor, currRepl)
         val solutionForRest = solveSimpleEqSysFor(restReplaced, termIndicesToReplace.tail, replacements)
-        val unrolledValue = currRepl.powers.elements.mapWithIndex { (pow, idx) =>
+        val unrolledValue = currRepl.powers.mapWithIndex { (pow, idx) =>
           if (pow == 0) Product.ONE else solutionForRest(idx).pow(pow)
         }
         val reduced = unrolledValue.reduce(_ * _) * currRepl.coeff
@@ -96,7 +97,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
     val res = for (term <- eq) yield {
       val srcPow = term.powers(termIdx)
       val poweredRepr = repr pow srcPow
-      val powerlessTerm = term mapPowers (_.updated(termIdx, 0))
+      val powerlessTerm = term mapPowers (_.upd(termIdx, 0))
       val newTerm = poweredRepr * powerlessTerm
       newTerm
     }

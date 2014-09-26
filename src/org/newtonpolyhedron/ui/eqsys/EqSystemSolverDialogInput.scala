@@ -14,6 +14,7 @@ import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 class EqSystemSolverDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
@@ -81,16 +82,16 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
   private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial, EquationSign.Equals, zeroPoly(dim))
 
   override def getInputFor(system: Polys, headerTextOption: Option[String]): Option[Seq[String]] = {
-    val dim = system collectFirst {
-      case poly if !poly.isEmpty => poly.head.powers.dim
+    val dimension = system collectFirst {
+      case poly if !poly.isEmpty => poly.head.powers.size
     } getOrElse (throw new IllegalArgumentException("Can't get dimension of polys"))
 
-    val (inputs, inputPanels) = createInputComponents(dim)
+    val (inputs, inputPanels) = createInputComponents(dimension)
 
     inputDialog.resetDialog(
       headerText = headerTextOption getOrElse s"Please solve for $varName:",
       inputPanels = inputPanels,
-      eqSys = system map asEqualsZeroEquation(dim)
+      eqSys = system map asEqualsZeroEquation(dimension)
     )
     inputDialog.visible = true
     inputDialog.dispose
@@ -116,13 +117,13 @@ object EqSystemSolverDialogInput extends App {
 
   val eqs: Polys = IndexedSeq[Polynomial](
     IndexedSeq(
-      new Term(Product(1), FracMathVec(1, 2, 3)),
-      new Term(tricky, FracMathVec(1, 2, 3)),
-      new Term(Product(4), FracMathVec(0, 0, 0))
+      new Term(Product(1), FracVec(1, 2, 3)),
+      new Term(tricky, FracVec(1, 2, 3)),
+      new Term(Product(4), FracVec(0, 0, 0))
     ),
     IndexedSeq(
-      new Term(Product(BigFrac(-1, 2)), FracMathVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
-      new Term(Product(-2), FracMathVec(0, 0, 3))
+      new Term(Product(BigFrac(-1, 2)), IndexedSeq(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+      new Term(Product(-2), FracVec(0, 0, 3))
     )
   )
 

@@ -3,6 +3,7 @@ package org.newtonpolyhedron.solve.changevars
 import org.newtonpolyhedron.Polynomial
 import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 trait ChangerOfVariables {
 

@@ -3,32 +3,33 @@ package org.newtonpolyhedron.solverprinters
 import java.io.PrintWriter
 import java.text.MessageFormat
 
-import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron._
+import org.newtonpolyhedron.entity.MatrixSupport
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
 
 class ConeSolverPrinter(solver: ConeSolver,
-                        val inequations: IndexedSeq[IntMathVec],
-                        val basis: IndexedSeq[IntMathVec],
+                        val inequations: IndexedSeq[IntVec],
+                        val basis: IndexedSeq[IntVec],
                         output: PrintWriter)
     extends SolverPrinter[ConeSolver](solver, output) {
 
   override def solveFor(solver: ConeSolver,
                         output: PrintWriter) = {
     output.println(title("Cone computing"))
-    val rank = Matrix(inequations).rank
+    val rank = MatrixSupport.fromInts(inequations).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations eachWithIndex { (currIneq, i) =>
       output.println(MessageFormat.format(" c{0} = {1}", int2Integer(i + 1), currIneq))
     }
-    val dim = inequations(0).dim
-    val solved = solver.solve(inequations, basis, dim, output)
+    val dimension = inequations(0).size
+    val solved = solver.solve(inequations, basis, dimension, output)
     coneFinalSolutionOutput(solved, output)
   }
 
-  private def coneFinalSolutionOutput(testing: Seq[IntMathVec],
+  private def coneFinalSolutionOutput(testing: Seq[IntVec],
                                       output: PrintWriter) = {
     output.println(header("FINAL SOLUTIONS:"))
     testing eachWithIndex { (currTesting, i) =>

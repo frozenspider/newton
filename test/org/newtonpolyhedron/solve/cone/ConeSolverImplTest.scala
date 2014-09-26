@@ -3,7 +3,7 @@ package org.newtonpolyhedron.solve.cone
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.NullPrintWriter
 
 @RunWith(classOf[JUnitRunner])
@@ -12,16 +12,16 @@ class ConeSolverImplTest extends FunSuite {
   val coneSolver = new ConeSolverImpl
 
   implicit def tupleToVec(tuple: Tuple2[Int, Int]) =
-    IntMathVec(tuple._1, tuple._2)
+    IntVec(tuple._1, tuple._2)
 
   implicit def tupleToVec(tuple: Tuple3[Int, Int, Int]) =
-    IntMathVec(tuple._1, tuple._2, tuple._3)
+    IntVec(tuple._1, tuple._2, tuple._3)
 
   implicit def tupleToVec(tuple: Tuple4[Int, Int, Int, Int]) =
-    IntMathVec(tuple._1, tuple._2, tuple._3, tuple._4)
+    IntVec(tuple._1, tuple._2, tuple._3, tuple._4)
 
   implicit def tupleToVec(tuple: Tuple5[Int, Int, Int, Int, Int]) =
-    IntMathVec(tuple._1, tuple._2, tuple._3, tuple._4, tuple._5)
+    IntVec(tuple._1, tuple._2, tuple._3, tuple._4, tuple._5)
 
   test("chernyakov") {
     def eqSys = IndexedSeq(

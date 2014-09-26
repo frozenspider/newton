@@ -1,10 +1,9 @@
 package org.newtonpolyhedron.entity
 
-import org.apache.commons.math3.FieldElement
-import org.apache.commons.math3.linear.FieldVector
-import org.apache.commons.math3.linear.MatrixUtils
-import org.apache.commons.math3.Field
 import scala.annotation.tailrec
+
+import org.apache.commons.math3.linear.MatrixUtils
+import org.newtonpolyhedron.utils.compatibility.FieldElementSupport._
 
 object MatrixExt {
   sealed trait Orientation
@@ -36,7 +35,7 @@ object MatrixExt {
       val col2 = copy.getColumnVector(j)
       copy.setColumnVector(i, col2)
       copy.setColumnVector(j, col1)
-      new Matrix(copy)
+      new Matrix(copy)(bigFracFieldWrapper)
     }
 
     def inverseRow(i: Int): M = {
@@ -51,7 +50,7 @@ object MatrixExt {
       val vec = copy.getColumnVector(i)
       val zeros = fieldRowOfZeros(vec.getDimension)
       copy.setColumnVector(i, zeros subtract vec)
-      new Matrix(copy)
+      new Matrix(copy)(bigFracFieldWrapper)
     }
 
     def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): M =
@@ -68,10 +67,10 @@ object MatrixExt {
       val copy = mt.contentCopy
       val srcCol = copy.getColumnVector(from)
       val dstCol = copy.getColumnVector(to)
-      val srcColMul = srcCol mapMultiply quotient
+      val srcColMul = srcCol mapMultiply bigFracFieldWrapper(quotient)
       val dstColSub = dstCol subtract srcColMul
       copy.setColumnVector(to, dstColSub)
-      new Matrix(copy)
+      new Matrix(copy)(bigFracFieldWrapper)
     }
 
     /**
@@ -81,9 +80,9 @@ object MatrixExt {
      */
     def toDiagonal: MatrixTriple = {
       require(mt.isSquare, "Non-square matrix")
-      val iden = Matrix.idenitiy(mt.rowCount)(mt.field)
-      val rowOnes = new Matrix(iden.contentCopy)
-      val colOnes = new Matrix(iden.contentCopy)
+      val iden = Matrix.idenitiy(mt.rowCount)(bigFracFieldWrapper)
+      val rowOnes = new Matrix(iden.contentCopy)(bigFracFieldWrapper)
+      val colOnes = new Matrix(iden.contentCopy)(bigFracFieldWrapper)
       FunctionalMatrixCompanion.toDiagonalTriple((mt, rowOnes, colOnes))
     }
   }
