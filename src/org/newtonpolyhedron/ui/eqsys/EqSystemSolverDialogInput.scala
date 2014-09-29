@@ -9,12 +9,13 @@ import scala.swing.Panel
 import scala.swing.TextField
 import scala.swing.event.ButtonClicked
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class EqSystemSolverDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
@@ -106,10 +107,11 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
 }
 
 object EqSystemSolverDialogInput extends App {
-  import org.newtonpolyhedron._
   import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector._
   import org.newtonpolyhedron.entity.equation._
+  import org.newtonpolyhedron.utils.LanguageImplicits._
+  import org.newtonpolyhedron.utils.PolynomialUtils._
 
   val s = new EqSystemSolverDialogInput
 

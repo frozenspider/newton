@@ -6,8 +6,7 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.NullPrintWriter
-import org.newtonpolyhedron.Polys
-import org.newtonpolyhedron.Polynomial
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 @RunWith(classOf[JUnitRunner])
 class SimpleEqSystemSolverImplTest extends FunSuite {

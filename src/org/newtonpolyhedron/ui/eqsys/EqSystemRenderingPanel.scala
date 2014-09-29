@@ -2,8 +2,8 @@ package org.newtonpolyhedron.ui.eqsys
 
 import scala.swing.BorderPanel
 
-import org.newtonpolyhedron.Equations
 import org.newtonpolyhedron.ui.LatexRenderingComponent
+import org.newtonpolyhedron.utils.PolynomialUtils.Equations
 
 class EqSystemRenderingPanel extends BorderPanel {
   import BorderPanel.Position._
@@ -25,10 +25,11 @@ class EqSystemRenderingPanel extends BorderPanel {
 
 object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
   import scala.swing.MainFrame
-  import org.newtonpolyhedron._
   import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector.VectorImports._
   import org.newtonpolyhedron.entity.equation._
+  import org.newtonpolyhedron.utils.LanguageImplicits._
+  import org.newtonpolyhedron.utils.PolynomialUtils._
 
   val subj = new EqSystemRenderingPanel
   def top = new MainFrame {

@@ -1,15 +1,16 @@
 package org.newtonpolyhedron.conversion
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 package object latex {
 
   sealed trait LatexStringMixin
 
   type LatexString = String with LatexStringMixin
-  
+
   def latex(s: String) = stringToLatex(s)
 
   private implicit def stringToLatex(s: String) = s.asInstanceOf[LatexString]

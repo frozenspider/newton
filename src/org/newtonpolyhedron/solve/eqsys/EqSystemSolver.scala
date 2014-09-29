@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.PolynomialUtils.Polys
 
 trait EqSystemSolver {
 

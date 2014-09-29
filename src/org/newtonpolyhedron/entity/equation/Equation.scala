@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.entity.equation
 
-import org.newtonpolyhedron._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 case class Equation(lhs: Polynomial, sign: EquationSign, rhs: Polynomial)
 

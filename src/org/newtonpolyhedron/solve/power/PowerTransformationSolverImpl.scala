@@ -1,15 +1,14 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron._
-import org.newtonpolyhedron.entity.PolynomialWrapper._
-import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.Product
+import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
-import org.newtonpolyhedron.solve.changevars.ChangerOfVariables
-import org.newtonpolyhedron.entity.Product
+import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class PowerTransformationSolverImpl(
   val umm: UnimodularMatrixMaker,

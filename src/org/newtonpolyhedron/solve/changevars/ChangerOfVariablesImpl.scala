@@ -2,11 +2,10 @@ package org.newtonpolyhedron.solve.changevars
 
 import scala.collection.IndexedSeq
 
-import org.newtonpolyhedron.Polynomial
-import org.newtonpolyhedron.Polys
-import org.newtonpolyhedron.entity.PolynomialWrapper._
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class ChangerOfVariablesImpl extends ChangerOfVariables {
   private val s = IndexedSeq

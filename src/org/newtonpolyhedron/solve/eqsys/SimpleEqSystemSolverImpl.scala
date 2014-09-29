@@ -1,12 +1,12 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.Polynomial
-import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.BigFrac._
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 /**
  * Is only capable of solving *simple* equation systems.

@@ -5,9 +5,9 @@ import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
 import org.fs.utils.collection.table.KeyTables
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
+import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PointUtils
 

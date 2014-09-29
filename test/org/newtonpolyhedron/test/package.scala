@@ -10,6 +10,8 @@ import org.scalatest.Suite
 import org.scalatest.FailureMessages
 import org.scalatest.Resources
 import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 /**
  * Contains test shortcuts

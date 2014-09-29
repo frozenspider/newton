@@ -5,10 +5,11 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 @RunWith(classOf[JUnitRunner])
 class PolynomialWrapperTest extends FunSuite {
-  import PolynomialWrapper._
 
   test("powers") {
     val `x + y` = makePoly((1, s(1, 0)), (1, s(0, 1)))

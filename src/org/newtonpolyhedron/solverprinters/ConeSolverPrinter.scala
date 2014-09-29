@@ -3,11 +3,11 @@ package org.newtonpolyhedron.solverprinters
 import java.io.PrintWriter
 import java.text.MessageFormat
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
 class ConeSolverPrinter(solver: ConeSolver,
                         val inequations: IndexedSeq[IntVec],

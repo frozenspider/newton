@@ -1,13 +1,23 @@
-package org.newtonpolyhedron.entity
+package org.newtonpolyhedron.utils
 
-import org.newtonpolyhedron.Polynomial
+import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.Product
+import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.entity.equation.Equation
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
-object PolynomialWrapper {
+object PolynomialUtils {
+  type Polynomial = IndexedSeq[Term]
+  type Polys = IndexedSeq[Polynomial]
+  type Equations = IndexedSeq[Equation]
+
+  def zeroPoly(dim: Int): Polynomial =
+    IndexedSeq(Term(Product.ZERO, IndexedSeq.fill[BigFrac](dim)(BigFrac.ZERO)))
 
   /**
    * Contains some basic polynomial-related operations - multiplication, raising to powers, etc.
    */
-  implicit class RichPolynomial(poly: IndexedSeq[Term]) {
+  implicit class RichPolynomial(poly: Polynomial) {
 
     def pow(pow: Int): Polynomial = {
       require(pow >= 0, "Can't raise polynomial to negative power")
@@ -42,5 +52,14 @@ object PolynomialWrapper {
 
     def coeffs =
       poly map (_.coeff)
+
+    def toPlainString: String = {
+      poly map (term => "(" +
+        term.coeff.fracValue +
+        ") * " +
+        term.powers.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
+      ) mkString ("", " + ", " = 0")
+    }
   }
+
 }

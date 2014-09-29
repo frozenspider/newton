@@ -1,9 +1,9 @@
 package org.newtonpolyhedron.entity
 
-import org.newtonpolyhedron._
 import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
 import org.apache.commons.math3.Field
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
 // How to raise complex number to a fractional power?
 case class Complex(val r: Product, i: Product)

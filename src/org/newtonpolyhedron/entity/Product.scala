@@ -1,10 +1,10 @@
 package org.newtonpolyhedron.entity
 
-import scala.math.ScalaNumber
-import org.newtonpolyhedron.utils.MathUtils
-import scala.collection.immutable.SortedSet
-import scala.math.ScalaNumericConversions
 import scala.collection.immutable.ListMap
+import scala.math.ScalaNumber
+import scala.math.ScalaNumericConversions
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.MathUtils._
 
 /**
  * Represents a number as a product of powers of its prime factors.
@@ -102,7 +102,6 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
    * @return rational part along with (RootBase -> RootedValue) map
    */
   lazy val rootedForm: (BigInt, Map[Int, BigInt]) = {
-    import org.newtonpolyhedron._
     val (rationalMultipliers, irrationalMultipliers) = {
       val unzip = (underlying.toSeq collect {
         case (base, power) if power.isInt => (Some((base, power.intValue)), None)
@@ -211,7 +210,6 @@ object Product {
 
   def factorize(v: Int): Map[Int, BigFrac] = {
     require(v > 0, "Can only factorize positive numbers")
-    import MathUtils._
     def rec(v: Int, primes: Seq[Int], acc: Map[Int, BigFrac]): Map[Int, BigFrac] =
       if (primes.isEmpty) // v is prime itself
         incPower(acc, v)

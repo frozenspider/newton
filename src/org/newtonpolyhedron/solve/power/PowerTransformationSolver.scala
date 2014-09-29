@@ -1,10 +1,10 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 trait PowerTransformationSolver {
 

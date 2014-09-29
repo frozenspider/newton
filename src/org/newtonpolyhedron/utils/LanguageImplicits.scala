@@ -1,36 +1,20 @@
-package org
+package org.newtonpolyhedron.utils
 
-import java.math.BigInteger
-import scala.Numeric.Implicits._
-import scala.Ordering.Implicits._
-import scala.collection.JavaConversions._
-import org.newtonpolyhedron.entity._
-import org.newtonpolyhedron.entity.equation._
-import org.newtonpolyhedron.entity.vector._
-import scala.collection.immutable.SortedSet
-import scala.collection.TraversableLike
-import scala.collection.SeqLike
+import scala.collection.GenTraversableLike
 import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
-import scala.collection.GenTraversableLike
+import scala.collection.immutable.SortedSet
 
-package object newtonpolyhedron {
+object LanguageImplicits {
+  // Mapping helpers
+  implicit def funOfTwo2funOfMonad[A1, A2, T](f: (A1, A2) => T): ((A1, A2)) => T =
+    p => f(p._1, p._2)
 
-  type Polynomial = IndexedSeq[Term]
-  type Polys = IndexedSeq[Polynomial]
-  type Equations = IndexedSeq[Equation]
+  implicit def funOfThree2funOfMonad[A1, A2, A3, T](f: (A1, A2, A3) => T): ((A1, A2, A3)) => T =
+    p => f(p._1, p._2, p._3)
 
-  def zeroPoly(dim: Int): Polynomial =
-    IndexedSeq(Term(Product.ZERO, IndexedSeq.fill[BigFrac](dim)(BigFrac.ZERO)))
-
-  implicit class ExtPoly(val p: Polynomial) {
-    def toPlainString: String = {
-      p map (term => "(" +
-        term.coeff.fracValue +
-        ") * " +
-        term.powers.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
-      ) mkString ("", " + ", " = 0")
-    }
+  implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
+    SortedSet.empty[T] ++ t
   }
 
   implicit class ExtBigInt(val n: BigInt) extends AnyVal {
@@ -108,15 +92,4 @@ package object newtonpolyhedron {
       for (o <- iter if o.isDefined) yield o.get
     }
   }
-
-  implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
-    SortedSet.empty[T] ++ t
-  }
-
-  // Mapping helpers
-  implicit def funOfTwo2funOfMonad[A1, A2, T](f: (A1, A2) => T): ((A1, A2)) => T =
-    p => f(p._1, p._2)
-
-  implicit def funOfThree2funOfMonad[A1, A2, A3, T](f: (A1, A2, A3) => T): ((A1, A2, A3)) => T =
-    p => f(p._1, p._2, p._3)
 }

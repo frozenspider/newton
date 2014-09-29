@@ -5,7 +5,6 @@ import scala.collection.mutable.StringBuilder
 import org.apache.commons.math3.linear.FieldLUDecomposition
 import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
 import internal.FieldElementSupport._

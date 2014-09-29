@@ -6,13 +6,13 @@ import java.text.MessageFormat
 
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver
 import org.newtonpolyhedron.solve.surface.SurfaceBuilder
 import org.newtonpolyhedron.ui.render3d.PolyRenderer
+import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PointUtils
 
 import com.sun.j3d.utils.applet.MainFrame
