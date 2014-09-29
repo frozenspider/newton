@@ -3,6 +3,9 @@ package org.newtonpolyhedron.solve.eqsys
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.PolynomialUtils.Polys
 
+/**
+ * Solver for system of polynomial equations
+ */
 trait EqSystemSolver {
 
   /** Checks whether or not the system can be solved by this solver */

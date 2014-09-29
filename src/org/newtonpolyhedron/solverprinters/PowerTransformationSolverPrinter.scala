@@ -4,6 +4,7 @@ import java.io.PrintWriter
 
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariables
 import org.newtonpolyhedron.solve.power.PowerTransformationSolver
 import org.newtonpolyhedron.utils.LanguageImplicits._
@@ -26,8 +27,10 @@ class PowerTransformationSolverPrinter(solver: PowerTransformationSolver,
       (polys zip intersectionPtsIndices).toIndexedSeq map {
         case (poly, polyIndices) => polyIndices.toIndexedSeq map poly
       }
+    val shortPolysPowers: Seq[Seq[FracVec]] =
+      shotPolys map (_ map (_.powers))
 
-    val alpha = solver.generateAlphaFromTerms(shotPolys)
+    val alpha = solver.generateAlphaFromTerms(shortPolysPowers)
     //  val alpha = matrFromVecs(s(s(-1, -1, 5), s(2, -1, 0), s(-1, 0, 2)) map vec.fromInts)
     def substituteAllIn(polynomials: Polys) = polynomials map (solver.substitute(_, alpha))
 

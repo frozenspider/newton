@@ -17,19 +17,19 @@ import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 
-class EqSystemSolverDialogInput extends EqSystemSolutionInput {
+class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
   import org.newtonpolyhedron.conversion.latex._
 
-  private val varName = "x"
+  override val varName = "x"
 
   //
   // UI
   //
   private lazy val inputDialog = new Dialog {
-    def resetDialog(headerText: String, inputPanels: Seq[Panel], eqSys: Equations) = {
+    def resetDialog(headerText: LatexString, inputPanels: Seq[Panel], eqSys: Equations) = {
       ok = false
-      header.text = headerText
+      header.content = headerText
       inputsContainer.contents.clear()
       inputsContainer.contents ++= inputPanels
       eqSysRenderer.render(eqSys, varName)
@@ -39,13 +39,17 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
     var ok = false
     modal = true
     title = "Manual solver"
-    private val header = new Label
+    private val header = new LatexRenderingComponent {
+      fontSize = 30
+    }
     private val inputsContainer = new FlowPanel
     private val eqSysRenderer = new EqSystemRenderingPanel
     private val okBtn = new Button("OK")
     private val cnBtn = new Button("Cancel")
     contents = new BorderPanel {
-      layout(header) = North
+      layout(new FlowPanel {
+        contents += header
+      }) = North
       layout(eqSysRenderer) = Center
       layout(new BorderPanel {
         layout(inputsContainer) = Center
@@ -82,17 +86,24 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
 
   private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial, EquationSign.Equals, zeroPoly(dim))
 
-  override def getInputFor(system: Polys, headerTextOption: Option[String]): Option[Seq[String]] = {
-    val dimension = system collectFirst {
-      case poly if !poly.isEmpty => poly.head.powers.size
+  override def getInputFor(system: Polys,
+                           initialValuesOption: Option[Seq[String]],
+                           headerTextOption: Option[LatexString]): Option[Seq[String]] = {
+    val dim = system collectFirst {
+      case poly if !poly.isEmpty => poly.head.powers.length
     } getOrElse (throw new IllegalArgumentException("Can't get dimension of polys"))
 
-    val (inputs, inputPanels) = createInputComponents(dimension)
+    val (inputs, inputPanels) = createInputComponents(dim)
+    initialValuesOption foreach { initialValues =>
+      (initialValues zip inputs) map {
+        case (value, input) => input.text = value
+      }
+    }
 
     inputDialog.resetDialog(
-      headerText = headerTextOption getOrElse s"Please solve for $varName:",
+      headerText = headerTextOption getOrElse latex(textToLatex(s"Please solve for ") + varName + ":"),
       inputPanels = inputPanels,
-      eqSys = system map asEqualsZeroEquation(dimension)
+      eqSys = system map asEqualsZeroEquation(dim)
     )
     inputDialog.visible = true
     inputDialog.dispose
@@ -106,14 +117,14 @@ class EqSystemSolverDialogInput extends EqSystemSolutionInput {
 
 }
 
-object EqSystemSolverDialogInput extends App {
+object EqSystemSolutionDialogInput extends App {
   import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector._
   import org.newtonpolyhedron.entity.equation._
   import org.newtonpolyhedron.utils.LanguageImplicits._
   import org.newtonpolyhedron.utils.PolynomialUtils._
 
-  val s = new EqSystemSolverDialogInput
+  val s = new EqSystemSolutionDialogInput
 
   val tricky = EqSystemRenderingPanel.tricky
 
@@ -124,10 +135,10 @@ object EqSystemSolverDialogInput extends App {
       new Term(Product(4), FracVec(0, 0, 0))
     ),
     IndexedSeq(
-      new Term(Product(BigFrac(-1, 2)), IndexedSeq(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+      new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
       new Term(Product(-2), FracVec(0, 0, 3))
     )
   )
 
-  println(s.getInputFor(eqs, None))
+  println(s.getInputFor(eqs, None, None))
 }

@@ -15,6 +15,9 @@ package object latex {
 
   private implicit def stringToLatex(s: String) = s.asInstanceOf[LatexString]
 
+  def textToLatex(plaintext: String): LatexString =
+    "\\text{" + plaintext + "}"
+
   def fracToLatex(frac: BigFrac): LatexString = {
     if (frac.isInt) {
       frac.num.toString
@@ -33,10 +36,16 @@ package object latex {
       val rationalString = if (rational == 1) "" else rational.toString
       val irrationalString = roots.toSeq sortBy (_._1) map {
         case (_, rooted) if rooted == 0 => ""
-        case (rootBase, rooted)         => s"\\sqrt[$rootBase]{$rooted}"
+        case (rootBase, rooted)         => rootToLatex(rootBase, rooted)
       }
       "(" + rationalString + irrationalString.mkString + ")"
     }
+
+  def rootToLatex(rootBase: BigFrac, rootedValue: BigFrac): LatexString = {
+    val rootBaseLatex = fracToLatex(rootBase)
+    val rootedValueLatex = fracToLatex(rootedValue)
+    s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"
+  }
 
   def signToLatex(sign: EquationSign): LatexString = sign match {
     case EquationSign.Equals    => "="
@@ -74,17 +83,21 @@ package object latex {
           productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers)
         )
       }
-      val (headCoeff, headTermAbsString) = termsSignedStrings.head
-      val restTermsString = termsSignedStrings.tail.foldLeft("") {
-        case (start, (coeff, termAbsString)) if coeff < 0 => start + "-" + termAbsString
-        case (start, (coeff, termAbsString))              => start + "+" + termAbsString
-      }
-      val termsString = headCoeff match {
-        case x if x < 0 => "-" + headTermAbsString + restTermsString
-        case x          => headTermAbsString + restTermsString
-      }
-      termsString
+      signedAbsSeqToLatex(termsSignedStrings)
     }
+  }
+
+  def signedAbsSeqToLatex(seq: Seq[(Int, String)]): LatexString = {
+    val (headCoeff, headTermAbsString) = seq.head
+    val restTermsString = seq.tail.foldLeft("") {
+      case (start, (coeff, termAbsString)) if coeff < 0 => start + "-" + termAbsString
+      case (start, (coeff, termAbsString))              => start + "+" + termAbsString
+    }
+    val termsString = headCoeff match {
+      case x if x < 0 => "-" + headTermAbsString + restTermsString
+      case x          => headTermAbsString + restTermsString
+    }
+    termsString
   }
 
   def equationToLatex(varName1: String, varName2: String)(eq: Equation): LatexString = {

@@ -20,23 +20,30 @@ class PowerTransformationSolverImpl(
 
   private def vecf(s: Seq[BigFrac]) = FracVec(s: _*)
 
-  override def generateAlphaFromTerms(termSeqs: Seq[Seq[Term]]): Matrix[BigFrac] = {
+  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[BigFrac] = {
     // TODO: Make sure this works for more than 2 polys
-    val dim = termSeqs.size + 1
+    val dimension = powersSeqs.size + 1
     def lastRowMinors(m: Matrix[BigFrac]): Seq[BigFrac] = {
       (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
-    require(termSeqs forall (_ forall (_.powers.size == dim)), "Each term should have the same dimension: number of pairs + 1")
-    def pairsStream: Stream[Seq[(Term, Term)]] = choosePairs(termSeqs)
+    require(powersSeqs forall (_ forall (_.length == dimension)),
+      "Each term should have the same dimension: number of pairs + 1")
+    val pairsStream: Stream[Seq[(FracVec, FracVec)]] = choosePairs(powersSeqs)
+    val matrices = pairsStream map { pairs =>
+      val matrixBase = (pairs map {
+        case (powers1, powers2) => powers1 - powers2
+      }) :+ FracVec.zero(dimension)
+      Matrix.fromVectors(matrixBase)
+    }
+    if (matrices.isEmpty)
+      throw new IllegalArgumentException("Pairs are not provided")
+    val nonZeroMatrices = matrices filter { matrix =>
+      !lastRowMinors(matrix).contains(0)
+    }
+    if (nonZeroMatrices.isEmpty)
+      throw new IllegalArgumentException("All pre-alpha matrices have zero minors")
     val alphasStream: Stream[Matrix[BigFrac]] =
-      pairsStream map { pairs =>
-        val matrixBase = (pairs map {
-          case (term1, term2) => term1.powers - term2.powers
-        }) :+ FracVec.zero(dim)
-        Matrix.fromVectors(matrixBase)
-      } filter { matrix =>
-        !lastRowMinors(matrix).contains(0)
-      } map { matrix =>
+      nonZeroMatrices map { matrix =>
         val alpha = umm unimodularFrom matrix
         assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
         assert(alpha.det == 1)

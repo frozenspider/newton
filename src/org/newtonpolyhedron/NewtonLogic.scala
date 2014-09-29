@@ -12,6 +12,8 @@ import org.newtonpolyhedron.ex.UnknownModeException
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
 import org.newtonpolyhedron.solve.cone._
+import org.newtonpolyhedron.solve.eqsys.EqSystemChainSolver
+import org.newtonpolyhedron.solve.eqsys.ManualEqSystemSolver
 import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
@@ -20,9 +22,11 @@ import org.newtonpolyhedron.solve.polyinter._
 import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
 import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
+import org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
 class NewtonLogic {
+  import NewtonLogic._
 
   val coneSolver: ConeSolver = new ConeSolverImpl
 
@@ -126,10 +130,17 @@ class NewtonLogic {
     val (polys, pts) = InputParser.parsePowerTransfBaseFromFile(file)
     val powTransfSolver = new PowerTransformationSolverImpl(
       new UnimodularMatrixMakerImpl,
-      new SimpleEqSystemSolverImpl
+      systemOfEqSolverChain
     )
     new PowerTransformationSolverPrinter(
       powTransfSolver, new ChangerOfVariablesImpl, polys, pts, writer
     )
   }
+}
+
+object NewtonLogic {
+  lazy val systemOfEqSolverChain = new EqSystemChainSolver(Seq(
+    new SimpleEqSystemSolverImpl,
+    new ManualEqSystemSolver(new EqSystemSolutionDialogInput)
+  ))
 }
