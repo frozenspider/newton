@@ -21,33 +21,31 @@ import javax.swing.JApplet
 import javax.vecmath.Color3f
 import javax.vecmath.Point3d
 
-class PolyRenderer extends JApplet {
-  /**
-   * Create a simple scene and attach it to the virtual universe
-   *
-   * @param pts
-   *            points to draw
-   * @param mode
-   *            drawing mode
-   * @param is2d
-   *            whether or not this image should be 2d
-   */
-  def this(pts: Seq[Point3d],
-           mode: Int,
-           is2d: Boolean) = {
-    this
-    val config = SimpleUniverse.getPreferredConfiguration
-    val canvas3D = new Canvas3D(config)
-    setLayout(new BorderLayout)
-    add("Center", canvas3D)
+/**
+ * Create a simple scene and attach it to the virtual universe
+ *
+ * @param pts
+ *            points to draw
+ * @param mode
+ *            drawing mode
+ * @param is2d
+ *            whether or not this image should be 2d
+ */
+class PolyRenderer(
+    pts: Seq[Point3d],
+    mode: Int,
+    is2d: Boolean) extends JApplet {
+  private val config = SimpleUniverse.getPreferredConfiguration
+  private val canvas3D = new Canvas3D(config)
+  setLayout(new BorderLayout)
+  add("Center", canvas3D)
 
-    val scene = createSceneGraph(pts, mode, is2d)
-    // SimpleUniverse is a Convenience Utility class
-    val universe = new SimpleUniverse(canvas3D)
-    // This will move the ViewPlatform back a bit so the objects in the scene can be viewed.
-    universe.getViewingPlatform.setNominalViewingTransform
-    universe.addBranchGraph(scene)
-  }
+  private val scene = createSceneGraph(pts, mode, is2d)
+  // SimpleUniverse is a Convenience Utility class
+  private val universe = new SimpleUniverse(canvas3D)
+  // This will move the ViewPlatform back a bit so the objects in the scene can be viewed.
+  universe.getViewingPlatform.setNominalViewingTransform
+  universe.addBranchGraph(scene)
 
   /** Create scene graph branch group */
   def createSceneGraph(pts: Seq[Point3d],

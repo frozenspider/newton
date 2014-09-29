@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.Polys
+import org.newtonpolyhedron.utils.PolynomialUtils.Polys
 import org.newtonpolyhedron.conversion.latex.LatexString
 
 trait EqSystemSolutionInput {

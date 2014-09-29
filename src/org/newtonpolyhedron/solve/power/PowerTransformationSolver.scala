@@ -1,10 +1,9 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron.Polynomial
-import org.newtonpolyhedron.Polys
 import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.Matrix
-import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 trait PowerTransformationSolver {
 
@@ -13,12 +12,12 @@ trait PowerTransformationSolver {
    *
    * @param powersSeq one border per polyhedron
    */
-  def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracMathVec]]): Matrix[BigFrac]
+  def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[BigFrac]
 
   def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial
 
-  def solveShortSubstitutesSystem(substitutesSys: Polys): FracMathVec
+  def solveShortSubstitutesSystem(substitutesSys: Polys): FracVec
 
   /** Used for transformation of variable (y to z) using solution for y */
-  def varChangeFromShortSubsSolution(shortSubsSysSol: FracMathVec): Polys
+  def varChangeFromShortSubsSolution(shortSubsSysSol: FracVec): Polys
 }

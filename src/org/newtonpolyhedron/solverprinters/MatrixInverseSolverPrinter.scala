@@ -3,8 +3,8 @@ package org.newtonpolyhedron.solverprinters
 import java.io.PrintWriter
 
 import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.SolverPrinter
+import org.newtonpolyhedron.entity.matrix.Matrix
 
 class MatrixInverseSolverPrinter(val baseMatrix: Matrix[BigFrac],
                                  output: PrintWriter)

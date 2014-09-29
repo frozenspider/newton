@@ -4,7 +4,8 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.entity.BigFrac
 
 @RunWith(classOf[JUnitRunner])
 class UnimodularMatrixMakerImplTest extends FunSuite {
@@ -18,28 +19,32 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
   }
 
   test("3x3 case 1") {
-    val source = matrFrac(a(
-      a(1, 3, 4),
-      a(3, 4, 2),
-      a(0, 0, 0)))
-    val expected = matrFrac(a(
-      a(1, 3, 4),
-      a(3, 10, 14),
-      a(0, 0, 1)))
+    val source = matrFrac(s(
+      s(1, 3, 4),
+      s(3, 4, 2),
+      s(0, 0, 0)
+    ))
+    val expected = matrFrac(s(
+      s(1, 3, 4),
+      s(3, 10, 14),
+      s(0, 0, 1)
+    ))
 
     val actual = maker.unimodularFrom(source)
     assert(actual === expected)
   }
 
   test("3x3 case 2") {
-    val source = matrFrac(a(
-      a(36, 18, 72),
-      a(5, 6, 12),
-      a(2, 8, 16)))
-    val expected = matrFrac(a(
-      a(1605, -1551, -3586),
-      a(2278, -2267, -5287),
-      a(2275, -2265, -5283)))
+    val source = matrFrac(s(
+      s(36, 18, 72),
+      s(5, 6, 12),
+      s(2, 8, 16)
+    ))
+    val expected = matrFrac(s(
+      s(1605, -1551, -3586),
+      s(2278, -2267, -5287),
+      s(2275, -2265, -5283)
+    ))
 
     val actual = maker.unimodularFrom(source)
     assert(actual === expected)
@@ -47,10 +52,11 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
 
   test("3x3 power transform article") {
     // Article by Sollev and Khakimov 
-    val source = matrFrac(a(
-      a(2, -3, 1),
-      a(-1, -1, 1),
-      a(1, -1, 0)))
+    val source = matrFrac(s(
+      s(2, -3, 1),
+      s(-1, -1, 1),
+      s(1, -1, 0)
+    ))
     // Unimodular matrix in article:
     //  1, -1, -2
     //  1, -1, -3
@@ -59,10 +65,11 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
     // -2,  3, -1
     //  1,  1, -1
     //  1, -1,  0
-    val expected = matrFrac(a(
-      a(-2, 3, -1),
-      a(1, 1, -1),
-      a(1, -1, 0)))
+    val expected = matrFrac(s(
+      s(-2, 3, -1),
+      s(1, 1, -1),
+      s(1, -1, 0)
+    ))
 
     val actual = maker.unimodularFrom(source)
     assert(actual === expected)

@@ -9,11 +9,13 @@ import scala.swing.Panel
 import scala.swing.TextField
 import scala.swing.event.ButtonClicked
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
+import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
@@ -88,7 +90,7 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
                            initialValuesOption: Option[Seq[String]],
                            headerTextOption: Option[LatexString]): Option[Seq[String]] = {
     val dim = system collectFirst {
-      case poly if !poly.isEmpty => poly.head.powers.dim
+      case poly if !poly.isEmpty => poly.head.powers.length
     } getOrElse (throw new IllegalArgumentException("Can't get dimension of polys"))
 
     val (inputs, inputPanels) = createInputComponents(dim)
@@ -116,10 +118,11 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
 }
 
 object EqSystemSolutionDialogInput extends App {
-  import org.newtonpolyhedron._
   import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector._
   import org.newtonpolyhedron.entity.equation._
+  import org.newtonpolyhedron.utils.LanguageImplicits._
+  import org.newtonpolyhedron.utils.PolynomialUtils._
 
   val s = new EqSystemSolutionDialogInput
 
@@ -127,13 +130,13 @@ object EqSystemSolutionDialogInput extends App {
 
   val eqs: Polys = IndexedSeq[Polynomial](
     IndexedSeq(
-      new Term(Product(1), FracMathVec(1, 2, 3)),
-      new Term(tricky, FracMathVec(1, 2, 3)),
-      new Term(Product(4), FracMathVec(0, 0, 0))
+      new Term(Product(1), FracVec(1, 2, 3)),
+      new Term(tricky, FracVec(1, 2, 3)),
+      new Term(Product(4), FracVec(0, 0, 0))
     ),
     IndexedSeq(
-      new Term(Product(BigFrac(-1, 2)), FracMathVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
-      new Term(Product(-2), FracMathVec(0, 0, 3))
+      new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+      new Term(Product(-2), FracVec(0, 0, 3))
     )
   )
 

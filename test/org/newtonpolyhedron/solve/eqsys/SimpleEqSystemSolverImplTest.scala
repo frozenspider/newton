@@ -4,10 +4,9 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.NullPrintWriter
-import org.newtonpolyhedron.Polys
-import org.newtonpolyhedron.Polynomial
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 @RunWith(classOf[JUnitRunner])
 class SimpleEqSystemSolverImplTest extends FunSuite {
@@ -28,7 +27,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val expected = s(1, -1) map bf
 
     assert(actual.tail.isEmpty)
-    assert(expected === actual.head.elements)
+    assert(expected === actual.head)
   }
 
   test("simplest 2d example 2") {
@@ -45,7 +44,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val expected = s(1, -1) map bf
 
     assert(actual.tail.isEmpty)
-    assert(expected === actual.head.elements)
+    assert(expected === actual.head)
   }
 
   test("simple 2d example 1") {
@@ -62,7 +61,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val expected = s(bf(2), bf(-1, 16))
 
     assert(actual.tail.isEmpty)
-    assert(expected === actual.head.elements)
+    assert(expected === actual.head)
   }
 
   test("simple 3d example 1") {
@@ -86,6 +85,6 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val expected = s(-1, 3, 2) map bf
 
     assert(actual.tail.isEmpty)
-    assert(expected === actual.head.elements)
+    assert(expected === actual.head)
   }
 }

@@ -1,41 +1,39 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron._
-import org.newtonpolyhedron.entity.PolynomialWrapper._
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
-import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
-import org.newtonpolyhedron.solve.changevars.ChangerOfVariables
 import org.newtonpolyhedron.entity.Product
+import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
+import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class PowerTransformationSolverImpl(
   val umm: UnimodularMatrixMaker,
   val eqSysSolver: EqSystemSolver)
     extends PowerTransformationSolver {
 
-  private type Powers = Seq[FracMathVec]
+  private type Powers = Seq[FracVec]
   private type Coeffs = Seq[Product]
 
-  private def vec = FracMathVec
-  private def vecf(s: Seq[BigFrac]) = vec(s: _*)
+  private def vecf(s: Seq[BigFrac]) = FracVec(s: _*)
 
-  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracMathVec]]): Matrix[BigFrac] = {
+  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[BigFrac] = {
     // TODO: Make sure this works for more than 2 polys
-    val dim = powersSeqs.size + 1
+    val dimension = powersSeqs.size + 1
     def lastRowMinors(m: Matrix[BigFrac]): Seq[BigFrac] = {
       (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
-    require(powersSeqs forall (_ forall (_.dim == dim)),
+    require(powersSeqs forall (_ forall (_.length == dimension)),
       "Each term should have the same dimension: number of pairs + 1")
-    val pairsStream: Stream[Seq[(FracMathVec, FracMathVec)]] = choosePairs(powersSeqs)
+    val pairsStream: Stream[Seq[(FracVec, FracVec)]] = choosePairs(powersSeqs)
     val matrices = pairsStream map { pairs =>
       val matrixBase = (pairs map {
         case (powers1, powers2) => powers1 - powers2
-      }) :+ vec.zero(dim)
-      Matrix[BigFrac, FracMathVec](matrixBase)
+      }) :+ FracVec.zero(dimension)
+      Matrix.fromVectors(matrixBase)
     }
     if (matrices.isEmpty)
       throw new IllegalArgumentException("Pairs are not provided")
@@ -79,7 +77,7 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  private def matrixByRows(m: Matrix[BigFrac]): Seq[FracMathVec] =
+  private def matrixByRows(m: Matrix[BigFrac]): Seq[FracVec] =
     m.elementsByRow map (_._3) grouped (m.colCount) map vecf toIndexedSeq
 
   private def inverse(m: Matrix[BigFrac]): Matrix[BigFrac] = {
@@ -89,13 +87,13 @@ class PowerTransformationSolverImpl(
   }
 
   private def getLowestPowers(powers: Powers) =
-    vecf(powers map (_.elements) reduce ((_, _).zipped map (_ min _)))
+    vecf(powers reduce ((_, _).zipped map (_ min _)))
 
   override def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial = {
     require(alpha.isSquare, "Alpha matrix should be square")
     val alphaInvByRows = matrixByRows(inverse(alpha))
     val rawPows =
-      poly.powers map (p => (alphaInvByRows, p.elements).zipped map ((alphaRow, polyPow) => alphaRow * polyPow) reduce (_ + _))
+      poly.powers map (p => (alphaInvByRows, p).zipped map ((alphaRow, polyPow) => alphaRow * polyPow) reduce (_ + _))
     val lowestPows = getLowestPowers(rawPows)
     val resPows = rawPows map (_ - lowestPows)
     //    println(" === Alpha Inv:       " + alphaInvByRows)
@@ -107,28 +105,28 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  override def solveShortSubstitutesSystem(simpleSys: Polys): FracMathVec = {
-    require(simpleSys forall (_ forall (t => t.powers.elements.last == 0)))
+  override def solveShortSubstitutesSystem(simpleSys: Polys): FracVec = {
+    require(simpleSys forall (_ forall (t => t.powers.last == 0)))
     // Remove last (zero) component
-    val truncatedSimpleSys: Polys = simpleSys map (_ map (_.mapPowers(_.elements.dropRight(1))))
+    val truncatedSimpleSys: Polys = simpleSys map (_ map (_.mapPowers(_ dropRight 1)))
     val sol: Powers = eqSysSolver.solve(truncatedSimpleSys)
     assert(sol.tail.isEmpty)
     // Add it back
-    sol.head.elements :+ BigFrac.ZERO
+    sol.head :+ BigFrac.ZERO
   }
 
   //
   // =========================
   //
-  override def varChangeFromShortSubsSolution(vecs: FracMathVec): Polys = {
-    val dim = vecs.dim
-    val zeroVec = vec.zero(dim)
-    def zeroOneVec(i: Int) = zeroVec updated (i, 1)
+  override def varChangeFromShortSubsSolution(vecs: FracVec): Polys = {
+    val dimension = vecs.size
+    val zeroVec = FracVec.zero(dimension)
+    def zeroOneVec(i: Int) = zeroVec upd (i, 1)
     // 0,0,0  1,0,0
     // 0,0,0  0,1,0
     // 0,0,0  0,0,1
-    val coeffsSeq: Seq[Coeffs] = vecs.elements map (solVal => Seq(Product(solVal), Product.ONE))
-    val powersSeq: Seq[Powers] = (0 until dim) map (i => Seq(zeroVec, zeroOneVec(i)))
+    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(Product(solVal), Product.ONE))
+    val powersSeq: Seq[Powers] = (0 until dimension) map (i => Seq(zeroVec, zeroOneVec(i)))
     val tPolys: Polys = (coeffsSeq, powersSeq).zipped.toIndexedSeq map coeffRowsSeqToPoly
     tPolys map (_.skipZeroTerms)
   }

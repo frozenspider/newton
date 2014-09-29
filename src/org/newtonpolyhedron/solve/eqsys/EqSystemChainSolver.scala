@@ -1,13 +1,13 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.Polys
-import org.newtonpolyhedron.entity.vector.FracMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class EqSystemChainSolver(solversChain: Seq[EqSystemSolver]) extends EqSystemSolver {
 
   override def whyCantSolve(system: Polys): Option[String] = None
 
-  def solve(system: Polys): Seq[FracMathVec] = {
+  def solve(system: Polys): Seq[FracVec] = {
     val solutionOption = solversChain collectFirst {
       case solver if solver canSolve system => solver solve system
     }

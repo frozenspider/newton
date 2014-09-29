@@ -1,11 +1,13 @@
-package org.newtonpolyhedron
+package org.newtonpolyhedron.utils
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import org.newtonpolyhedron.InputParser
+import LanguageImplicits._
 
 @RunWith(classOf[JUnitRunner])
-class PackageTest extends FunSuite {
+class LanguageImplicitsTest extends FunSuite {
 
   def toLines(s: String) = InputParser.refineLines(s.lines.toStream)
 

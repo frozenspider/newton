@@ -1,78 +1,25 @@
-package org.newtonpolyhedron.entity
+package org.newtonpolyhedron.entity.matrix
 
-import org.apache.commons.math3.FieldElement
-import org.apache.commons.math3.linear.FieldVector
-import org.apache.commons.math3.linear.MatrixUtils
-import org.apache.commons.math3.Field
 import scala.annotation.tailrec
 
-object MatrixExt {
-  sealed trait Orientation
+import org.apache.commons.math3.linear.MatrixUtils
+import org.newtonpolyhedron.entity.BigFrac
+
+import internal.FieldElementSupport._
+
+/**
+ * Provides implicit "toDiagonal" method on BigFrac matrices, which is needed for unimodular matrices maker
+ * via Euler (or whatever is its name, not sure yet) algorithm.
+ */
+object MatrixToDiagonalImplicits {
+  private sealed trait Orientation
   private case object ROWS extends Orientation
   private case object COLS extends Orientation
 
-  type M = Matrix[BigFrac]
-  type MatrixTriple = (M, M, M)
+  private type M = Matrix[BigFrac]
+  private type MatrixTriple = (M, M, M)
 
   implicit class FunctionalMatrix(val mt: M) {
-
-    def getCornerRelative(orientation: Orientation, cornerIdx: Int, colIdx: Int): BigFrac = orientation match {
-      case ROWS => mt(cornerIdx, colIdx)
-      case COLS => mt(colIdx, cornerIdx)
-    }
-
-    def swapInverse(i: Int, j: Int, orientation: Orientation): M = orientation match {
-      case ROWS => mt.swapCols(i, j).inverseCol(j)
-      case COLS => mt.swapRows(i, j).inverseRow(j)
-    }
-
-    def swapRows(i: Int, j: Int): M = {
-      mt.transpose.swapCols(i, j).transpose
-    }
-
-    def swapCols(i: Int, j: Int): M = {
-      val copy = mt.contentCopy
-      val col1 = copy.getColumnVector(i)
-      val col2 = copy.getColumnVector(j)
-      copy.setColumnVector(i, col2)
-      copy.setColumnVector(j, col1)
-      new Matrix(copy)
-    }
-
-    def inverseRow(i: Int): M = {
-      mt.transpose.inverseCol(i).transpose
-    }
-
-    private[FunctionalMatrix] def fieldRowOfZeros(size: Int) =
-      MatrixUtils.createFieldMatrix(mt.field, size, 1).getColumnVector(0)
-
-    def inverseCol(i: Int): M = {
-      val copy = mt.contentCopy
-      val vec = copy.getColumnVector(i)
-      val zeros = fieldRowOfZeros(vec.getDimension)
-      copy.setColumnVector(i, zeros subtract vec)
-      new Matrix(copy)
-    }
-
-    def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): M =
-      orientation match {
-        case ROWS => mt.subtractMultipliedCol(from, to, quotient)
-        case COLS => mt.subtractMultipliedRow(from, to, quotient)
-      }
-
-    def subtractMultipliedRow(from: Int, to: Int, quotient: BigFrac): M = {
-      mt.transpose.subtractMultipliedCol(from, to, quotient).transpose
-    }
-
-    def subtractMultipliedCol(from: Int, to: Int, quotient: BigFrac): M = {
-      val copy = mt.contentCopy
-      val srcCol = copy.getColumnVector(from)
-      val dstCol = copy.getColumnVector(to)
-      val srcColMul = srcCol mapMultiply quotient
-      val dstColSub = dstCol subtract srcColMul
-      copy.setColumnVector(to, dstColSub)
-      new Matrix(copy)
-    }
 
     /**
      * Converts the matrix to diagonal form.
@@ -81,21 +28,92 @@ object MatrixExt {
      */
     def toDiagonal: MatrixTriple = {
       require(mt.isSquare, "Non-square matrix")
-      val iden = Matrix.idenitiy(mt.rowCount)(mt.field)
-      val rowOnes = new Matrix(iden.contentCopy)
-      val colOnes = new Matrix(iden.contentCopy)
+      val iden = Matrix.idenitiy[BigFrac](mt.rowCount)
+      val rowOnes = new Matrix(iden.contentCopy)(bigFracFieldWrapper)
+      val colOnes = new Matrix(iden.contentCopy)(bigFracFieldWrapper)
       FunctionalMatrixCompanion.toDiagonalTriple((mt, rowOnes, colOnes))
+    }
+
+    private[matrix] def getCornerRelative(orientation: Orientation, cornerIdx: Int, colIdx: Int): BigFrac =
+      orientation match {
+        case ROWS => mt(cornerIdx, colIdx)
+        case COLS => mt(colIdx, cornerIdx)
+      }
+
+    private def swapInverse(i: Int, j: Int, orientation: Orientation): M = orientation match {
+      case ROWS => mt.swapCols(i, j).inverseCol(j)
+      case COLS => mt.swapRows(i, j).inverseRow(j)
+    }
+
+    private[matrix] def swapRows(i: Int, j: Int): M = {
+      mt.transpose.swapCols(i, j).transpose
+    }
+
+    private[matrix] def swapCols(i: Int, j: Int): M = {
+      val copy = mt.contentCopy
+      val col1 = copy.getColumnVector(i)
+      val col2 = copy.getColumnVector(j)
+      copy.setColumnVector(i, col2)
+      copy.setColumnVector(j, col1)
+      new Matrix(copy)(bigFracFieldWrapper)
+    }
+
+    private def fieldRowOfZeros(size: Int) =
+      MatrixUtils.createFieldMatrix(mt.field, size, 1).getColumnVector(0)
+
+    private[matrix] def inverseRow(i: Int): M = {
+      mt.transpose.inverseCol(i).transpose
+    }
+
+    private[matrix] def inverseCol(i: Int): M = {
+      val copy = mt.contentCopy
+      val vec = copy.getColumnVector(i)
+      val zeros = fieldRowOfZeros(vec.getDimension)
+      copy.setColumnVector(i, zeros subtract vec)
+      new Matrix(copy)(bigFracFieldWrapper)
+    }
+
+    private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): M =
+      orientation match {
+        case ROWS => mt.subtractMultipliedCol(from, to, quotient)
+        case COLS => mt.subtractMultipliedRow(from, to, quotient)
+      }
+
+    private[matrix] def subtractMultipliedRow(from: Int, to: Int, quotient: BigFrac): M = {
+      mt.transpose.subtractMultipliedCol(from, to, quotient).transpose
+    }
+
+    private[matrix] def subtractMultipliedCol(from: Int, to: Int, quotient: BigFrac): M = {
+      val copy = mt.contentCopy
+      val srcCol = copy.getColumnVector(from)
+      val dstCol = copy.getColumnVector(to)
+      val srcColMul = srcCol mapMultiply bigFracFieldWrapper(quotient)
+      val dstColSub = dstCol subtract srcColMul
+      copy.setColumnVector(to, dstColSub)
+      new Matrix(copy)(bigFracFieldWrapper)
     }
   }
 
-  implicit class FunctionalMatrixTriple(val mt: MatrixTriple) {
-    val (main, rowOnes, colOnes) = mt
+  //
+  //
+  //
 
-    def map[R](f: M => R): (R, R, R) = {
+  private implicit class FunctionalMatrixTriple(val mt: MatrixTriple) {
+    private[matrix] val (main, rowOnes, colOnes) = mt
+
+    private def transpose: MatrixTriple = {
+      (
+        main.transpose,
+        colOnes.transpose,
+        rowOnes.transpose
+      )
+    }
+
+    private def map[R](f: M => R): (R, R, R) = {
       (f(main), f(rowOnes), f(colOnes))
     }
 
-    def swapInverse(i: Int, j: Int, orientation: Orientation): MatrixTriple = {
+    private[matrix] def swapInverse(i: Int, j: Int, orientation: Orientation): MatrixTriple = {
       val distance = math.abs(i - j)
       println(s"   Swapping ${orientation} $i <=> $j (distance: $distance)")
       orientation match {
@@ -136,7 +154,7 @@ object MatrixExt {
       )
     }
 
-    def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): MatrixTriple = {
+    private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): MatrixTriple = {
       println(s"Subtracting ${orientation} $from from $to (quotient $quotient)")
       orientation match {
         case ROWS => mt.subtractMultipliedCol(from, to, quotient)
@@ -159,21 +177,13 @@ object MatrixExt {
         colOnes.subtractMultipliedCol(from, to, quotient)
       )
     }
-
-    def transpose: MatrixTriple = {
-      (
-        main.transpose,
-        colOnes.transpose,
-        rowOnes.transpose
-      )
-    }
   }
 
   //
   //
   //
 
-  object FunctionalMatrixCompanion {
+  private object FunctionalMatrixCompanion {
     def toDiagonalTriple(mts: MatrixTriple): MatrixTriple = {
       toDiagonalTriple(mts, 0)
     }

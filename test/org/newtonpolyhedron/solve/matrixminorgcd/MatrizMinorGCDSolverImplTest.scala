@@ -1,4 +1,5 @@
 package org.newtonpolyhedron.solve.matrixminorgcd
+
 import org.junit.runner.RunWith
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
@@ -10,10 +11,11 @@ class MatrizMinorGCDSolverImplTest extends FunSuite {
   val solver = new MatrixMinorGCDSolverImpl
 
   test("3x3 case 1") {
-    val matrix = matrFrac(a(
-      a(1, 3, 4),
-      a(3, 4, 2),
-      a(0, 0, 0)))
+    val matrix = matrFrac(s(
+      s(1, 3, 4),
+      s(3, 4, 2),
+      s(0, 0, 0)
+    ))
     val expectedGcd = 5
     val expectedMinors = Seq(-10, -10, -5) map BigInt.apply
 
@@ -23,10 +25,11 @@ class MatrizMinorGCDSolverImplTest extends FunSuite {
   }
 
   test("3x3 case 2") {
-    val matrix = matrFrac(a(
-      a(-3, -2, 1),
-      a(5, -2, 1),
-      a(0, 0, 0)))
+    val matrix = matrFrac(s(
+      s(-3, -2, 1),
+      s(5, -2, 1),
+      s(0, 0, 0)
+    ))
     val expectedGcd = 8
     val expectedMinors = Seq(0, -8, 16) map BigInt.apply
 
@@ -36,11 +39,12 @@ class MatrizMinorGCDSolverImplTest extends FunSuite {
   }
 
   test("4x4") {
-    val matrix = matrFrac(a(
-      a(1, 3, 5, 1),
-      a(1, 2, -6, 9),
-      a(2, 4, 3, 2),
-      a(0, 0, 0, 0)))
+    val matrix = matrFrac(s(
+      s(1, 3, 5, 1),
+      s(1, 2, -6, 9),
+      s(2, 4, 3, 2),
+      s(0, 0, 0, 0)
+    ))
     val expectedGcd = 1
     val expectedMinors = Seq(73, 56, 16, -15) map BigInt.apply
 

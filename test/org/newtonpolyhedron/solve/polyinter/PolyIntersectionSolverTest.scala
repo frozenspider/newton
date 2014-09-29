@@ -1,8 +1,9 @@
 package org.newtonpolyhedron.solve.polyinter
+
 import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table.KeyTable
 import org.junit.runner.RunWith
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolverImpl
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
@@ -179,10 +180,10 @@ class PolyIntersectionSolverTest extends FunSuite {
     val filtered = solutions.filter(solver.isIntersectingSol(eqSystems)).sorted
     assert(filtered === expected)
   }
-  
+
   /** @param map { vector -> [ pts sequence per polyhedron ] }*/
-  private def polyTableFromMap(map: Map[IntMathVec, IndexedSeq[Seq[Int]]]): KeyTable[Int, IntMathVec, SortedSet[Int]] = {
-    var table = new ArrayListKeyTable[Int, IntMathVec, SortedSet[Int]]
+  private def polyTableFromMap(map: Map[IntVec, IndexedSeq[Seq[Int]]]): KeyTable[Int, IntVec, SortedSet[Int]] = {
+    var table = new ArrayListKeyTable[Int, IntVec, SortedSet[Int]]
     map foreach {
       case (vec, seq) =>
         (seq zip (0 until seq.size)) map {
@@ -190,7 +191,7 @@ class PolyIntersectionSolverTest extends FunSuite {
             table.put(polyIdx, vec, SortedSet(points: _*))
         }
     }
-    KeyTables.sortByColHeaders(table, true)
+    KeyTables.sortByColHeaders(table, intVecOrdering, true)
     table
   }
 }

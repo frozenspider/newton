@@ -7,15 +7,13 @@ import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
-import org.fs.utils.collection.table.KeyTables
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.polyinter.PolyIntersectionSolver
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
 class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
-                                    val polyhedrons: Seq[IndexedSeq[FracMathVec]],
+                                    val polyhedrons: Seq[IndexedSeq[FracVec]],
                                     val dim: Int,
                                     output: PrintWriter)
     extends SolverPrinter[PolyIntersectionSolver](solver, output) {
@@ -35,9 +33,9 @@ class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
     printTable(vectorPointTable, output)
   }
 
-  private def printTable(vectorPointTable: KeyTable[Int, IntMathVec, SortedSet[Int]], output: PrintWriter): Unit = {
+  private def printTable(vectorPointTable: KeyTable[Int, IntVec, SortedSet[Int]], output: PrintWriter): Unit = {
     import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
-    var strTable = new ArrayListKeyTable[Int, IntMathVec, String]
+    var strTable = new ArrayListKeyTable[Int, IntVec, String]
     for {
       r <- vectorPointTable.rowKeyList()
       c <- vectorPointTable.colKeyList()

@@ -2,8 +2,8 @@ package org.newtonpolyhedron.ui.eqsys
 
 import scala.swing.BorderPanel
 
-import org.newtonpolyhedron.Equations
 import org.newtonpolyhedron.ui.LatexRenderingComponent
+import org.newtonpolyhedron.utils.PolynomialUtils.Equations
 
 class EqSystemRenderingPanel extends BorderPanel {
   import BorderPanel.Position._
@@ -25,10 +25,11 @@ class EqSystemRenderingPanel extends BorderPanel {
 
 object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
   import scala.swing.MainFrame
-  import org.newtonpolyhedron._
   import org.newtonpolyhedron.entity._
-  import org.newtonpolyhedron.entity.vector._
+  import org.newtonpolyhedron.entity.vector.VectorImports._
   import org.newtonpolyhedron.entity.equation._
+  import org.newtonpolyhedron.utils.LanguageImplicits._
+  import org.newtonpolyhedron.utils.PolynomialUtils._
 
   val subj = new EqSystemRenderingPanel
   def top = new MainFrame {
@@ -40,21 +41,21 @@ object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
   val eqs: Equations = IndexedSeq[Equation](
     Equation(
       IndexedSeq(
-        new Term(Product(1), FracMathVec(1, 2, 3)),
-        new Term(Product(0), FracMathVec(1, 2, 3)),
-        new Term(Product(4), FracMathVec(0, 0, 0))
+        new Term(Product(1), FracVec(1, 2, 3)),
+        new Term(Product(0), FracVec(1, 2, 3)),
+        new Term(Product(4), FracVec(0, 0, 0))
       ),
       EquationSign.Equals,
       IndexedSeq(
-        new Term(Product(1), FracMathVec(1, 2, 3)),
-        new Term(tricky, FracMathVec(1, 2, 3)),
-        new Term(Product(4), FracMathVec(0, 0, 0))
+        new Term(Product(1), FracVec(1, 2, 3)),
+        new Term(tricky, FracVec(1, 2, 3)),
+        new Term(Product(4), FracVec(0, 0, 0))
       )
     ),
     Equation(
       IndexedSeq(
-        new Term(Product(BigFrac(-1, 2)), FracMathVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
-        new Term(Product(-2), FracMathVec(0, 0, 3))
+        new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+        new Term(Product(-2), FracVec(0, 0, 3))
       ),
       EquationSign.GreaterEq,
       zeroPoly(3)

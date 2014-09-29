@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.utils
+package org.newtonpolyhedron.utils.parsing
 
 import java.text.ParsePosition
 
@@ -8,7 +8,7 @@ import org.apache.commons.math3.fraction.AbstractFormat
 import org.apache.commons.math3.fraction.BigFractionFormat
 import org.newtonpolyhedron.entity.BigFrac
 
-class BigFracFormat extends AbstractFormat {
+object BigFracFormat extends AbstractFormat {
 
   private val bigFrationFormat = new BigFractionFormat
 

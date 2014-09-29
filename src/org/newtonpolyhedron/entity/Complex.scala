@@ -1,16 +1,14 @@
 package org.newtonpolyhedron.entity
 
-import org.newtonpolyhedron._
-import org.apache.commons.math3.FieldElement
 import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
 import org.apache.commons.math3.Field
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
 // How to raise complex number to a fractional power?
 case class Complex(val r: Product, i: Product)
     extends ScalaNumber
     with ScalaNumericConversions
-    with FieldElement[Complex]
     with Ordered[Complex]
     with Serializable {
 
@@ -69,15 +67,6 @@ case class Complex(val r: Product, i: Product)
     else this.i compare that.i
   }
 
-  override def add(that: Complex) = this + that
-  override def subtract(that: Complex) = this - that
-  override def multiply(that: Complex) = this * that
-  override def multiply(that: Int) = this * that
-  override def divide(that: Complex) = this / that
-  override def reciprocal = this.inv
-  override def negate = -this
-  override def getField = Complex.ComplexField
-
   private def enforceReal: this.type = if (isReal) this else throw new IllegalStateException("Has imaginary part")
   override def isWhole = this.isReal
   override def underlying = (this.r, this.i)
@@ -110,11 +99,5 @@ object Complex {
     override def toLong(x: Complex): Long = x.toInt
     override def toFloat(x: Complex): Float = x.toInt
     override def toDouble(x: Complex): Double = x.toInt
-  }
-
-  implicit object ComplexField extends Field[Complex] {
-    def getZero = Complex.ZERO
-    def getOne = Complex.ONE
-    def getRuntimeClass = classOf[Complex]
   }
 }

@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.utils
+package org.newtonpolyhedron.utils.parsing
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
@@ -11,7 +11,7 @@ import java.text.ParseException
 @RunWith(classOf[JUnitRunner])
 class BigFracFormatTest extends FunSuite {
 
-  val fmt = new BigFracFormat
+  val fmt = BigFracFormat
 
   test("int") {
     assert(fmt.parse("123") === BigFrac(123))

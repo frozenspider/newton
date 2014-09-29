@@ -1,8 +1,9 @@
 package org.newtonpolyhedron.conversion
 
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
+import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.PolynomialUtils._
 
 package object latex {
 
@@ -79,7 +80,7 @@ package object latex {
       val termsSignedStrings = poly map { term =>
         (
           term.coeff.signum,
-          productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers.elements)
+          productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers)
         )
       }
       signedAbsSeqToLatex(termsSignedStrings)
