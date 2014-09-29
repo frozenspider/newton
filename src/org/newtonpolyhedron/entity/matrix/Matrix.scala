@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.entity
+package org.newtonpolyhedron.entity.matrix
 
 import scala.collection.mutable.StringBuilder
 
@@ -7,7 +7,8 @@ import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.compatibility.FieldElementSupport._
+
+import internal.FieldElementSupport._
 
 class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implicit wrapper: FieldElementWrapper[T])
     extends Function2[Int, Int, T]
@@ -24,7 +25,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
   def +(that: Matrix[T]) = new Matrix(this.matrix add that.matrix)
   def -(that: Matrix[T]) = new Matrix(this.matrix subtract that.matrix)
   def *(that: Matrix[T]) = new Matrix(this.matrix multiply that.matrix)
-  def unary_- = Matrix.zero(rowCount, colCount) - this
+  def unary_- = Matrix.zero(rowCount, colCount)(wrapper.numeric) - this
 
   /** Inverse */
   def inv = {
@@ -71,7 +72,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
   }
 
   def map[B](f: T => B)(implicit wrapper2: FieldElementWrapper[B]) = {
-    val mapped = Matrix.zero[B](rowCount, colCount)
+    val mapped = Matrix.zero[B](rowCount, colCount)(wrapper2.numeric)
     for {
       r <- 0 until rowCount
       c <- 0 until colCount
@@ -162,7 +163,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
   def addRow(row: Traversable[T]) = {
     require(row.size == colCount, "Wrong row size")
-    val res = Matrix.zero[T](rowCount + 1, colCount)
+    val res = Matrix.zero[T](rowCount + 1, colCount)(wrapper.numeric)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
     val rowSeq = row.toIndexedSeq map wrapper.apply
     for (i <- 0 until colCount) res.matrix setEntry (rowCount, i, rowSeq(i))
@@ -171,7 +172,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
   def addCol(col: Traversable[T]) = {
     require(col.size == rowCount, "Wrong col size")
-    val res = Matrix.zero[T](rowCount, colCount + 1)
+    val res = Matrix.zero[T](rowCount, colCount + 1)(wrapper.numeric)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
     val colSeq = col.toIndexedSeq map wrapper.apply
     for (i <- 0 until rowCount) res.matrix setEntry (i, colCount, colSeq(i))
@@ -204,13 +205,15 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
 object Matrix {
 
-  def fromArray[T](elements: Array[Array[T]])(implicit wrapper: FieldElementWrapper[T]): Matrix[T] = {
+  def fromArray[T](elements: Array[Array[T]])(implicit numeric: Numeric[T]): Matrix[T] = {
+    implicit val wrapper = wrap(numeric)
     val wrapped = elements map (_ map (z => wrapper(z)))
     new Matrix(MatrixUtils.createFieldMatrix(wrapped))
   }
 
-  def fromVectors[T](elements: Iterable[IndexedSeq[T]])(implicit wrapper: FieldElementWrapper[T]): Matrix[T] = {
+  def fromVectors[T](elements: Iterable[IndexedSeq[T]])(implicit numeric: Numeric[T]): Matrix[T] = {
     require(!elements.isEmpty, "Elements was empty")
+    implicit val wrapper = wrap(numeric)
     val dim = elements.head.size
     val matrix = MatrixUtils.createFieldMatrix(wrapper.field, elements.size, dim)
     val elsSeq = elements.toIndexedSeq
@@ -223,26 +226,23 @@ object Matrix {
     new Matrix(matrix)
   }
 
-  def idenitiy[T](dim: Int)(implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+  def idenitiy[T](dim: Int)(implicit numeric: Numeric[T]): Matrix[T] = {
+    implicit val wrapper = wrap(numeric)
     new Matrix(MatrixUtils.createFieldIdentityMatrix(wrapper.field, dim))
+  }
 
-  def zero[T](dim: Int)(implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+  def zero[T](dim: Int)(implicit numeric: Numeric[T]): Matrix[T] = {
+    implicit val wrapper = wrap(numeric)
     new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, dim, dim))
+  }
 
-  def zero[T](rowCount: Int, colCount: Int)(implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+  def zero[T](rowCount: Int, colCount: Int)(implicit numeric: Numeric[T]): Matrix[T] = {
+    implicit val wrapper = wrap(numeric)
     new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, rowCount, colCount))
+  }
 
-  def empty[T](implicit wrapper: FieldElementWrapper[T]): Matrix[T] =
+  def empty[T](implicit numeric: Numeric[T]): Matrix[T] = {
+    implicit val wrapper = wrap(numeric)
     new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, 0, 0))
-
-  /**
-   * Converts the matrix to diagonal form.
-   * <p>
-   * Returns diagonal matrix alongside with row and column transformation matrices
-   */
-  def toDiagonal(m: Matrix[BigFrac]): (Matrix[BigFrac], Matrix[BigFrac], Matrix[BigFrac]) = {
-    require(m.isSquare, "Non-square matrix")
-    import MatrixExt._
-    m.toDiagonal
   }
 }

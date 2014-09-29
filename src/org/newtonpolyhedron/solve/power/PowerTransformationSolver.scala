@@ -2,8 +2,8 @@ package org.newtonpolyhedron.solve.power
 
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
 trait PowerTransformationSolver {

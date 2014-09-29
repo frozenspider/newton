@@ -5,6 +5,7 @@ import java.io.File
 import scala.io.Source
 
 import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 

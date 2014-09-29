@@ -4,8 +4,8 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.Matrix
-import org.newtonpolyhedron.utils.compatibility.FieldElementSupport._
+import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.entity.BigFrac
 
 @RunWith(classOf[JUnitRunner])
 class UnimodularMatrixMakerImplTest extends FunSuite {
@@ -14,7 +14,7 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
 
   test("non-square") {
     intercept[IllegalArgumentException] {
-      maker.unimodularFrom(Matrix.zero(1, 2)(bigFracFieldWrapper))
+      maker.unimodularFrom(Matrix.zero(1, 2))
     }
   }
 

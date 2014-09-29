@@ -5,8 +5,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.utils.StringUtils
-import org.newtonpolyhedron.entity.Matrix
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.matrix.Matrix
 
 @RunWith(classOf[JUnitRunner])
 class AlphaMatrixTest extends FunSuite {

@@ -4,8 +4,8 @@ import java.io.PrintWriter
 import java.text.MessageFormat
 
 import org.newtonpolyhedron._
-import org.newtonpolyhedron.entity.MatrixSupport
 import org.newtonpolyhedron.entity.SolverPrinter
+import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
 
@@ -18,7 +18,7 @@ class ConeSolverPrinter(solver: ConeSolver,
   override def solveFor(solver: ConeSolver,
                         output: PrintWriter) = {
     output.println(title("Cone computing"))
-    val rank = MatrixSupport.fromInts(inequations).rank
+    val rank = Matrix.fromVectors(inequations).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations eachWithIndex { (currIneq, i) =>

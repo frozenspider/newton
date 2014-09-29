@@ -4,6 +4,7 @@ import java.util.Comparator
 import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table._
 import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.scalatest.Suite
 import org.scalatest.FailureMessages
@@ -17,11 +18,11 @@ package object test {
   type DoubleConvertible = Any { def toDouble: Double }
 
   def matrInt(content: Seq[Seq[Int]]): Matrix[BigInt] = {
-    MatrixSupport.fromInts(content map (_.toIndexedSeq map BigInt.apply))
+    Matrix.fromVectors(content map (_.toIndexedSeq map BigInt.apply))
   }
 
   def matrFrac(content: Seq[Seq[Int]]): Matrix[BigFrac] = {
-    MatrixSupport.fromFracs(content map (_.toIndexedSeq map BigFrac.apply))
+    Matrix.fromVectors(content map (_.toIndexedSeq map BigFrac.apply))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)

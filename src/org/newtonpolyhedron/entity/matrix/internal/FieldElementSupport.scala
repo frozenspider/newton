@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.utils.compatibility
+package org.newtonpolyhedron.entity.matrix.internal
 
 import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.Field
@@ -11,7 +11,7 @@ import org.newtonpolyhedron.entity.BigFrac
  *
  * @author FS
  */
-object FieldElementSupport {
+private[matrix] object FieldElementSupport {
 
   type FieldWrapped[T] = Field[FieldElementWrapping[T]]
 
@@ -20,7 +20,7 @@ object FieldElementSupport {
   val bigFracFieldWrapper: FieldElementWrapper[BigFrac] = new FieldElementWrapper
 
   // Wrapping
-  def wrapper[T](implicit fractional: Numeric[T]) = new FieldElementWrapper[T]
+  def wrap[T](implicit fractional: Numeric[T]) = new FieldElementWrapper[T]
 
   class FieldElementWrapper[T](implicit val numeric: Numeric[T]) {
     implicit val field: FieldWrapped[T] = new Field[FieldElementWrapping[T]] {

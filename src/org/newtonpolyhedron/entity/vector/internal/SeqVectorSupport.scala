@@ -1,11 +1,14 @@
-package org.newtonpolyhedron.entity.vector
+package org.newtonpolyhedron.entity.vector.internal
 
 import org.newtonpolyhedron.entity.BigFrac
 
-trait SeqVectorSupport {
+private[vector] trait SeqVectorSupport {
 
+  /**
+   * Adds support for mathematical vector operations to indexed sequences, allowing
+   * to effectively use them to representing vectors in the application.
+   */
   implicit class MathSeqVector[T](val seq: IndexedSeq[T])(implicit numeric: Numeric[T]) {
-
     import numeric._
 
     def +(that: Seq[T]): IndexedSeq[T] = {
@@ -49,17 +52,6 @@ trait SeqVectorSupport {
     /** Serves as "updated" method, but doesn't screw types and allows implicits to work */
     def upd(i: Int, v: T): IndexedSeq[T] = {
       seq.updated(i, v)
-    }
-  }
-
-  implicit class RichIntVec(val seq: IndexedSeq[BigInt]) {
-    /** Divided by GCD*/
-    def reduced: IndexedSeq[BigInt] = {
-      val gcd = seq reduceLeft (_ gcd _)
-      if (gcd == 0 || gcd == 1)
-        seq
-      else
-        seq map (_ / gcd)
     }
   }
 }

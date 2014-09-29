@@ -1,4 +1,5 @@
-package org.newtonpolyhedron.entity
+package org.newtonpolyhedron.entity.matrix
+
 import org.apache.commons.math3.exception.DimensionMismatchException
 import org.junit.runner.RunWith
 import org.newtonpolyhedron.test._
@@ -220,13 +221,15 @@ class MatrixTest extends FunSuite {
     )).rank === 3)
   }
 
+  import MatrixToDiagonalImplicits._
+
   test("diagonal form 1") {
     val source = matrFrac(s(
       s(0, 1, -1),
       s(2, -3, 0),
       s(0, 0, 0)
     ))
-    val (actual, rowOnes, colOnes) = Matrix.toDiagonal(source)
+    val (actual, rowOnes, colOnes) = source.toDiagonal
     assert(actual
       === matrFrac(s(
         s(1, 0, 0),
@@ -253,7 +256,7 @@ class MatrixTest extends FunSuite {
       s(5, 6, 12),
       s(2, 8, 16)
     ))
-    val (actual, rowOnes, colOnes) = Matrix.toDiagonal(source)
+    val (actual, rowOnes, colOnes) = source.toDiagonal
     assert(actual
       === matrFrac(s(
         s(1, 0, 0),

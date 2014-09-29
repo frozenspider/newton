@@ -3,10 +3,10 @@ package org.newtonpolyhedron.solverprinters
 import java.io.PrintWriter
 import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
+import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariables
 import org.newtonpolyhedron.solve.power.PowerTransformationSolver
-import org.newtonpolyhedron.entity.Matrix
-import org.newtonpolyhedron.entity.BigFrac
 
 class PowerTransformationSolverPrinter(solver: PowerTransformationSolver,
                                        val varChanger: ChangerOfVariables,

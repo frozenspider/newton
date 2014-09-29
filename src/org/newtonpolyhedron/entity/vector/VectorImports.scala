@@ -2,7 +2,10 @@ package org.newtonpolyhedron.entity.vector
 
 import org.newtonpolyhedron.entity.BigFrac
 
+import internal.SeqVectorSupport
+
 object VectorImports extends SeqVectorSupport {
+
   type IntVec = IndexedSeq[BigInt]
   type FracVec = IndexedSeq[BigFrac]
 
@@ -32,4 +35,15 @@ object VectorImports extends SeqVectorSupport {
 
   implicit lazy val intVecOrdering: Ordering[IntVec] = Ordering.Implicits.seqDerivedOrdering
   implicit lazy val fracVecOrdering: Ordering[FracVec] = Ordering.Implicits.seqDerivedOrdering
+
+  implicit class RichIntVec(val seq: IntVec) {
+    /** Divided by GCD*/
+    def reduced: IntVec = {
+      val gcd = seq reduceLeft (_ gcd _)
+      if (gcd == 0 || gcd == 1)
+        seq
+      else
+        seq map (_ / gcd)
+    }
+  }
 }
