@@ -8,6 +8,7 @@ public enum WorkingMode {
 	MATRIX_INVERSE("Matrix Inverse"), //
 	MATRIX_UNIMODULAR_ALPHA("Unimodular \"Alpha\"-matrix"), //
 	MATRIX_LAST_ROW_MINOR_GCD("Matrix last row minors GCD"), //
+	POWER_TRANSFORMATION("Power Transformation"), //
 	;
 	
 	private final String	textValue;

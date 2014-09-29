@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.matrixuni
 
 import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron.entity.matrix.Matrix
 
 trait UnimodularMatrixMaker {
 

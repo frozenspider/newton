@@ -39,45 +39,38 @@ class PointDrawer extends Shape3D {
     val len = 6.5
     val dif = 0.2
     val z = 0.0
-    val axisX = Seq(
-      p3d(z, z, z),
-      p3d(len, z, z),
-      p3d(len, z, z),
-      p3d(len - dif, dif, z),
-      p3d(len, z, z),
-      p3d(len - dif, -dif, z)) ++
-      (if (!is2d) Seq(
-        p3d(len, z, z),
-        p3d(len - dif, z, dif),
-        p3d(len, z, z),
-        p3d(len - dif, z, -dif))
-      else Seq()) ++
-      Seq(
-        p3d(z, z, z),
-        p3d(z, len, z),
-        p3d(z, len, z),
-        p3d(dif, len - dif, z),
-        p3d(z, len, z),
-        p3d(-dif, len - dif, z)) ++
-        (if (!is2d) Seq(
-          p3d(z, len, z),
-          p3d(z, len - dif, dif),
-          p3d(z, len, z),
-          p3d(z, len - dif, -dif),
-          p3d(z, z, z),
-          p3d(z, z, len),
-          p3d(z, z, len),
-          p3d(dif, z, len - dif),
-          p3d(z, z, len),
-          p3d(-dif, z, len - dif),
-          p3d(z, z, len),
-          p3d(z, dif, len - dif),
-          p3d(z, z, len),
-          p3d(z, -dif, len - dif))
-        else Seq())
-
+    val axisX = {
+      if (!is2d)
+        Seq(
+          linePts((len, z, z), (z, z, z)),
+          linePts((len, z, z), (len - dif, dif, z)),
+          linePts((len, z, z), (len - dif, -dif, z)),
+          linePts((len, z, z), (len - dif, z, dif)),
+          linePts((len, z, z), (len - dif, z, -dif)),
+          //
+          linePts((z, len, z), (z, z, z)),
+          linePts((z, len, z), (dif, len - dif, z)),
+          linePts((z, len, z), (-dif, len - dif, z)),
+          linePts((z, len, z), (z, len - dif, dif)),
+          linePts((z, len, z), (z, len - dif, -dif)),
+          //
+          linePts((z, z, len), (z, z, z)),
+          linePts((z, z, len), (dif, z, len - dif)),
+          linePts((z, z, len), (-dif, z, len - dif)),
+          linePts((z, z, len), (z, dif, len - dif)),
+          linePts((z, z, len), (z, -dif, len - dif)))
+      else
+        Seq(
+          linePts((len, z, z), (z, z, z)),
+          linePts((len, z, z), (len - dif, dif, z)),
+          linePts((len, z, z), (len - dif, -dif, z)),
+          //
+          linePts((z, len, z), (z, z, z)),
+          linePts((z, len, z), (dif, len - dif, z)),
+          linePts((z, len, z), (-dif, len - dif, z)))
+    }.flatten
     val axisGeom = new LineArray(30, COORDINATES | COLOR_3)
-    (0 until axisX.size) map (i => axisGeom setCoordinate (i, axisX(i)))
+    (0 until axisX.size) foreach (i => axisGeom setCoordinate (i, axisX(i)))
 
     def c3f = (x: Double, y: Double, z: Double) => new Color3f(x.toFloat, y.toFloat, z.toFloat)
     val clbr = 0.7
@@ -90,18 +83,21 @@ class PointDrawer extends Shape3D {
       } else {
         Seq(
           c3f(z, clbr, clbr),
-          c3f(clbr, z, clbr)) flatMap (Seq.fill(06)(_))
+          c3f(clbr, z, clbr)) flatMap (Seq.fill(6)(_))
       }
     axisGeom.setColors(0, colors.toArray[Color3f])
     axisGeom
   }
+
+  def linePts(p1: (Double, Double, Double), p2: (Double, Double, Double)) =
+    Seq(p3d(p1), p3d(p2))
 
   def createLinesAllVsAll(pts: Seq[Point3d], color: Color): Geometry = {
     val sz = pts.size
     val sum = (1 to (sz - 1)).sum
     val lineArr = new LineArray(sum * 2, COORDINATES | COLOR_3)
     if (color != null) {
-      lineArr.setColors(0, Array.fill(sum * 2)(new Color3f(color)))
+      lineArr setColors (0, Array.fill(sum * 2)(new Color3f(color)))
     }
     var counter = 0
     for {

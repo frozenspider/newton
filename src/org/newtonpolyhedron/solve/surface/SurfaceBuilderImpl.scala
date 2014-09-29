@@ -4,10 +4,11 @@ import scala.collection.immutable.SortedSet
 
 import org.fs.utils.collection.table.KeyTable
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
 class SurfaceBuilderImpl extends SurfaceBuilder {
-  override def surfaces(lookupTable: KeyTable[IntMathVec, Int, Boolean],
+  override def surfaces(lookupTable: KeyTable[IntVec, Int, Boolean],
                         dim: Int): Map[Int, SortedSet[Surface]] = {
     val lookupData = extactLookupTableData(lookupTable)
     val surfacesMap = gatherSurfacesMap(dim, lookupData)
@@ -28,13 +29,15 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
     recurse(dim - 1, Map.empty, Set.empty)
   }
 
-  def extactLookupTableData(lookup: KeyTable[IntMathVec, Int, Boolean]): Seq[Seq[Int]] =
+  def extactLookupTableData(lookup: KeyTable[IntVec, Int, Boolean]): Seq[Seq[Int]] = {
+    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     for {
       point <- lookup.rowKeyList
     } yield for {
       colKey <- scala.collection.JavaConversions.asScalaBuffer(lookup.colKeyList)
       if lookup.get(point, colKey)
     } yield colKey
+  }
 
   /**
    * Finds the common surfaces of a lesser dimension
@@ -103,13 +106,14 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
                                             upperLevelSurfaces: Set[Surface],
                                             tagetDim: Int,
                                             polyDim: Int): Set[Surface] = {
-    surfaces map { currentSurface =>
+    val surfaceOpts = surfaces map { currentSurface =>
       val superior = surfacesConatiningGiven(currentSurface, upperLevelSurfaces)
       if (tagetDim == 0 && (superior.size < polyDim - 1))
         None
       else
         Some(currentSurface.addUpperSurfaces(superior))
-    } filter (_.isDefined) map (_.get)
+    }
+    surfaceOpts.yieldDefined
   }
 
   /**

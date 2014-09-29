@@ -4,11 +4,10 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.vector.FracMathVec.FracMathVecFormat
-import org.newtonpolyhedron.entity.vector.IntMathVec.IntMathVecFormat
-import org.newtonpolyhedron.entity.MatrixSupport
-import org.newtonpolyhedron.entity.Matrix
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
 @RunWith(classOf[JUnitRunner])
 class InputParserTest extends FunSuite {
@@ -19,26 +18,26 @@ class InputParserTest extends FunSuite {
   // Parse vectors
   //
   test("parse vectors - integer") {
-    val str = // 
+    val str =
       """1 2 3
          4 5 6"""
-    val section = InputParser.parseVectors(3)(IntMathVecFormat, toLines(str))
+    val section = InputParser.parseVectors(3)(toLines(str))(parseInt)
     assert(section === s(iv(1, 2, 3), iv(4, 5, 6)))
   }
 
   test("parse vectors - fraction") {
-    val str = // 
+    val str =
       """1 2 3
          4 5 6"""
-    val section = InputParser.parseVectors(3)(FracMathVecFormat, toLines(str))
+    val section = InputParser.parseVectors(3)(toLines(str))(parseFrac)
     assert(section === s(fv(1, 2, 3), fv(4, 5, 6)))
   }
 
   test("parse vectors - complex fraction") {
-    val str = // 
+    val str =
       """1.0 2.00 009
          2.22 3/2 6/2"""
-    val section = InputParser.parseVectors(3)(FracMathVecFormat, toLines(str))
+    val section = InputParser.parseVectors(3)(toLines(str))(parseFrac)
     assert(section === s(fv(1, 2, 9), fv2(bf(222, 100), bf(3, 2), bf(6, 2))))
   }
 
@@ -46,30 +45,30 @@ class InputParserTest extends FunSuite {
   // Parse single poly
   //
   test("parse poly - empty") {
-    val str = // 
+    val str =
       """  
       """
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(FracMathVecFormat)(toLines(str))
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s())
     assert(commonLimits === s())
     assert(basis === s())
   }
 
   test("parse poly - simplest") {
-    val str = // 
+    val str =
       """  
       3
       1 2 3
       4 5 6
       """
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(FracMathVecFormat)(toLines(str))
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s())
     assert(basis === s())
   }
 
   test("parse poly - basis") {
-    val str = // 
+    val str =
       """
       3
       #
@@ -81,14 +80,15 @@ class InputParserTest extends FunSuite {
       1 2 3
       4 5 6
       """
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(FracMathVecFormat)(toLines(str))
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s())
     assert(basis === s(
       iv(1, 0, 0),
       iv(0, 0, 1),
       iv(3, 1, -1),
-      iv(2, 3, 4)))
+      iv(2, 3, 4)
+    ))
   }
 
   test("parse poly - limits") {
@@ -104,18 +104,19 @@ class InputParserTest extends FunSuite {
       1 2 3
       4 5 6
       """
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(FracMathVecFormat)(toLines(str))
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s(
       iv(1, 0, 0),
       iv(0, 0, 1),
       iv(3, 1, -1),
-      iv(2, 3, 4)))
+      iv(2, 3, 4)
+    ))
     assert(basis === s())
   }
 
   test("parse poly - both") {
-    val str = // 
+    val str =
       """
       3
       $         
@@ -136,23 +137,25 @@ class InputParserTest extends FunSuite {
       comment
       
       """
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(FracMathVecFormat)(toLines(str))
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
     assert(commonLimits === s(
       iv(1, 0, 0),
       iv(0, 0, 1),
       iv(3, 1, -1),
-      iv(2, 3, 4)))
+      iv(2, 3, 4)
+    ))
     assert(basis === s(
       iv(0, 2, 3),
-      iv(1, 9, 2)))
+      iv(1, 9, 2)
+    ))
   }
 
   //
   // Parse multiple polys
   //
   test("parse polys - two") {
-    val str = // 
+    val str =
       """
       3
       9 0 0
@@ -165,7 +168,7 @@ class InputParserTest extends FunSuite {
       0 0 5
       1 2 2
       """
-    val (polys, dim) = InputParser.parsePolysFromLines(FracMathVecFormat)(toLines(str))
+    val (polys, dim) = InputParser.parsePolysFromLines(toLines(str))(parseFrac)
     assert(dim === 3)
     assert(polys.size === 2)
     assert(polys === s(
@@ -173,16 +176,19 @@ class InputParserTest extends FunSuite {
         iv(9, 0, 0),
         iv(0, 8, 0),
         iv(0, 0, 7),
-        iv(3, 2, 1)),
+        iv(3, 2, 1)
+      ),
       s(
         iv(3, 0, 0),
         iv(0, 4, 0),
         iv(0, 0, 5),
-        iv(1, 2, 2))))
+        iv(1, 2, 2)
+      )
+    ))
   }
 
   test("parse polys - three") {
-    val str = // 
+    val str =
       """
       4
       9 0 0 1
@@ -201,7 +207,7 @@ class InputParserTest extends FunSuite {
       4 3 2 1
       5 6 7 8
       """
-    val (polys, dim) = InputParser.parsePolysFromLines(FracMathVecFormat)(toLines(str))
+    val (polys, dim) = InputParser.parsePolysFromLines(toLines(str))(parseFrac)
     assert(dim === 4)
     assert(polys.size === 3)
     assert(polys === s(
@@ -209,25 +215,29 @@ class InputParserTest extends FunSuite {
         iv(9, 0, 0, 1),
         iv(0, 8, 0, 2),
         iv(0, 0, 7, 3),
-        iv(3, 2, 1, 4)),
+        iv(3, 2, 1, 4)
+      ),
       s(
         iv(3, 0, 0, 4),
         iv(0, 4, 0, 3),
         iv(0, 0, 5, 2),
-        iv(1, 2, 2, 1)),
+        iv(1, 2, 2, 1)
+      ),
       s(
         iv(1, 2, 2, 4),
         iv(0, 1, 2, 3),
         iv(0, 0, 1, 2),
         iv(4, 3, 2, 1),
-        iv(5, 6, 7, 8))))
+        iv(5, 6, 7, 8)
+      )
+    ))
   }
 
   //
   // Parse matrix
   //
   test("parse matrix - fractions 1") {
-    val str = // 
+    val str =
       """
       4
       9 0 0 1
@@ -235,38 +245,42 @@ class InputParserTest extends FunSuite {
       0 0 7 3
       3 2 1 4
       """
-    val matrix = InputParser.parseMatrixFromLines(FracMathVecFormat, MatrixSupport.fromFracs)(toLines(str)).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.fromVectors[BigFrac], parseFrac).get
     assert(matrix.isSquare === true)
-    assert(matrix.rowNum === 4)
+    assert(matrix.rowCount === 4)
     assert(matrix === matrFrac(
-      a(
-        a(9, 0, 0, 1),
-        a(0, 8, 0, 2),
-        a(0, 0, 7, 3),
-        a(3, 2, 1, 4))))
+      s(
+        s(9, 0, 0, 1),
+        s(0, 8, 0, 2),
+        s(0, 0, 7, 3),
+        s(3, 2, 1, 4)
+      )
+    ))
   }
 
   test("parse matrix - ints") {
-    val str = // 
+    val str =
       """
       3
       9 0 0
       0 8 0
       0 0 7
       """
-    val matrix = InputParser.parseMatrixFromLines(IntMathVecFormat, MatrixSupport.fromInts)(toLines(str)).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.fromVectors[BigInt], parseInt).get
     assert(matrix.isSquare === true)
-    assert(matrix.rowNum === 3)
-    assert(matrix.colNum === 3)
+    assert(matrix.rowCount === 3)
+    assert(matrix.colCount === 3)
     assert(matrix === matrInt(
-      a(
-        a(9, 0, 0),
-        a(0, 8, 0),
-        a(0, 0, 7))))
+      s(
+        s(9, 0, 0),
+        s(0, 8, 0),
+        s(0, 0, 7)
+      )
+    ))
   }
 
   test("parse matrix while skipping rows - ints") {
-    val str = // 
+    val str =
       """
       3
       1 2
@@ -276,17 +290,19 @@ class InputParserTest extends FunSuite {
       @
       Comment!
       """
-    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(IntMathVecFormat, MatrixSupport.fromInts)(toLines(str)).get
+    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(Matrix.fromVectors[BigInt], parseInt).get
     assert(r === 1)
     assert(c === 2)
     assert(matrix.isSquare === true)
-    assert(matrix.rowNum === 3)
-    assert(matrix.colNum === 3)
+    assert(matrix.rowCount === 3)
+    assert(matrix.colCount === 3)
     assert(matrix === matrInt(
-      a(
-        a(9, 0, 0),
-        a(0, 8, 0),
-        a(0, 0, 7))))
+      s(
+        s(9, 0, 0),
+        s(0, 8, 0),
+        s(0, 0, 7)
+      )
+    ))
   }
 
 }

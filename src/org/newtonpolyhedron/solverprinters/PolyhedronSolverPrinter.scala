@@ -6,14 +6,13 @@ import java.text.MessageFormat
 
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.fs.utils.collection.table.KeyTable
-import org.newtonpolyhedron._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver
 import org.newtonpolyhedron.solve.surface.SurfaceBuilder
 import org.newtonpolyhedron.ui.render3d.PolyRenderer
+import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PointUtils
 
 import com.sun.j3d.utils.applet.MainFrame
@@ -22,9 +21,9 @@ import javax.vecmath.Point3d
 
 class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                               val surfaceBuilder: SurfaceBuilder,
-                              val points: IndexedSeq[FracMathVec],
-                              val commonLimits: IndexedSeq[IntMathVec],
-                              val basis: IndexedSeq[IntMathVec],
+                              val points: IndexedSeq[FracVec],
+                              val commonLimits: IndexedSeq[IntVec],
+                              val basis: IndexedSeq[IntVec],
                               val illustrate: Boolean,
                               output: PrintWriter)
     extends SolverPrinter[PolyhedronSolver](solver, output) {
@@ -34,7 +33,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     output.println(title("Polyhedron computing"))
 
     output.println(header("Original points:"))
-    val dim = points(0).dim
+    val dimension = points(0).size
     for (i <- 0 until points.size) {
       output.println(MessageFormat.format(" Q{0} = {1}", int2Integer(i), points(i)))
     }
@@ -51,7 +50,7 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     val lookupTable = solver.solve(points, commonLimits, basis, output)
     printLookupTable(lookupTable, output)
 
-    val surfacesMap = surfaceBuilder.surfaces(lookupTable, dim)
+    val surfacesMap = surfaceBuilder.surfaces(lookupTable, dimension)
 
     var upperDimSurfaces = IndexedSeq.empty[Surface]
     for ((surfaceDim, currDimSurfaces) <- surfacesMap) {
@@ -65,13 +64,14 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
       upperDimSurfaces = currDimSurfacesList
     }
 
-    if (dim <= 3 && illustrate) {
-      illustrate(dim, points, surfacesMap, 85)
+    if (dimension <= 3 && illustrate) {
+      illustrate(dimension, points, surfacesMap, 85)
     }
   }
 
-  private def printLookupTable(lookupTable: KeyTable[IntMathVec, Int, Boolean],
+  private def printLookupTable(lookupTable: KeyTable[IntVec, Int, Boolean],
                                output: PrintWriter) = {
+    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     var strTable = new ArrayListKeyTable[String, String, String]
     var rowIdx = 0
     for (rowKey <- lookupTable.rowKeyList) {
@@ -97,15 +97,16 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
   }
 
   private def illustrate(dim: Int,
-                         points: Seq[FracMathVec],
+                         points: Seq[FracVec],
                          surfacesMap: Map[Int, Set[Surface]],
                          freq: Int) = {
     val points3d = points map (PointUtils.p3d)
     val lines = collectLineCorners(surfacesMap(1), points)
     val borderEdgesAlt = (lines map (_.pointIndices map points3d)).flatten
     val illustrFrames = Seq(
-      doDrawFrame(points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
-      doDrawFrame(borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2))
+      doDrawFrame("All-Vs-All", points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
+      doDrawFrame("Convex Hull", borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2)
+    )
     try {
       while (!Thread.interrupted()) {
         Thread.sleep(freq)
@@ -117,7 +118,8 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     }
   }
 
-  private def doDrawFrame(pts: Seq[Point3d],
+  private def doDrawFrame(title: String,
+                          pts: Seq[Point3d],
                           mode: Int,
                           positionX: Int,
                           positionY: Int,
@@ -126,15 +128,16 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                           is2d: Boolean): Frame = {
     val polyRenderer = new PolyRenderer(pts, mode, is2d)
     val frame = new MainFrame(polyRenderer, width, height)
+    frame.setTitle(title)
     frame.setLocation(positionX, positionY)
     frame
   }
 
-  private def collectLineCorners(surfaces: Iterable[Surface], points: Seq[FracMathVec]): Seq[Surface] = {
+  private def collectLineCorners(surfaces: Iterable[Surface], points: Seq[FracVec]): Seq[Surface] = {
     surfaces.map(s => if (s.size == 2) s else getLineCorners(s, points)).toSeq
   }
 
-  private def getLineCorners(surface: Surface, points: Seq[FracMathVec]): Surface = {
+  private def getLineCorners(surface: Surface, points: Seq[FracVec]): Surface = {
     def getLesserAndGreaterPoints(surfacePtsIndices: List[Int],
                                   currDim: Int, lesserPtIdx: Int, greaterPtIdx: Int): (Int, Int) =
       surfacePtsIndices match {
@@ -150,8 +153,8 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
         }
       }
     val surfacePtsIndices = surface.pointIndices.toIndexedSeq
-    val dim = points(0).dim
-    for (t <- 0 until dim) {
+    val dimension = points(0).size
+    for (t <- 0 until dimension) {
       val (lesserPtIdx, greaterPtIdx) = getLesserAndGreaterPoints(surfacePtsIndices.toList, t, surfacePtsIndices(0), surfacePtsIndices(0))
       if (lesserPtIdx != greaterPtIdx)
         return new Surface(Seq(lesserPtIdx, greaterPtIdx)).addUpperSurfaces(surface.upperSurfaces)

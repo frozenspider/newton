@@ -4,18 +4,17 @@ import scala.annotation.implicitNotFound
 import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
 import org.apache.commons.math3.fraction.BigFraction
-import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.Field
 
 /** Wrapper around {@link org.apache.commons.math3.fraction.BigFraction} */
 case class BigFrac(val underlying: BigFraction)
     extends ScalaNumber
     with ScalaNumericConversions
-    with FieldElement[BigFrac]
     with Ordered[BigFrac]
     with Serializable {
   val num = new BigInt(this.underlying.getNumerator)
   val den = new BigInt(this.underlying.getDenominator)
+  lazy val signum = num.signum
   lazy val quotient = num / den
   lazy val remainder = num % den
   /** Behaves exactly as {@link Math#round(double)}.  */
@@ -37,20 +36,19 @@ case class BigFrac(val underlying: BigFraction)
   def /(that: BigInt) = new BigFrac(this.underlying divide that.underlying)
   def /(that: Long) = new BigFrac(this.underlying divide that)
 
+  def min(that: BigFrac) = if (this <= that) this else that
+  def max(that: BigFrac) = if (this >= that) this else that
+
   def unary_- = new BigFrac(this.underlying.negate)
+
+  def pow(that: Int) = new BigFrac(this.underlying pow that)
+
+  def inv = BigFrac(den, num)
 
   override def compare(that: BigFrac): Int = this.underlying compareTo that.underlying
 
-  override def add(that: BigFrac) = this + that
-  override def subtract(that: BigFrac) = this - that
-  override def multiply(that: BigFrac) = this * that
-  override def multiply(that: Int) = this * that
-  override def divide(that: BigFrac) = this / that
-  override def reciprocal = new BigFrac(underlying.reciprocal)
-  override def negate = -this
-  override def getField = BigFrac.BigFracField
-
   val isInt = den == 1
+  def isZero = num == 0
   override def isWhole = true
   override def doubleValue = this.underlying.doubleValue
   override def floatValue = this.underlying.floatValue
@@ -66,7 +64,11 @@ case class BigFrac(val underlying: BigFraction)
     case _                => false
   }
   override def hashCode = this.underlying.hashCode
-  override def toString = this.underlying.toString
+  override def toString = {
+    if (isInt) num.toString
+    else if (isZero) "0"
+    else num + "/" + den
+  }
 }
 
 object BigFrac {
@@ -82,22 +84,17 @@ object BigFrac {
   implicit def int2bigFrac(n: Int) = this(n)
   implicit def bigInt2bigFrac(n: BigInt) = this(n)
 
-  implicit object BigFracNumeric extends Numeric[BigFrac] {
+  implicit object BigFracFractional extends Fractional[BigFrac] {
     override def compare(a: BigFrac, b: BigFrac) = a compare b
     override def plus(x: BigFrac, y: BigFrac): BigFrac = x + y
     override def minus(x: BigFrac, y: BigFrac): BigFrac = x - y
     override def times(x: BigFrac, y: BigFrac): BigFrac = x * y
+    override def div(x: BigFrac, y: BigFrac): BigFrac = x / y
     override def negate(x: BigFrac): BigFrac = -x
     override def fromInt(x: Int): BigFrac = BigFrac(x, 1)
     override def toInt(x: BigFrac): Int = x.underlying.intValue
     override def toLong(x: BigFrac): Long = x.underlying.longValue
     override def toFloat(x: BigFrac): Float = x.underlying.floatValue
     override def toDouble(x: BigFrac): Double = x.underlying.doubleValue
-  }
-
-  implicit object BigFracField extends Field[BigFrac] {
-    def getZero = BigFrac.ZERO
-    def getOne = BigFrac.ONE
-    def getRuntimeClass = classOf[BigFrac]
   }
 }

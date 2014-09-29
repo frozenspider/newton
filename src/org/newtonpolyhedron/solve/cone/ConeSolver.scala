@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.cone
 
 import java.io.PrintWriter
 
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 trait ConeSolver {
   /**
@@ -20,8 +20,8 @@ trait ConeSolver {
    * @throws InterruptedException
    *             if execution was interrupted
    */
-  def solve(inequations: IndexedSeq[IntMathVec],
-            basis: IndexedSeq[IntMathVec],
+  def solve(inequations: Seq[IntVec],
+            basis: Seq[IntVec],
             spaceDimension: Int,
-            output: PrintWriter): IndexedSeq[IntMathVec]
+            output: PrintWriter): Seq[IntVec]
 }

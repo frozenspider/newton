@@ -6,24 +6,24 @@ import java.io.PrintWriter
 
 import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.ExecutorRunnable
-import org.newtonpolyhedron.entity.MatrixSupport
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.vector.FracMathVec
-import org.newtonpolyhedron.entity.vector.IntMathVec
+import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.ex.UnknownModeException
 import org.newtonpolyhedron.ex.WrongFormatException
+import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
 import org.newtonpolyhedron.solve.cone._
+import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolverImpl
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
 import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
+import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
 import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
+import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
 class NewtonLogic {
 
-  val intFmt = IntMathVec.IntMathVecFormat
-  val fracFmt = FracMathVec.FracMathVecFormat
   val coneSolver: ConeSolver = new ConeSolverImpl
 
   /**
@@ -61,6 +61,7 @@ class NewtonLogic {
       case WorkingMode.MATRIX_INVERSE            => launchMatrixInverse(file, writer)
       case WorkingMode.MATRIX_UNIMODULAR_ALPHA   => launchMatrixUniAlpha(file, writer)
       case WorkingMode.MATRIX_LAST_ROW_MINOR_GCD => launchMatrixMinorGCD(file, writer)
+      case WorkingMode.POWER_TRANSFORMATION      => launchPowerTransformation(file, writer)
       case _                                     => throw new UnknownModeException(mode)
     }
     return new Thread(new ExecutorRunnable(solver, writer), "MainSolver")
@@ -69,7 +70,7 @@ class NewtonLogic {
   def launchPolyMotzkinBurger(file: File,
                               illustrate: Boolean,
                               writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file, fracFmt)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file)(parseFrac)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
     val surfaceBuilder = new SurfaceBuilderImpl
     new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimits, basis, illustrate, writer)
@@ -77,37 +78,37 @@ class NewtonLogic {
 
   def launchIntersection(file: File,
                          writer: PrintWriter): SolverPrinter[_] = {
-    val (polys, dim) = InputParser.parsePolysFromFile(file, fracFmt)
+    val (polys, dim) = InputParser.parsePolysFromFile(file)(parseFrac)
     val polySolver = new PolyIntersectionSolverImpl(coneSolver)
     new PolyIntersectionSolverPrinter(polySolver, polys, dim, writer)
   }
 
   def launchCone(file: File,
                  writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file, intFmt)
+    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file)(parseInt)
     new ConeSolverPrinter(coneSolver, pointList, basis, writer)
   }
 
   def launchMatrixDet(file: File,
                       writer: PrintWriter): SolverPrinter[_] = {
-    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
     new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
   def launchMatrixInverse(file: File,
                           writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    val matrix = InputParser.parseMatrixFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
     new MatrixInverseSolverPrinter(matrix, writer)
   }
 
   def launchMatrixUniAlpha(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
     val matrix = {
-      val m = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+      val m = InputParser.parseMatrixFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
       // Add all-zero row if necessary
       if (m.isSquare) m
-      else if (m.rowNum != m.colNum - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
-      else m addRow (Seq.fill(m.colNum)(BigFrac.ZERO))
+      else if (m.rowCount != m.colCount - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
+      else m addRow (Seq.fill(m.colCount)(BigFrac.ZERO))
     }
     val uniMatrixMaker = new UnimodularMatrixMakerImpl
     new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer)
@@ -115,8 +116,20 @@ class NewtonLogic {
 
   def launchMatrixMinorGCD(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, fracFmt, MatrixSupport.fromFracs)
+    val matrix = InputParser.parseMatrixFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
     new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
+  }
+
+  def launchPowerTransformation(file: File,
+                                writer: PrintWriter): SolverPrinter[_] = {
+    val (polys, pts) = InputParser.parsePowerTransfBaseFromFile(file)
+    val powTransfSolver = new PowerTransformationSolverImpl(
+      new UnimodularMatrixMakerImpl,
+      new SimpleEqSystemSolverImpl
+    )
+    new PowerTransformationSolverPrinter(
+      powTransfSolver, new ChangerOfVariablesImpl, polys, pts, writer
+    )
   }
 }
