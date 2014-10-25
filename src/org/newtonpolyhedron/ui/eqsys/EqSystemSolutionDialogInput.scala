@@ -35,6 +35,7 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
       eqSysRenderer.render(eqSys, varName)
       pack()
       centerOnScreen()
+      defaultButton = okBtn
     }
     var ok = false
     modal = true
@@ -46,6 +47,7 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
     private val eqSysRenderer = new EqSystemRenderingPanel
     private val okBtn = new Button("OK")
     private val cnBtn = new Button("Cancel")
+    defaultButton = okBtn
     contents = new BorderPanel {
       layout(new FlowPanel {
         contents += header
