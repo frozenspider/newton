@@ -185,12 +185,18 @@ object InputParser {
   }
 
   def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Polys, ISeqSeq[Int]) = {
-    val parts = lines.splitBySkippingDelim(_ == "%")
     if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
-    if (parts.size != dim) throw new WrongFormatException("Incorrect file format or wrong number of sections")
-    val polys = parts dropRight 1 map (part => parsePowerTransfBasePoly(dim, part))
-    val indices = parts.last map { line =>
-      (line split ' ' map Integer.parseInt).toIndexedSeq
+    val (polyLines, chosenLines) = {
+      val delimIdx = lines.indexOf("#")
+      if (delimIdx == -1) throw new WrongFormatException("Please separate chosen points by #")
+      val split = lines.splitAt(delimIdx)
+      (split._1, split._2.drop(1))
+    }
+    val polyStringGroups = polyLines.splitBySkippingDelim(_ == "%")
+    if (polyStringGroups.size != (dim - 1)) throw new WrongFormatException("Incorrect file format or wrong number of sections")
+    val polys = polyStringGroups map (part => parsePowerTransfBasePoly(dim, part))
+    val indices = chosenLines.toIndexedSeq map { line =>
+      (line split ' ' map parseInt map (_.toInt)).toIndexedSeq
     }
     (polys, indices)
   }
@@ -198,8 +204,9 @@ object InputParser {
   def parsePowerTransfBasePoly(dim: Int, lines: Lines): Polynomial = {
     val res = lines map { line =>
       val split = (line split ' ').toVector
-      if (!split.head.endsWith(",")) throw new WrongFormatException(s"Incorrect line format '$line'")
-      val coeff = Integer.parseInt(split.head.dropRight(1).trim)
+      val coeffStr = split.head.trim
+      if (!coeffStr.endsWith(",")) throw new WrongFormatException(s"Incorrect line format '$line'")
+      val coeff = parseInt(coeffStr.dropRight(1))
       val powers = split.tail map parseFrac
       new Term(Product(coeff), powers)
     }
