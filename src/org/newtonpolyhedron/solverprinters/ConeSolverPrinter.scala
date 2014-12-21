@@ -11,7 +11,7 @@ import org.newtonpolyhedron.utils.LanguageImplicits._
 
 class ConeSolverPrinter(solver: ConeSolver,
                         val inequations: IndexedSeq[IntVec],
-                        val basis: IndexedSeq[IntVec],
+                        val basisOption: Option[IndexedSeq[IntVec]],
                         output: PrintWriter)
     extends SolverPrinter[ConeSolver](solver, output) {
 
@@ -25,7 +25,7 @@ class ConeSolverPrinter(solver: ConeSolver,
       output.println(MessageFormat.format(" c{0} = {1}", int2Integer(i + 1), currIneq))
     }
     val dimension = inequations(0).size
-    val solved = solver.solve(inequations, basis, dimension, output)
+    val solved = solver.solve(inequations, basisOption, dimension, output)
     coneFinalSolutionOutput(solved, output)
   }
 

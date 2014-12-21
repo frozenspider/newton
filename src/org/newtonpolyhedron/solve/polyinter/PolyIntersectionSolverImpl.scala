@@ -42,7 +42,7 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
         val commonEqSys = eqSystems.flatten
         // -- Construct a system
 
-        val solutions = coneSolver solve (commonEqSys, IndexedSeq.empty, dim, NullPrintWriter)
+        val solutions = coneSolver solve (commonEqSys, None, dim, NullPrintWriter)
         val intersectingSols = solutions filter (isIntersectingSol(eqSystems))
         fillMapRecursive(indicesSeq.tail, withSoluionsToIndices(prevMap, intersectingSols, indices))
       }

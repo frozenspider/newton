@@ -74,10 +74,10 @@ class NewtonLogic {
   def launchPolyMotzkinBurger(file: File,
                               illustrate: Boolean,
                               writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file)(parseFrac)
+    val (pointList, commonLimitsOption, basisOption) = InputParser.parsePolyFromFile(file)(parseFrac)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
     val surfaceBuilder = new SurfaceBuilderImpl
-    new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimits, basis, illustrate, writer)
+    new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimitsOption, basisOption, illustrate, writer)
   }
 
   def launchIntersection(file: File,
@@ -89,8 +89,8 @@ class NewtonLogic {
 
   def launchCone(file: File,
                  writer: PrintWriter): SolverPrinter[_] = {
-    val (pointList, commonLimits, basis) = InputParser.parsePolyFromFile(file)(parseInt)
-    new ConeSolverPrinter(coneSolver, pointList, basis, writer)
+    val (pointList, _, basisOption) = InputParser.parsePolyFromFile(file)(parseInt)
+    new ConeSolverPrinter(coneSolver, pointList, basisOption, writer)
   }
 
   def launchMatrixDet(file: File,

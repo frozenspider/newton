@@ -22,8 +22,8 @@ import javax.vecmath.Point3d
 class PolyhedronSolverPrinter(solver: PolyhedronSolver,
                               val surfaceBuilder: SurfaceBuilder,
                               val points: IndexedSeq[FracVec],
-                              val commonLimits: IndexedSeq[IntVec],
-                              val basis: IndexedSeq[IntVec],
+                              val commonLimitsOption: Option[IndexedSeq[IntVec]],
+                              val basisOption: Option[IndexedSeq[IntVec]],
                               val illustrate: Boolean,
                               output: PrintWriter)
     extends SolverPrinter[PolyhedronSolver](solver, output) {
@@ -39,15 +39,16 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     }
 
     output.println(header("Common limits:"))
-    if (commonLimits.size > 0) {
-      for (i <- 0 until commonLimits.size) {
-        output.println(MessageFormat.format(" L{0} = {1}", int2Integer(i), commonLimits(i)))
-      }
-    } else {
-      output.println(" (none)")
+    commonLimitsOption match {
+      case Some(commonLimits) =>
+        for (i <- 0 until commonLimits.size) {
+          output.println(MessageFormat.format(" L{0} = {1}", int2Integer(i), commonLimits(i)))
+        }
+      case None =>
+        output.println(" (none)")
     }
 
-    val lookupTable = solver.solve(points, commonLimits, basis, output)
+    val lookupTable = solver.solve(points, commonLimitsOption, basisOption, output)
     printLookupTable(lookupTable, output)
 
     val surfacesMap = surfaceBuilder.surfaces(lookupTable, dimension)

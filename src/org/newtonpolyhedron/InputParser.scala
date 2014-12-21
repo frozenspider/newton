@@ -17,6 +17,7 @@ object InputParser {
   private type Lines = Seq[String]
   private type ISeq[E] = IndexedSeq[E]
   private type ISeqSeq[E] = ISeq[ISeq[E]]
+  private type OptISeqSeq[E] = Option[ISeqSeq[E]]
   private type ISeqSeqSeq[E] = ISeq[ISeqSeq[E]]
   private type IV = ISeq[BigInt]
   private type FV = ISeq[BigFrac]
@@ -81,12 +82,13 @@ object InputParser {
   // Poly and Cone
   //
   /** @return pointList, commonLimits, basis */
-  def parsePolyFromFile[C](file: File)(parseElement: Parse[C]): (ISeqSeq[C], ISeqSeq[BigInt], ISeqSeq[BigInt]) =
+  def parsePolyFromFile[C](file: File)(parseElement: Parse[C]): (ISeqSeq[C], OptISeqSeq[BigInt], OptISeqSeq[BigInt]) =
     genParseFile(file)(lines => parsePolyFromLines(lines)(parseElement))
 
   /** @return pointList, commonLimits, basis */
   def parsePolyFromLines[C](lines: Lines)(parseElement: Parse[C]) = {
-    val empty = (IndexedSeq.empty[ISeq[C]], IndexedSeq.empty[IV], IndexedSeq.empty[IV])
+    val empty: (ISeqSeq[C], OptISeqSeq[BigInt], OptISeqSeq[BigInt]) =
+      (IndexedSeq.empty[ISeq[C]], None, None)
     genParseLines(lines, empty) { (dim, travLines) =>
       val commonLimits = parseSectionIfPresent("$", dim)(travLines)(parseInt)
       val basis = parseSectionIfPresent("#", dim)(travLines)(parseInt)
@@ -95,14 +97,14 @@ object InputParser {
     }
   }
 
-  private def parseSectionIfPresent[C](separator: String, dim: Int)(lines: Lines)(parseElement: Parse[C]): ISeqSeq[C] = {
+  private def parseSectionIfPresent[C](separator: String, dim: Int)(lines: Lines)(parseElement: Parse[C]): OptISeqSeq[C] = {
     val start = lines indexOf separator
-    if (start == -1) IndexedSeq.empty
+    if (start == -1) None
     else {
       val end = lines indexOf (separator, start + 1)
       if (end == -1) throw new WrongFormatException("Section has no end: " + separator)
       else if (lines.indexOf(separator, end + 1) != -1) throw new WrongFormatException("Too many section separators: " + separator)
-      else parseVectors(dim)(lines slice (start + 1, end))(parseElement)
+      else Some(parseVectors(dim)(lines slice (start + 1, end))(parseElement))
     }
   }
 

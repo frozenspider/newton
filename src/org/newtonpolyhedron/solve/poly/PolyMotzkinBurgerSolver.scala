@@ -14,22 +14,23 @@ import org.newtonpolyhedron.utils.PointUtils
 class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolver {
 
   override def solve(points: Seq[FracVec],
-                     commonLimits: Seq[IntVec],
-                     wishfulBasis: Seq[IntVec],
+                     commonLimitsOption: Option[Seq[IntVec]],
+                     wishfulBasisOption: Option[Seq[IntVec]],
                      output: PrintWriter): KeyTable[IntVec, Int, Boolean] = {
-    val allSolutions = solveForEachPoint(points, commonLimits, wishfulBasis, output)
+    val allSolutions = solveForEachPoint(points, commonLimitsOption, wishfulBasisOption, output)
     fillTableWith(allSolutions)
   }
 
   def solveForEachPoint(points: Seq[FracVec],
-                        commonLimits: Seq[IntVec],
-                        wishfulBasis: Seq[IntVec],
+                        commonLimitsOption: Option[Seq[IntVec]],
+                        wishfulBasisOption: Option[Seq[IntVec]],
                         output: PrintWriter): Seq[Seq[IntVec]] = {
     val dim = points.head.size
     val allSolutions = for (currPtIdx <- 0 until points.size) yield {
+      val commonLimits = commonLimitsOption getOrElse IndexedSeq.empty
       // Forming equations by substracting current point, plus common limits - if any
       val eqSys = PointUtils.copySubtractPointAsInt(points, currPtIdx) ++ commonLimits
-      val coneSolutions = coneSolver.solve(eqSys, wishfulBasis, dim, NullPrintWriter)
+      val coneSolutions = coneSolver.solve(eqSys, wishfulBasisOption, dim, NullPrintWriter)
       coneSolutions
     }
     allSolutions

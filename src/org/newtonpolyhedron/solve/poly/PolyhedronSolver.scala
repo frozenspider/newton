@@ -7,7 +7,7 @@ import org.newtonpolyhedron.entity.vector.VectorImports._
 
 trait PolyhedronSolver {
   def solve(points: Seq[FracVec],
-            commonLimits: Seq[IntVec],
-            wishfulBasis: Seq[IntVec],
+            commonLimitsOption: Option[Seq[IntVec]],
+            wishfulBasisOption: Option[Seq[IntVec]],
             output: PrintWriter): KeyTable[IntVec, Int, Boolean]
 }

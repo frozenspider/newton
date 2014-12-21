@@ -7,17 +7,22 @@ import org.newtonpolyhedron.entity.vector.VectorImports._
 class ConeSolverImpl extends ConeSolver {
 
   override def solve(ineqs: Seq[IntVec],
-                     basis: Seq[IntVec],
+                     basisOption: Option[Seq[IntVec]],
                      dim: Int,
                      output: PrintWriter): Seq[IntVec] = {
     require(ineqs forall (_.size == dim), "Inequation vector with incorrect dimension")
-    require(basis forall (_.size == dim), "Basis vector with incorrect dimension")
     // E.g. we got one vector in 3d space - we can handle 2 vectors here (simple degenerated case),
     // but with this few points the solution is undefined
     require(ineqs.size >= dim - 1, s"Not enough equations given, need at least ${dim - 1}."
       + " This case is too degenerated to have any solutions.")
-    val basis2 = if (!basis.isEmpty) basis else initialBasis(dim)
-    val fundamentalSolution = solveInner(ineqs.toIndexedSeq, basis2.toIndexedSeq, dim, output)
+    val basis = basisOption match {
+      case Some(basis) =>
+        require(basis forall (_.size == dim), "Basis vector with incorrect dimension")
+        basis
+      case None =>
+        initialBasis(dim)
+    }
+    val fundamentalSolution = solveInner(ineqs.toIndexedSeq, basis.toIndexedSeq, dim, output)
     // val rank = MatrixUtils.getRank(MatrixUtils.fromIntVector(proxyList(ineqs)))
     // val result = withoutZeroProductSolutions(ineqs, rank)(basis)
     fundamentalSolution

@@ -18,9 +18,9 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
   val solver = new PolyMotzkinBurgerSolver(new ConeSolverImpl)
 
   def solve(points: IndexedSeq[FracVec],
-            commonLimits: IndexedSeq[IntVec],
-            wishfulBasis: IndexedSeq[IntVec]) =
-    solver.solve(points, commonLimits, wishfulBasis, /* NullPrintWriter.instance */ new PrintWriter(System.out, true))
+            commonLimitsOption: Option[IndexedSeq[IntVec]],
+            basisOption: Option[IndexedSeq[IntVec]]) =
+    solver.solve(points, commonLimitsOption, basisOption, /* NullPrintWriter.instance */ new PrintWriter(System.out, true))
 
   test("Bruno, pages 19 to 30") {
     val points = s(
@@ -50,7 +50,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(1, 2, 3, 4))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -126,7 +126,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(4, 5, 6, 7))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -203,7 +203,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(11))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, commonLimits, s())
+    val lookupTable = solve(points, Some(commonLimits), None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -238,7 +238,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(2, 3, 4))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -320,7 +320,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(11, 12, 16, 17, 21, 22))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -358,7 +358,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(2, 8))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -394,7 +394,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(1, 4, 5))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -430,7 +430,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(1, 4, 5))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -458,7 +458,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(0, 1, 2, 3))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 
@@ -486,7 +486,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(0, 1, 2, 3))
     (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
 
-    val lookupTable = solve(points, s(), s())
+    val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
   }
 }

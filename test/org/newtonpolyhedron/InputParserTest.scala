@@ -50,8 +50,8 @@ class InputParserTest extends FunSuite {
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s())
-    assert(commonLimits === s())
-    assert(basis === s())
+    assert(commonLimits === None)
+    assert(basis === None)
   }
 
   test("parse poly - simplest") {
@@ -63,8 +63,8 @@ class InputParserTest extends FunSuite {
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
-    assert(commonLimits === s())
-    assert(basis === s())
+    assert(commonLimits === None)
+    assert(basis === None)
   }
 
   test("parse poly - basis") {
@@ -82,13 +82,13 @@ class InputParserTest extends FunSuite {
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
-    assert(commonLimits === s())
-    assert(basis === s(
+    assert(commonLimits === None)
+    assert(basis === Some(s(
       iv(1, 0, 0),
       iv(0, 0, 1),
       iv(3, 1, -1),
       iv(2, 3, 4)
-    ))
+    )))
   }
 
   test("parse poly - limits") {
@@ -106,13 +106,13 @@ class InputParserTest extends FunSuite {
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
-    assert(commonLimits === s(
+    assert(commonLimits === Some(s(
       iv(1, 0, 0),
       iv(0, 0, 1),
       iv(3, 1, -1),
       iv(2, 3, 4)
-    ))
-    assert(basis === s())
+    )))
+    assert(basis === None)
   }
 
   test("parse poly - both") {
@@ -139,16 +139,16 @@ class InputParserTest extends FunSuite {
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
-    assert(commonLimits === s(
+    assert(commonLimits === Some(s(
       iv(1, 0, 0),
       iv(0, 0, 1),
       iv(3, 1, -1),
       iv(2, 3, 4)
-    ))
-    assert(basis === s(
+    )))
+    assert(basis === Some(s(
       iv(0, 2, 3),
       iv(1, 9, 2)
-    ))
+    )))
   }
 
   //

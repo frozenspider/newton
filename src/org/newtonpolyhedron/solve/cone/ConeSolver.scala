@@ -10,8 +10,8 @@ trait ConeSolver {
    *
    * @param inequations
    *            list of linear inequations coefficients.
-   * @param basis
-   *            a basis to solve for (or {@code null})
+   * @param basisOption
+   *            a basis to solve for
    * @param spaceDimension
    *            target space dimension
    * @param output
@@ -21,7 +21,7 @@ trait ConeSolver {
    *             if execution was interrupted
    */
   def solve(inequations: Seq[IntVec],
-            basis: Seq[IntVec],
+            basisOption: Option[Seq[IntVec]],
             spaceDimension: Int,
             output: PrintWriter): Seq[IntVec]
 }
