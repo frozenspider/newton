@@ -32,17 +32,18 @@ class ChangerOfVariablesImpl extends ChangerOfVariables {
   //      p sortBy (_.powers.sum)
   //    }
 
+  // FIXME: Change vars and banish together
   def changeVars(poly: Polynomial, substs: Polys): Polynomial = {
     require(poly forall (_.powers.size == substs.size), "Original polynomial terms dimension should be" +
       "equal to replacement polynomials count")
-    val changedVarsPolyWithDup: Polynomial = poly flatMap changeVarInTerm(substs)
-    val changedVarsPoly: Polynomial = changedVarsPolyWithDup.collapseDups
+    val changedVarsPolyWithDup = poly.par flatMap changeVarInTerm(substs)
+    val changedVarsPoly: Polynomial = changedVarsPolyWithDup.toIndexedSeq.collapseDups
     changedVarsPoly sorted
   }
 
   def changeVarInTerm(substs: Polys)(term: Term): Polynomial = {
     assert(substs.size == term.powers.size)
-    val powered: Polys = (substs zip term.powers) map {
+    val powered = (substs zip term.powers).par map {
       case (changeVarPoly, pow) => {
         require(pow.isValidInt, "Power is either too large or fractional!")
         changeVarPoly pow pow.toInt
