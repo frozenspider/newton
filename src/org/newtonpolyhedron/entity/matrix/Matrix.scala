@@ -148,6 +148,10 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
   def contentCopy = matrix.copy
 
+  def exists(cond: T => Boolean): Boolean = elementsByRow exists (e => cond(e._3))
+
+  def forall(cond: T => Boolean): Boolean = elementsByRow forall (e => cond(e._3))
+
   def contains(what: T): Boolean = elementsByRow exists (_._3 == what)
 
   /** @return stream of (row, col, element) */

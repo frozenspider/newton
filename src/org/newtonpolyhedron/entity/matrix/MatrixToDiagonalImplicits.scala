@@ -115,7 +115,6 @@ object MatrixToDiagonalImplicits {
 
     private[matrix] def swapInverse(i: Int, j: Int, orientation: Orientation): MatrixTriple = {
       val distance = math.abs(i - j)
-      println(s"   Swapping ${orientation} $i <=> $j (distance: $distance)")
       orientation match {
         case ROWS => mt.swapCols(i, j).inverseCol(j)
         case COLS => mt.swapRows(i, j).inverseRow(j)
@@ -155,7 +154,6 @@ object MatrixToDiagonalImplicits {
     }
 
     private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): MatrixTriple = {
-      println(s"Subtracting ${orientation} $from from $to (quotient $quotient)")
       orientation match {
         case ROWS => mt.subtractMultipliedCol(from, to, quotient)
         case COLS => mt.subtractMultipliedRow(from, to, quotient)
