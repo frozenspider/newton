@@ -7,9 +7,9 @@ import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.NullPrintWriter
 
 @RunWith(classOf[JUnitRunner])
-class ConeSolverImplTest extends FunSuite {
+class MotzkinBurgerTest extends FunSuite {
 
-  val coneSolver = new ConeSolverImpl
+  val coneSolver = new MotzkinBurger
 
   implicit def tupleToVec(tuple: Tuple2[Int, Int]) =
     IntVec(tuple._1, tuple._2)
@@ -30,7 +30,7 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 1),
       (-3, 1, -1, 6),
       (1, 1, -3, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 4, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (15, 11, 12, 5),
       (13, 9, 12, 7),
@@ -45,23 +45,60 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 0),
       (-3, 1, -1, 0),
       (1, 1, -3, 0)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 4, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, 0, 1),
       (0, 0, 0, -1)) map tupleToVec).toSet)
   }
 
-  test("chernyakov degenerated 5d") {
+  test("chernyakov 5d (degenerated), with added zero") {
     def eqSys = IndexedSeq(
       (1, -1, 3, -8, 0),
       (-1, 2, -1, 1, 0),
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, 0),
       (1, 1, -3, 2, 0)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 5, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 5)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, 0, 0, 1),
       (0, 0, 0, 0, -1)) map tupleToVec).toSet)
+  }
+
+  test("chernyakov 5d, with added number and negative indentity vectors") {
+    def eqSys = IndexedSeq(
+      (-1, 0, 0, 0, 0),
+      (0, -1, 0, 0, 0),
+      (0, 0, -1, 0, 0),
+      (0, 0, 0, -1, 0),
+      (0, 0, 0, 0, -1),
+      (1, -1, 3, -8, 5),
+      (-1, 2, -1, 1, -1),
+      (2, -1, -2, 1, 0),
+      (-3, 1, -1, 6, -3),
+      (1, 1, -3, 2, -1)) map tupleToVec
+    val solution = coneSolver.solve(eqSys, None, 5)
+    assert(solution.toSet === (IndexedSeq(
+      (15, 11, 12, 5, 0),
+      (13, 0, 17, 8, 0),
+      (5, 5, 8, 3, 0),
+      (1, 1, 1, 1, 1),
+      (13, 9, 12, 7, 0),
+      (11, 0, 15, 8, 0),
+      (2, 0, 3, 2, 1),
+      (5, 0, 9, 4, 0)) map tupleToVec).toSet)
+  }
+
+  test("chernyakov degenerated 5d 2") {
+    def eqSys = IndexedSeq(
+      (1, -1, 3, -8, 5),
+      (-1, 2, -1, 1, -1),
+      (2, -1, -2, 1, 0),
+      (-3, 1, -1, 6, -3),
+      (1, 1, -3, 2, -1)) map tupleToVec
+    val solution = coneSolver.solve(eqSys, None, 5)
+    assert(solution.toSet === (IndexedSeq(
+      (1, 1, 1, 1, 1),
+      (-1, -1, -1, -1, -1)) map tupleToVec).toSet)
   }
 
   test("chernyakov 5d octant") {
@@ -76,41 +113,41 @@ class ConeSolverImplTest extends FunSuite {
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, -3),
       (1, 1, -3, 2, -1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 5, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 5)
     assert(solution.toSet === (IndexedSeq(
-      (15, 11, 12, 5, 0),
       (13, 0, 17, 8, 0),
-      (5, 5, 8, 3, 0),
-      (1, 1, 1, 1, 1),
-      (13, 9, 12, 7, 0),
-      (11, 0, 15, 8, 0),
+      (15, 11, 12, 5, 0),
+      (5, 0, 9, 4, 0),
       (2, 0, 3, 2, 1),
-      (5, 0, 9, 4, 0)) map tupleToVec).toSet)
+      (11, 0, 15, 8, 0),
+      (5, 5, 8, 3, 0),
+      (13, 9, 12, 7, 0),
+      (1, 1, 1, 1, 1)) map tupleToVec).toSet)
   }
 
   //
   //
   //
-  test("bruno simple test case") {
+  test("bruno 3d test case") {
     def eqSys = IndexedSeq(
       (3, -1, -1),
       (-1, 3, -1),
       (-1, -1, 3),
       (1, -1, 1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 3, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-1, -2, -1),
       (-1, -1, -2),
       (-2, -1, -1)) map tupleToVec).toSet)
   }
 
-  test("bruno simple test case 2") {
+  test("bruno 3d test case 2") {
     def eqSys = IndexedSeq(
       (3, -1, -1),
       (-1, 3, -1),
       (3, -1, 2),
       (-1, 3, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 3, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, -2),
       (-1, -3, 0),
@@ -121,7 +158,7 @@ class ConeSolverImplTest extends FunSuite {
   //
   //
   //
-  test("bruno test case") {
+  test("bruno 4d, q4") {
     def eqSys = IndexedSeq(
       (-5, -1, -1, -1),
       (-4, -2, -1, -1),
@@ -134,7 +171,7 @@ class ConeSolverImplTest extends FunSuite {
       (-4, -4, 0, 0),
       (-4, 0, -4, 0),
       (-4, 0, 0, -4)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 4, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (1, -1, -1, -1),
       (1, 1, -1, -1),
@@ -146,14 +183,39 @@ class ConeSolverImplTest extends FunSuite {
       (1, -1, 1, -1)) map tupleToVec).toSet)
   }
 
-  test("bruno test case 2") {
+  test("bruno 4d, page 9") {
+    def eqSys = IndexedSeq(
+      (3, -1, -1, -1),
+      (4, -2, -1, -1),
+      (4, 0, -2, -2),
+      (4, 0, 0, 0),
+      (8, 0, 0, 0),
+      (4, 4, 0, 0),
+      (4, 0, 4, 0),
+      (4, 0, 0, 4),
+      (4, -4, 0, 0),
+      (4, 0, -4, 0),
+      (4, 0, 0, -4)) map tupleToVec
+    val solution = coneSolver.solve(eqSys, None, 4)
+    assert(solution.toSet === (IndexedSeq(
+      (-1, -1, 1, 1),
+      (-1, 1, -1, 1),
+      (-1, 1, 1, -1),
+      (-1, -1, -1, -1),
+      (-1, -1, -1, 1),
+      (-1, 1, 1, 1),
+      (-1, 1, -1, -1),
+      (-1, -1, 1, -1)) map tupleToVec).toSet)
+  }
+
+  test("bruno 4d, problematic case") {
     def eqSys = IndexedSeq(
       (2, 0, 0, 0),
       (2, 1, 0, 0),
       (2, 1, 1, 1),
       (2, 2, 1, 1),
       (2, 1, 2, 1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 4, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, -1, 1),
       (0, 0, 1, -2),
@@ -165,11 +227,30 @@ class ConeSolverImplTest extends FunSuite {
   //
   //
   //
+  test("solodovnikov 4d, artificial") {
+    def eqSys = IndexedSeq(
+      (3, 4, -5, 6),
+      (-2, -3, 3, -1),
+      (1, 0, 0, 0),
+      (0, 1, 0, 0),
+      (0, 0, 1, 0),
+      (0, 0, 0, 1)) map tupleToVec
+    val solution = coneSolver.solve(eqSys, None, 4)
+    assert(solution.toSet === (IndexedSeq(
+      (0, -13, -14, -3),
+      (-13, 0, -9, -1),
+      (0, 0, -6, -5),
+      (0, 0, -1, -3)) map tupleToVec).toSet)
+  }
+
+  //
+  //
+  //
   test("simple 2d") {
     def eqSys = IndexedSeq(
       (1, -4),
       (-2, -1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 2, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (4, 1),
       (-1, 2)) map tupleToVec).toSet)
@@ -179,7 +260,7 @@ class ConeSolverImplTest extends FunSuite {
     def eqSys = IndexedSeq(
       (-1, 2),
       (2, -1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 2, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (-2, -1),
       (-1, -2)) map tupleToVec).toSet)
@@ -189,10 +270,20 @@ class ConeSolverImplTest extends FunSuite {
     def eqSys = IndexedSeq(
       (-1, 2),
       (3, -3)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 2, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (-2, -1),
       (-1, -1)) map tupleToVec).toSet)
+  }
+
+  test("simple 2d - 4") {
+    def eqSys = IndexedSeq(
+      (-2, 1),
+      (-3, 3)) map tupleToVec
+    val solution = coneSolver.solve(eqSys, None, 2)
+    assert(solution.toSet === (IndexedSeq(
+      (-1, -2),
+      (1, 1)) map tupleToVec).toSet)
   }
 
   //
@@ -203,7 +294,7 @@ class ConeSolverImplTest extends FunSuite {
       (-3, 1, 1),
       (-1, 1, 0),
       (-1, 0, 1)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 3, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, -2),
       (-1, -2, -1),
@@ -221,7 +312,7 @@ class ConeSolverImplTest extends FunSuite {
       (-3, 4, 0),
       (-3, 0, 5),
       (-2, 2, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 3, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-8, -9, -30),
       (-14, -33, -18),
@@ -239,7 +330,7 @@ class ConeSolverImplTest extends FunSuite {
       (3, -4, 0),
       (0, -4, 5),
       (1, -2, 2)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 3, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-34, -21, -24),
       (0, 0, -1),
@@ -257,11 +348,18 @@ class ConeSolverImplTest extends FunSuite {
       (3, 0, -5),
       (0, 4, -5),
       (1, 2, -3)) map tupleToVec
-    val solution = coneSolver.solve(eqSys, None, 3, NullPrintWriter)
+    val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (56, 63, 72),
       (0, -1, 0),
       (-1, 0, 0),
       (-20, -15, -12)) map tupleToVec).toSet)
+  }
+
+  test("1d case") {
+    // Not even sure if this one is right
+    def eqSys = IndexedSeq(IntVec(3))
+    val solution = coneSolver.solve(eqSys, None, 1)
+    assert(solution === IndexedSeq(IntVec(-1)))
   }
 }

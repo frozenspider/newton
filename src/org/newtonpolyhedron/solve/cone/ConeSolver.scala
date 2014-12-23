@@ -1,7 +1,5 @@
 package org.newtonpolyhedron.solve.cone
 
-import java.io.PrintWriter
-
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
 trait ConeSolver {
@@ -14,14 +12,11 @@ trait ConeSolver {
    *            a basis to solve for
    * @param spaceDimension
    *            target space dimension
-   * @param output
-   *            an output for intermediate values (final result won't be printed anyway)
    * @return a fundamental solution for an linear inequation system
    * @throws InterruptedException
    *             if execution was interrupted
    */
   def solve(inequations: Seq[IntVec],
             basisOption: Option[Seq[IntVec]],
-            spaceDimension: Int,
-            output: PrintWriter): Seq[IntVec]
+            spaceDimension: Int): Seq[IntVec]
 }

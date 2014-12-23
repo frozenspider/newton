@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.poly
 
 import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
-import org.newtonpolyhedron.solve.cone.ConeSolverImpl
+import org.newtonpolyhedron.solve.cone.MotzkinBurger
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.entity.vector.VectorImports._
@@ -15,7 +15,7 @@ import java.util.Comparator
 @RunWith(classOf[JUnitRunner])
 class PolyMotzkinBurgerSolverTest extends FunSuite {
 
-  val solver = new PolyMotzkinBurgerSolver(new ConeSolverImpl)
+  val solver = new PolyMotzkinBurgerSolver(new MotzkinBurger)
 
   def solve(points: IndexedSeq[FracVec],
             commonLimitsOption: Option[IndexedSeq[IntVec]],

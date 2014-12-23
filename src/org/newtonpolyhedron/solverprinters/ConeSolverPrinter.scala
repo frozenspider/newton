@@ -18,14 +18,14 @@ class ConeSolverPrinter(solver: ConeSolver,
   override def solveFor(solver: ConeSolver,
                         output: PrintWriter) = {
     output.println(title("Cone computing"))
-    val rank = Matrix.fromVectors(inequations).rank
+    val rank = Matrix.fromVectors(inequations map (_.toFracVec)).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations eachWithIndex { (currIneq, i) =>
-      output.println(MessageFormat.format(" c{0} = {1}", int2Integer(i + 1), currIneq))
+      output.println(MessageFormat.format(" c{0} = {1}", int2Integer(i + 1), currIneq.toTupleString))
     }
     val dimension = inequations(0).size
-    val solved = solver.solve(inequations, basisOption, dimension, output)
+    val solved = solver.solve(inequations, basisOption, dimension)
     coneFinalSolutionOutput(solved, output)
   }
 
@@ -33,7 +33,7 @@ class ConeSolverPrinter(solver: ConeSolver,
                                       output: PrintWriter) = {
     output.println(header("FINAL SOLUTIONS:"))
     testing eachWithIndex { (currTesting, i) =>
-      val str = currTesting.toString
+      val str = currTesting.toTupleString
       val len = str.length
       output.print(str + "\t")
       if (len < 10) {
@@ -47,6 +47,6 @@ class ConeSolverPrinter(solver: ConeSolver,
       }
     }
     output.println(header("ANSWERS:"))
-    testing foreach (output.println)
+    testing map (_.toTupleString) foreach (output.println)
   }
 }

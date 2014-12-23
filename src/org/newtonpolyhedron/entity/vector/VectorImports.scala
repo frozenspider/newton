@@ -45,5 +45,11 @@ object VectorImports extends SeqVectorSupport {
       else
         seq map (_ / gcd)
     }
+
+    def toFracVec: FracVec =
+      seq map BigFrac.apply
+
+    def toTupleString: String =
+      seq mkString ("(", ", ", ")")
   }
 }

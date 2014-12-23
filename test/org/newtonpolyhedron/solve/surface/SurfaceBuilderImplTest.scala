@@ -4,7 +4,6 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.solve.cone.ConeSolverImpl
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.fs.utils.collection.table.ArrayListKeyTable
 import org.newtonpolyhedron.entity.Surface

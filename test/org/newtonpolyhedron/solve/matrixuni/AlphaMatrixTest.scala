@@ -19,7 +19,6 @@ class AlphaMatrixTest extends FunSuite {
 
   private def performTheTest(source: Seq[Seq[Int]], expected: Matrix[BigFrac]): Unit = {
     val alpha = maker.unimodularFrom(matrixFromDraft(source))
-    println("=====")
     assert(alpha === expected)
   }
 

@@ -28,7 +28,7 @@ import org.newtonpolyhedron.utils.parsing.ParseFormats._
 class NewtonLogic {
   import NewtonLogic._
 
-  val coneSolver: ConeSolver = new ConeSolverImpl
+  val coneSolver: ConeSolver = new MotzkinBurger
 
   /**
    * Starts the processing thread.

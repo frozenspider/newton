@@ -4,7 +4,7 @@ import scala.collection.immutable.SortedSet
 import org.fs.utils.collection.table.KeyTable
 import org.junit.runner.RunWith
 import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.solve.cone.ConeSolverImpl
+import org.newtonpolyhedron.solve.cone.MotzkinBurger
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
@@ -14,7 +14,7 @@ import org.fs.utils.collection.table.KeyTables
 @RunWith(classOf[JUnitRunner])
 class PolyIntersectionSolverTest extends FunSuite {
 
-  val solver = new PolyIntersectionSolverImpl(new ConeSolverImpl)
+  val solver = new PolyIntersectionSolverImpl(new MotzkinBurger)
 
   test("simple") {
     val source = s(

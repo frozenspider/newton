@@ -30,7 +30,7 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
       val commonLimits = commonLimitsOption getOrElse IndexedSeq.empty
       // Forming equations by substracting current point, plus common limits - if any
       val eqSys = PointUtils.copySubtractPointAsInt(points, currPtIdx) ++ commonLimits
-      val coneSolutions = coneSolver.solve(eqSys, wishfulBasisOption, dim, NullPrintWriter)
+      val coneSolutions = coneSolver.solve(eqSys, wishfulBasisOption, dim)
       coneSolutions
     }
     allSolutions
