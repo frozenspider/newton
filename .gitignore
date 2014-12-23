@@ -1,6 +1,9 @@
-.classpath
-.metadata/*
-.settings/*
-bin/*
-Инпуты/*
+# Eclipse:
+/.project
+/.cache
+/.settings
+/.classpath
 /bin
+
+# Project-specific
+Инпуты/*
