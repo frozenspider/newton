@@ -8,7 +8,6 @@ import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
-import org.newtonpolyhedron.ex.UnknownModeException
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
 import org.newtonpolyhedron.solve.cone._
@@ -44,29 +43,25 @@ class NewtonLogic {
    * @return working thread (not started)
    * @throws WrongFormatException
    *             if file was malformed
-   * @throws UnknownModeException
-   *             if chosen mode has not yet been supported
    * @throws Exception
    *             if... whatever.
    */
   @throws(classOf[FileNotFoundException])
   @throws(classOf[WrongFormatException])
-  @throws(classOf[UnknownModeException])
   def makeThread(path: String,
-                 mode: WorkingMode,
+                 mode: WorkingMode.Value,
                  illustrate: Boolean,
                  writer: PrintWriter): Thread = {
     val file = new File(path)
     val solver = mode match {
-      case WorkingMode.POLY_MOTZKIN_BURGER       => launchPolyMotzkinBurger(file, illustrate, writer)
-      case WorkingMode.POLY_INTERSECTION         => launchIntersection(file, writer)
-      case WorkingMode.CONE                      => launchCone(file, writer)
-      case WorkingMode.MATRIX_DET                => launchMatrixDet(file, writer)
-      case WorkingMode.MATRIX_INVERSE            => launchMatrixInverse(file, writer)
-      case WorkingMode.MATRIX_UNIMODULAR_ALPHA   => launchMatrixUniAlpha(file, writer)
-      case WorkingMode.MATRIX_LAST_ROW_MINOR_GCD => launchMatrixMinorGCD(file, writer)
-      case WorkingMode.POWER_TRANSFORMATION      => launchPowerTransformation(file, writer)
-      case _                                     => throw new UnknownModeException(mode)
+      case WorkingMode.Poly                   => launchPolyMotzkinBurger(file, illustrate, writer)
+      case WorkingMode.PolyIntersection       => launchIntersection(file, writer)
+      case WorkingMode.Cone                   => launchCone(file, writer)
+      case WorkingMode.MatrixDet              => launchMatrixDet(file, writer)
+      case WorkingMode.MatrixInv              => launchMatrixInverse(file, writer)
+      case WorkingMode.MatrixUnimodularAlpha  => launchMatrixUniAlpha(file, writer)
+      case WorkingMode.MatrixLastRowMinorsGCD => launchMatrixMinorGCD(file, writer)
+      case WorkingMode.PowerTransformation    => launchPowerTransformation(file, writer)
     }
     return new Thread(new ExecutorRunnable(solver, writer), "MainSolver")
   }

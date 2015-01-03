@@ -11,7 +11,6 @@ import scala.swing.event.ButtonClicked
 
 import org.newtonpolyhedron.NewtonLogic
 import org.newtonpolyhedron.WorkingMode
-import org.newtonpolyhedron.ex.UnknownModeException
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.utils.Version
 
@@ -52,7 +51,7 @@ class NewtonPolyhedronFrame extends SimpleSwingApplication {
 
   lazy val tfPathToInput = new TextField(10)
   lazy val chckbxIllustrate = new CheckBox("Illustrate if possible")
-  lazy val cbMode = new ComboBox(WorkingMode.values)
+  lazy val cbMode = new ComboBox(WorkingMode.values.toSeq)
   lazy val txtrOutput = new TextArea {
     font = new Font("Courier New", Font.PLAIN, 12)
     text = "Press Browse button to browse for input files and press Start to begin.\n"
@@ -82,7 +81,6 @@ class NewtonPolyhedronFrame extends SimpleSwingApplication {
     } catch {
       case ex: FileNotFoundException => printWriter.println("File not found")
       case ex: WrongFormatException  => printWriter.println("Illegal file format, see instruction")
-      case ex: UnknownModeException  => printWriter.println("Unknown mode selected: " + ex.getLocalizedMessage)
       case ex: Throwable             => ex.printStackTrace(printWriter)
     }
 
