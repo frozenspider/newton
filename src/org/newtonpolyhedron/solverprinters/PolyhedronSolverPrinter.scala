@@ -35,14 +35,14 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
     output.println(header("Original points:"))
     val dimension = points(0).size
     for (i <- 0 until points.size) {
-      output.println(MessageFormat.format(" Q{0} = {1}", int2Integer(i), points(i)))
+      output.println(MessageFormat.format(" Q{0} = {1}", int2Integer(i), points(i).toTupleString))
     }
 
     output.println(header("Common limits:"))
     commonLimitsOption match {
       case Some(commonLimits) =>
         for (i <- 0 until commonLimits.size) {
-          output.println(MessageFormat.format(" L{0} = {1}", int2Integer(i), commonLimits(i)))
+          output.println(MessageFormat.format(" L{0} = {1}", int2Integer(i), commonLimits(i).toTupleString))
         }
       case None =>
         output.println(" (none)")
@@ -72,11 +72,12 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
 
   private def printLookupTable(lookupTable: KeyTable[IntVec, Int, Boolean],
                                output: PrintWriter) = {
+    output.println(header("Compliance table:"))
     import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     var strTable = new ArrayListKeyTable[String, String, String]
     var rowIdx = 0
     for (rowKey <- lookupTable.rowKeyList) {
-      val rowKeyStr = MessageFormat.format("N{0} = {1}", int2Integer(rowIdx), rowKey)
+      val rowKeyStr = MessageFormat.format("N{0} = {1}", int2Integer(rowIdx), rowKey.toTupleString)
       var colIdx = 0
       for (colKey <- lookupTable.colKeyList) {
         val colKeyStr = MessageFormat.format(" Q{0}", int2Integer(colIdx))

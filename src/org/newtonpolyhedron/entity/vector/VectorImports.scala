@@ -52,4 +52,9 @@ object VectorImports extends SeqVectorSupport {
     def toTupleString: String =
       seq mkString ("(", ", ", ")")
   }
+
+  implicit class RichFracVec(val seq: FracVec) {
+    def toTupleString: String =
+      seq mkString ("(", ", ", ")")
+  }
 }
