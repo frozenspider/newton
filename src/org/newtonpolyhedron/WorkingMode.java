@@ -1,9 +1,9 @@
 package org.newtonpolyhedron;
 
 public enum WorkingMode {
-    POLY_MOTZKIN_BURGER("Polyhedron (Motzkin - Burger)"), //
+    POLY_MOTZKIN_BURGER("Polyhedron"), //
     POLY_INTERSECTION("Polyhedron Intersection"), //
-    CONE("Cone"), //
+    CONE("Cone (Motzkin - Burger)"), //
     MATRIX_DET("Matrix Determinant"), //
     MATRIX_INVERSE("Matrix Inverse"), //
     MATRIX_UNIMODULAR_ALPHA("Unimodular \"Alpha\"-matrix"), //
