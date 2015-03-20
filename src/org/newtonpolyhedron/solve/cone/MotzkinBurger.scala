@@ -3,7 +3,9 @@ package org.newtonpolyhedron.solve.cone
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
 /**
- * Motzkin-Burger implementation of cone solver
+ * Motzkin-Burger implementation of cone solver.
+ *
+ * Runtime: O(n^4^ d) worst-case, n - #inequations, d - dimension
  */
 class MotzkinBurger extends ConeSolver {
 
