@@ -20,11 +20,11 @@ package object test {
   type DoubleConvertible = Any { def toDouble: Double }
 
   def matrInt(content: Seq[Seq[Int]]): Matrix[BigInt] = {
-    Matrix.fromVectors(content map (_.toIndexedSeq map BigInt.apply))
+    Matrix(content map (_.toIndexedSeq map BigInt.apply))
   }
 
   def matrFrac(content: Seq[Seq[Int]]): Matrix[BigFrac] = {
-    Matrix.fromVectors(content map (_.toIndexedSeq map BigFrac.apply))
+    Matrix(content map (_.toIndexedSeq map BigFrac.apply))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)

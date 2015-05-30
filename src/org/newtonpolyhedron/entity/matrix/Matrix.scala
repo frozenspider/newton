@@ -208,25 +208,19 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
 object Matrix {
 
-  def fromArray[T](elements: Array[Array[T]])(implicit numeric: Numeric[T]): Matrix[T] = {
-    implicit val wrapper = wrap(numeric)
-    val wrapped = elements map (_ map (z => wrapper(z)))
-    new Matrix(MatrixUtils.createFieldMatrix(wrapped))
-  }
-
-  def fromVectors[T](elements: Iterable[IndexedSeq[T]])(implicit numeric: Numeric[T]): Matrix[T] = {
+  def apply[T](elements: Iterable[Iterable[T]])(implicit numeric: Numeric[T]): Matrix[T] = {
     require(!elements.isEmpty, "Elements was empty")
     implicit val wrapper = wrap(numeric)
     val dim = elements.head.size
-    val matrix = MatrixUtils.createFieldMatrix(wrapper.field, elements.size, dim)
+    val apacheMath3Matrix = MatrixUtils.createFieldMatrix(wrapper.field, elements.size, dim)
     val elsSeq = elements.toIndexedSeq
     for {
       r <- 0 until elsSeq.size
       c <- 0 until dim
-      val vec = elsSeq(r)
+      val vec = elsSeq(r).toIndexedSeq
       val value = vec(c)
-    } matrix.setEntry(r, c, wrapper(value))
-    new Matrix(matrix)
+    } apacheMath3Matrix.setEntry(r, c, wrapper(value))
+    new Matrix(apacheMath3Matrix)
   }
 
   def idenitiy[T](dim: Int)(implicit numeric: Numeric[T]): Matrix[T] = {

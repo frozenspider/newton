@@ -90,20 +90,20 @@ class NewtonLogic {
 
   def launchMatrixDet(file: File,
                       writer: PrintWriter): SolverPrinter[_] = {
-    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
+    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.apply[BigFrac])(parseFrac)
     new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
   def launchMatrixInverse(file: File,
                           writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
+    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[BigFrac])(parseFrac)
     new MatrixInverseSolverPrinter(matrix, writer)
   }
 
   def launchMatrixUniAlpha(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
     val matrix = {
-      val m = InputParser.parseMatrixFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
+      val m = InputParser.parseMatrixFromFile(file, Matrix.apply[BigFrac])(parseFrac)
       // Add all-zero row if necessary
       if (m.isSquare) m
       else if (m.rowCount != m.colCount - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
@@ -115,7 +115,7 @@ class NewtonLogic {
 
   def launchMatrixMinorGCD(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, Matrix.fromVectors[BigFrac])(parseFrac)
+    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[BigFrac])(parseFrac)
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
     new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
   }

@@ -245,7 +245,7 @@ class InputParserTest extends FunSuite {
       0 0 7 3
       3 2 1 4
       """
-    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.fromVectors[BigFrac], parseFrac).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[BigFrac], parseFrac).get
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 4)
     assert(matrix === matrFrac(
@@ -266,7 +266,7 @@ class InputParserTest extends FunSuite {
       0 8 0
       0 0 7
       """
-    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.fromVectors[BigInt], parseInt).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[BigInt], parseInt).get
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 3)
     assert(matrix.colCount === 3)
@@ -290,7 +290,7 @@ class InputParserTest extends FunSuite {
       @
       Comment!
       """
-    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(Matrix.fromVectors[BigInt], parseInt).get
+    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(Matrix.apply[BigInt], parseInt).get
     assert(r === 1)
     assert(c === 2)
     assert(matrix.isSquare === true)

@@ -33,7 +33,7 @@ class PowerTransformationSolverImpl(
       val matrixBase = (pairs map {
         case (powers1, powers2) => powers1 - powers2
       }) :+ FracVec.zero(dimension)
-      Matrix.fromVectors(matrixBase)
+      Matrix(matrixBase)
     }
     if (matrices.isEmpty)
       throw new IllegalArgumentException("Pairs are not provided")

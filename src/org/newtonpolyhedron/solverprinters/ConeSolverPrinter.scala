@@ -18,7 +18,7 @@ class ConeSolverPrinter(solver: ConeSolver,
   override def solveFor(solver: ConeSolver,
                         output: PrintWriter) = {
     output.println(title("Cone computing"))
-    val rank = Matrix.fromVectors(inequations map (_.toFracVec)).rank
+    val rank = Matrix(inequations map (_.toFracVec)).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations eachWithIndex { (currIneq, i) =>
