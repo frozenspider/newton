@@ -93,7 +93,10 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     for ((vector, indicesSeq) <- ptsForVectors) {
       for (indices <- indicesSeq) {
         for (i <- 0 until indices.size) {
-          val pts = vectPtTable.get(i, vector, SortedSet.empty)
+          val pts = vectPtTable.get(i, vector) match {
+            case null => SortedSet.empty[Int]
+            case x    => x
+          }
           vectPtTable.put(i, vector, pts + indices(i))
         }
       }
