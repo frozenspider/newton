@@ -72,20 +72,16 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
   private def printLookupTable(lookupTable: KeyTable[IntVec, Int, Boolean],
                                output: PrintWriter) = {
     output.println(header("Compliance table:"))
-    var strTable = KeyTable.empty[String, String, String]
-    var rowIdx = 0
-    for (rowKey <- lookupTable.rowKeys) {
-      val rowKeyStr = MessageFormat.format("N{0} = {1}", int2Integer(rowIdx), rowKey.toTupleString)
-      var colIdx = 0
-      for (colKey <- lookupTable.colKeys) {
-        val colKeyStr = MessageFormat.format(" Q{0}", int2Integer(colIdx))
-        lookupTable.get(rowKey, colKey) match {
-          case Some(true) => strTable = strTable + (rowKeyStr, colKeyStr, " +")
-          case _          => strTable = strTable + (rowKeyStr, colKeyStr, " -")
+    val strTable = lookupTable.rowKeys.zipWithIndex.foldLeft(KeyTable.empty[String, String, String]) {
+      case (table, (rowKey, rowIdx)) =>
+        val rowKeyStr = MessageFormat.format("N{0} = {1}", int2Integer(rowIdx), rowKey.toTupleString)
+        lookupTable.colKeys.zipWithIndex.foldLeft(table) {
+          case (table, (colKey, colIdx)) =>
+            val colKeyStr = MessageFormat.format(" Q{0}", int2Integer(colIdx))
+            val isContained = lookupTable.get(rowKey, colKey).getOrElse(false)
+            val toAdd = if (isContained) " +" else " -"
+            table + (rowKeyStr, colKeyStr, toAdd)
         }
-        colIdx += 1
-      }
-      rowIdx += 1
     }
     // Skip "+-----+----+" lines
     val lines = strTable.toString.split("\n")

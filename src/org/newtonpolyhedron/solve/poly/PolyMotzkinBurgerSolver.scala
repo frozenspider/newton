@@ -39,6 +39,7 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
   }
 
   def fillTableWith(allSolutions: Seq[Seq[IntVec]]): KeyTable[IntVec, Int, Boolean] = {
+    // Looks way cleaner with variable than with values and folds
     var lookupTable = KeyTable.empty[IntVec, Int, Boolean]
     for (i <- 0 until allSolutions.size)
       lookupTable = lookupTable.withEmptyCol(i)

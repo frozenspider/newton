@@ -82,27 +82,27 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     equationSystems forall (_ exists (_ *+ solution == 0))
 
   /**
-   * @param ptsForVectors { vector : [ point indices list per polyhedron ] }
-   * @return { polyIdx, vector -> [ points giving this vector for this poly when intersecting ] }
+   * @param ptsForVectors vector -> [ point indices list per polyhedron ]
+   * @return (polyIdx, vector) -> [ points giving this vector for this poly when intersecting ]
    */
-  def reverseTableMeaning(ptsForVectors: Map[IntVec, Seq[IndexedSeq[Int]]]): KeyTable[Int, IntVec, SortedSet[Int]] = {
-    var vectPtTable = KeyTable.empty[Int, IntVec, SortedSet[Int]]
-    for ((vector, indicesSeq) <- ptsForVectors) {
-      for (indices <- indicesSeq) {
-        for (i <- 0 until indices.size) {
-          val pts = vectPtTable.get(i, vector) match {
-            case None    => SortedSet.empty[Int]
-            case Some(x) => x
+  def reverseTableMeaning(ptsForVectors: Map[IntVec, Seq[Seq[Int]]]): KeyTable[Int, IntVec, SortedSet[Int]] = {
+    val vectPtTable =
+      ptsForVectors.foldLeft(KeyTable.empty[Int, IntVec, SortedSet[Int]]) {
+        case (table, (vector, ptIndicesSeq)) => {
+          ptIndicesSeq.foldLeft(table) { (table, ptIndices) =>
+            ptIndices.zipWithIndex.foldLeft(table) {
+              case (table, (ptIndex, i)) =>
+                val pts = table.get(i, vector) getOrElse SortedSet.empty[Int]
+                table + (i, vector, pts + ptIndex)
+            }
           }
-          vectPtTable = vectPtTable + (i, vector, pts + indices(i))
-        }
+        } ensuring (table => {
+          // Sanity check that all combinations are present
+          // I.e. [0, 5], [0, 6], [0, 7], [1, 5], [1, 6], [1, 7] must all present to get [0, 1], [5, 6, 7]
+          // We'll use a weaker assertion: number of combinations must be equal to product of resulting point set sizes
+          table.col(vector).values.map(_.size).product == ptIndicesSeq.size
+        }, "Logic failure, please report to developer")
       }
-      // Sanity check that all combinations are present
-      // I.e. [0, 5], [0, 6], [0, 7], [1, 5], [1, 6], [1, 7] must all present to get [0, 1], [5, 6, 7]
-      // We'll use a weaker assertion: number of combinations must be equal to product of resulting point set sizes
-      assert(vectPtTable.col(vector).values.map(_.size).product == indicesSeq.size, "Logic failure, please report to developer")
-    }
-    vectPtTable = vectPtTable.sortedCols
-    vectPtTable
+    vectPtTable.sortedCols
   }
 }
