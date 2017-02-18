@@ -2,7 +2,7 @@ package org.newtonpolyhedron
 
 import java.util.Comparator
 import scala.collection.immutable.SortedSet
-import org.fs.utils.collection.table._
+import org.fs.utility.collection.table._
 import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
@@ -41,19 +41,23 @@ package object test {
 
   val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
 
-  def fillTableIdxKeys(lookupTable: KeyTable[IntVec, Int, Boolean],
-                       upTo: Int): Unit = {
-    for (i <- 0 until upTo)
-      lookupTable.put(null, i, false)
-    lookupTable.removeRow(null)
+  def markedTable(colsCount: Int, expectedVecs: Seq[IntVec], marked: IndexedSeq[IndexedSeq[Int]]): KeyTable[IntVec, Int, Boolean] = {
+    val table1 = (0 until colsCount).foldLeft(KeyTable.empty[IntVec, Int, Boolean]) {
+      case (table, i) => table.withEmptyCol(i)
+    }
+    val table2 = (expectedVecs zip marked).foldLeft(table1) {
+      case (table, (vec, marked)) =>
+        val table3 = marked.foldLeft(table) {
+          case (table, i) => table + (vec, i, true)
+        }
+        table3.sortedCols
+    }
+    table2.sortedRows
   }
-  def markInTable(lookupTable: KeyTable[IntVec, Int, Boolean])(rowKey: IntVec)(toMark: Seq[Int]): Unit = {
-    toMark map (lookupTable.put(rowKey, _, true))
-    KeyTables.sortByColHeaders(lookupTable, intCmp, true)
-  }
+
   /**
    * @param points sequence of [sequence of (pointIndices, upperLvlIndices)], one per dimension,
-   * 				in order of descending dimensinon. Last sequence will get the dimension of 0
+   *         in order of descending dimensinon. Last sequence will get the dimension of 0
    */
   def chainSurfaces(points: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]): Map[Int, SortedSet[Surface]] = {
     def addToMap(acc: Map[Int, SortedSet[Surface]],

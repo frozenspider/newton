@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.surface
 
 import scala.collection.immutable.SortedSet
 
-import org.fs.utils.collection.table.KeyTable
+import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.VectorImports._
 

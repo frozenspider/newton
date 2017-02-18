@@ -1,15 +1,14 @@
 package org.newtonpolyhedron.solve.polyinter
 
 import scala.collection.immutable.SortedSet
-import org.fs.utils.collection.table.KeyTable
+import org.fs.utility.Imports._
+import org.fs.utility.collection.table.KeyTable
 import org.junit.runner.RunWith
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.MotzkinBurger
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.fs.utils.collection.table.KeyTables
 
 @RunWith(classOf[JUnitRunner])
 class PolyIntersectionSolverTest extends FunSuite {
@@ -183,15 +182,10 @@ class PolyIntersectionSolverTest extends FunSuite {
 
   /** @param map { vector -> [ pts sequence per polyhedron ] }*/
   private def polyTableFromMap(map: Map[IntVec, IndexedSeq[Seq[Int]]]): KeyTable[Int, IntVec, SortedSet[Int]] = {
-    var table = new ArrayListKeyTable[Int, IntVec, SortedSet[Int]]
-    map foreach {
-      case (vec, seq) =>
-        (seq zip (0 until seq.size)) map {
-          case (points, polyIdx) =>
-            table.put(polyIdx, vec, SortedSet(points: _*))
-        }
+    val map2 = map mapValues {
+      case seq => seq.mapWithIndex(SortedSet(_: _*) -> _).map(_.swap).toMap
     }
-    KeyTables.sortByColHeaders(table, intVecOrdering, true)
-    table
+    val table = KeyTable.fromRows(map2).transpose
+    table.sortedCols
   }
 }

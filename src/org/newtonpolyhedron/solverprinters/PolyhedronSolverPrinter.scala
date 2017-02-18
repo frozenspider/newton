@@ -4,8 +4,7 @@ import java.awt.Frame
 import java.io.PrintWriter
 import java.text.MessageFormat
 
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.fs.utils.collection.table.KeyTable
+import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.VectorImports._
@@ -73,19 +72,16 @@ class PolyhedronSolverPrinter(solver: PolyhedronSolver,
   private def printLookupTable(lookupTable: KeyTable[IntVec, Int, Boolean],
                                output: PrintWriter) = {
     output.println(header("Compliance table:"))
-    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
-    var strTable = new ArrayListKeyTable[String, String, String]
+    var strTable = KeyTable.empty[String, String, String]
     var rowIdx = 0
-    for (rowKey <- lookupTable.rowKeyList) {
+    for (rowKey <- lookupTable.rowKeys) {
       val rowKeyStr = MessageFormat.format("N{0} = {1}", int2Integer(rowIdx), rowKey.toTupleString)
       var colIdx = 0
-      for (colKey <- lookupTable.colKeyList) {
+      for (colKey <- lookupTable.colKeys) {
         val colKeyStr = MessageFormat.format(" Q{0}", int2Integer(colIdx))
-        val value = lookupTable.get(rowKey, colKey)
-        if (value) {
-          strTable.put(rowKeyStr, colKeyStr, " +")
-        } else {
-          strTable.put(rowKeyStr, colKeyStr, " -")
+        lookupTable.get(rowKey, colKey) match {
+          case Some(true) => strTable = strTable + (rowKeyStr, colKeyStr, " +")
+          case _          => strTable = strTable + (rowKeyStr, colKeyStr, " -")
         }
         colIdx += 1
       }

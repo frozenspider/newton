@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.surface
 
 import scala.collection.immutable.SortedSet
 
-import org.fs.utils.collection.table.KeyTable
+import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
@@ -30,12 +30,10 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
   }
 
   def extactLookupTableData(lookup: KeyTable[IntVec, Int, Boolean]): Seq[Seq[Int]] = {
-    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
     for {
-      point <- lookup.rowKeyList
+      point <- lookup.rowKeys
     } yield for {
-      colKey <- scala.collection.JavaConversions.asScalaBuffer(lookup.colKeyList)
-      if lookup.get(point, colKey)
+      colKey <- lookup.colKeys if lookup.isDefinedAt(point, colKey)
     } yield colKey
   }
 

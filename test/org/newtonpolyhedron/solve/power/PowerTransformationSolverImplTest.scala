@@ -2,9 +2,6 @@ package org.newtonpolyhedron.solve.power
 
 import scala.collection.immutable.SortedSet
 
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.fs.utils.collection.table.KeyTable
-import org.fs.utils.collection.table.KeyTables
 import org.junit.runner.RunWith
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl

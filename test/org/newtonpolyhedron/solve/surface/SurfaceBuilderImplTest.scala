@@ -1,12 +1,12 @@
 package org.newtonpolyhedron.solve.surface
 
-import org.newtonpolyhedron.test._
+import org.fs.utility.collection.table.KeyTable
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.fs.utils.collection.table.ArrayListKeyTable
+import org.newtonpolyhedron.test._
 import org.newtonpolyhedron.entity.Surface
+import org.newtonpolyhedron.entity.vector.VectorImports._
 
 @RunWith(classOf[JUnitRunner])
 class SurfaceBuilderImplTest extends FunSuite {
@@ -15,15 +15,13 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("medium test case") {
     /*-
-	   =================| Q0   Q1   Q2   Q3   Q4  
-	   N1 = [ 0 0 -1 ]  |  +    +    +    +    -    
-	   N2 = [ -2 -2 1 ] |  +    +    -    -    +    
-	   N4 = [ -2 2 1 ]  |  -    -    -    +    +    
-	   N3 = [ 2 -2 1 ]  |  -    +    +    -    +    
-	   N5 = [ 2 2 1 ]   |  -    -    -    -    + 
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 5)
+     =================| Q0   Q1   Q2   Q3   Q4
+     N1 = [ 0 0 -1 ]  |  +    +    +    +    -
+     N2 = [ -2 -2 1 ] |  +    +    -    -    +
+     N4 = [ -2 2 1 ]  |  -    -    -    +    +
+     N3 = [ 2 -2 1 ]  |  -    +    +    -    +
+     N5 = [ 2 2 1 ]   |  -    -    -    -    +
+   */
     val vecs = s(
       iv(0, 0, -1),
       iv(-2, -2, 1),
@@ -36,7 +34,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(0, 3, 4),
       s(1, 2, 4),
       s(2, 3, 4))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(5, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 2
@@ -72,24 +70,22 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("large test case") {
     /*-
-	   |                 | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11| Q12| Q13| Q14| Q15| Q16| Q17| Q18| Q19| Q20| Q21| Q22| Q23| Q24|
-	   |N0 = [ -6 -4 3 ] | + | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  |
-	   |N1 = [ -1 -1 -2 ]| + | - | - | + | + | + | - | - | + | + | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N2 = [ -3 -1 0 ] | + | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N3 = [ -2 -2 1 ] | + | - | - | - | - | + | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  |
-	   |N4 = [ -1 1 0 ]  | - | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  | -  | -  | -  |
-	   |N5 = [ -2 2 1 ]  | - | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  | +  | -  | -  |
-	   |N6 = [ 0 0 -1 ]  | - | - | - | + | + | - | - | - | + | + | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | -  | -  |
-	   |N7 = [ -4 -6 3 ] | - | - | - | - | - | + | + | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | -  | -  | -  |
-	   |N8 = [ -1 -3 0 ] | - | - | - | - | - | + | + | - | + | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N9 = [ 1 -1 0 ]  | - | - | - | - | - | - | + | - | + | - | -  | +  | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N10 = [ 2 -2 1 ] | - | - | - | - | - | - | + | - | - | - | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  |
-	   |N11 = [ 2 2 1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  |
-	   |N12 = [ 1 1 0 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | +  | +  | -  | +  | +  | +  | +  | -  | -  | -  | -  | -  |
-	   |N13 = [ -1 -1 1 ]| - | - | - | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | +  | -  | -  |
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 25)
+     |                 | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11| Q12| Q13| Q14| Q15| Q16| Q17| Q18| Q19| Q20| Q21| Q22| Q23| Q24|
+     |N0 = [ -6 -4 3 ] | + | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  |
+     |N1 = [ -1 -1 -2 ]| + | - | - | + | + | + | - | - | + | + | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N2 = [ -3 -1 0 ] | + | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N3 = [ -2 -2 1 ] | + | - | - | - | - | + | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  |
+     |N4 = [ -1 1 0 ]  | - | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  | -  | -  | -  |
+     |N5 = [ -2 2 1 ]  | - | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  | +  | -  | -  |
+     |N6 = [ 0 0 -1 ]  | - | - | - | + | + | - | - | - | + | + | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | -  | -  |
+     |N7 = [ -4 -6 3 ] | - | - | - | - | - | + | + | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | -  | -  | -  |
+     |N8 = [ -1 -3 0 ] | - | - | - | - | - | + | + | - | + | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N9 = [ 1 -1 0 ]  | - | - | - | - | - | - | + | - | + | - | -  | +  | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N10 = [ 2 -2 1 ] | - | - | - | - | - | - | + | - | - | - | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  |
+     |N11 = [ 2 2 1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  |
+     |N12 = [ 1 1 0 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | +  | +  | -  | +  | +  | +  | +  | -  | -  | -  | -  | -  |
+     |N13 = [ -1 -1 1 ]| - | - | - | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | +  | -  | -  |
+   */
     val vecs = s(
       iv(-6, -4, 3),
       iv(-4, -6, 3),
@@ -120,7 +116,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(11, 12, 13, 14, 16, 17, 18, 19),
       s(6, 11, 21),
       s(11, 12, 16, 17, 21, 22))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(25, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 2
@@ -190,14 +186,12 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("penleve") {
     /*-
-	==============| Q0   Q1   Q2   Q3   Q4   Q5   Q6   Q7   Q8   Q9  
-	N1 = [ -1 0 ] |  +    +    +    +    +    +    -    -    -    -    
-	N2 = [ 1 -1 ] |  -    -    -    -    -    +    -    -    -    +    
-	N3 = [ 1 0 ]  |  -    -    -    -    -    -    -    -    +    +    
-	N4 = [ 1 1 ]  |  -    -    +    -    -    -    -    -    +    -
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 9)
+  ==============| Q0   Q1   Q2   Q3   Q4   Q5   Q6   Q7   Q8   Q9
+  N1 = [ -1 0 ] |  +    +    +    +    +    +    -    -    -    -
+  N2 = [ 1 -1 ] |  -    -    -    -    -    +    -    -    -    +
+  N3 = [ 1 0 ]  |  -    -    -    -    -    -    -    -    +    +
+  N4 = [ 1 1 ]  |  -    -    +    -    -    -    -    -    +    -
+   */
     val vecs = s(
       iv(-1, 0),
       iv(1, -1),
@@ -208,7 +202,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(5, 9),
       s(8, 9),
       s(2, 8))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(10, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 1
@@ -231,15 +225,13 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("half-cube diagonal") {
     /*-
-	================| Q0   Q1   Q2   Q3   Q4   Q5  
-	N1 = [ 0 -1 1 ] |  +    +    -    +    -    +    
-	N4 = [ 0 0 -1 ] |  +    +    +    -    +    -    
-	N2 = [ -1 0 0 ] |  +    -    +    +    -    -    
-	N3 = [ 0 1 0  ] |  -    -    +    +    +    +    
-	N5 = [ 1 0 0  ] |  -    +    -    -    +    +  
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 5)
+  ================| Q0   Q1   Q2   Q3   Q4   Q5
+  N1 = [ 0 -1 1 ] |  +    +    -    +    -    +
+  N4 = [ 0 0 -1 ] |  +    +    +    -    +    -
+  N2 = [ -1 0 0 ] |  +    -    +    +    -    -
+  N3 = [ 0 1 0  ] |  -    -    +    +    +    +
+  N5 = [ 1 0 0  ] |  -    +    -    -    +    +
+   */
     val vecs = s(
       iv(0, -1, 1),
       iv(0, 0, -1),
@@ -252,7 +244,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(0, 2, 3),
       s(2, 3, 4, 5),
       s(1, 4, 5))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(5, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 2
@@ -290,14 +282,12 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("Bruno, pages 19 to 30") {
     /*-
-	                     | Q0  Q1  Q2  Q3  Q4
-	   N1 = [ -2 -1 -1 ] |  +   -   +   +   -
-	   N2 = [ -1 -2 -1 ] |  +   +   -   +   +
-	   N3 = [ -1 -1 -2 ] |  +   +   +   -   -
-	   N4 = [  1  1  1 ] |  -   +   +   +   +
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 5)
+                       | Q0  Q1  Q2  Q3  Q4
+     N1 = [ -2 -1 -1 ] |  +   -   +   +   -
+     N2 = [ -1 -2 -1 ] |  +   +   -   +   +
+     N3 = [ -1 -1 -2 ] |  +   +   +   -   -
+     N4 = [  1  1  1 ] |  -   +   +   +   +
+   */
     val vecs = s(
       iv(-2, -1, -1),
       iv(-1, -2, -1),
@@ -308,7 +298,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(0, 1, 3, 4),
       s(0, 1, 2),
       s(1, 2, 3, 4))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(5, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 2
@@ -340,25 +330,23 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("Bruno, page 18, ex. 1") {
     /*-
-	|                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
-	|N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
-	|N1 = [ -1 -1 -1 0 ] | - | - | - | - | - | - | - | - | + | + | +  | -  |
-	|N2 = [ -1 -1 0 -1 ] | - | - | - | - | - | - | - | - | + | + | -  | +  |
-	|N3 = [ -1 -1 0 0 ]  | - | - | - | - | - | - | - | - | + | + | -  | -  |
-	|N4 = [ -1 0 -1 -1 ] | - | - | + | - | - | - | - | - | + | - | +  | +  |
-	|N5 = [ -1 0 -1 0 ]  | - | - | - | - | - | - | - | - | + | - | +  | -  |
-	|N6 = [ -1 0 0 -1 ]  | - | - | - | - | - | - | - | - | + | - | -  | +  |
-	|N7 = [ -1 0 0 0 ]   | - | - | - | - | - | - | - | - | + | - | -  | -  |
-	|N8 = [ 0 -1 -1 -1 ] | - | + | + | - | - | - | - | - | - | + | +  | +  |
-	|N9 = [ 0 -1 -1 0 ]  | - | - | - | - | - | - | - | - | - | + | +  | -  |
-	|N10 = [ 0 -1 0 -1 ] | - | - | - | - | - | - | - | - | - | + | -  | +  |
-	|N11 = [ 0 -1 0 0 ]  | - | - | - | - | - | - | - | - | - | + | -  | -  |
-	|N12 = [ 0 0 -1 -1 ] | - | - | + | - | - | - | - | - | - | - | +  | +  |
-	|N13 = [ 0 0 -1 0 ]  | - | - | - | - | - | - | - | - | - | - | +  | -  |
-	|N14 = [ 0 0 0 -1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  |
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 12)
+  |                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
+  |N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
+  |N1 = [ -1 -1 -1 0 ] | - | - | - | - | - | - | - | - | + | + | +  | -  |
+  |N2 = [ -1 -1 0 -1 ] | - | - | - | - | - | - | - | - | + | + | -  | +  |
+  |N3 = [ -1 -1 0 0 ]  | - | - | - | - | - | - | - | - | + | + | -  | -  |
+  |N4 = [ -1 0 -1 -1 ] | - | - | + | - | - | - | - | - | + | - | +  | +  |
+  |N5 = [ -1 0 -1 0 ]  | - | - | - | - | - | - | - | - | + | - | +  | -  |
+  |N6 = [ -1 0 0 -1 ]  | - | - | - | - | - | - | - | - | + | - | -  | +  |
+  |N7 = [ -1 0 0 0 ]   | - | - | - | - | - | - | - | - | + | - | -  | -  |
+  |N8 = [ 0 -1 -1 -1 ] | - | + | + | - | - | - | - | - | - | + | +  | +  |
+  |N9 = [ 0 -1 -1 0 ]  | - | - | - | - | - | - | - | - | - | + | +  | -  |
+  |N10 = [ 0 -1 0 -1 ] | - | - | - | - | - | - | - | - | - | + | -  | +  |
+  |N11 = [ 0 -1 0 0 ]  | - | - | - | - | - | - | - | - | - | + | -  | -  |
+  |N12 = [ 0 0 -1 -1 ] | - | - | + | - | - | - | - | - | - | - | +  | +  |
+  |N13 = [ 0 0 -1 0 ]  | - | - | - | - | - | - | - | - | - | - | +  | -  |
+  |N14 = [ 0 0 0 -1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  |
+   */
     val vecs = s(
       iv(-1, -1, -1, -1),
       iv(-1, -1, -1, 0),
@@ -391,7 +379,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(2, 10, 11),
       s(10),
       s(11))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(12, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 3
@@ -427,26 +415,24 @@ class SurfaceBuilderImplTest extends FunSuite {
 
   test("Bruno, page 35, ex. 2") {
     /*-
-	 |                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
-	 |N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
-	 |N1 = [ -1 -1 -1 1 ] | - | - | - | - | - | - | - | + | + | + | +  | -  |
-	 |N2 = [ -1 -1 1 -1 ] | - | - | - | - | - | - | + | - | + | + | -  | +  |
-	 |N3 = [ -1 -1 1 1 ]  | - | - | - | - | - | - | + | + | + | + | -  | -  |
-	 |N4 = [ -1 1 -1 -1 ] | - | - | + | - | - | + | - | - | + | - | +  | +  |
-	 |N5 = [ -1 1 -1 1 ]  | - | - | - | - | - | + | - | + | + | - | +  | -  |
-	 |N6 = [ -1 1 1 -1 ]  | - | - | - | - | - | + | + | - | + | - | -  | +  |
-	 |N7 = [ -1 1 1 1 ]   | - | - | - | - | - | + | + | + | + | - | -  | -  |
-	 |N8 = [ 1 -1 -1 -1 ] | - | + | + | - | + | - | - | - | - | + | +  | +  |
-	 |N9 = [ 1 -1 -1 1 ]  | - | - | - | - | + | - | - | + | - | + | +  | -  |
-	 |N10 = [ 1 -1 1 -1 ] | - | - | - | - | + | - | + | - | - | + | -  | +  |
-	 |N11 = [ 1 -1 1 1 ]  | - | - | - | - | + | - | + | + | - | + | -  | -  |
-	 |N12 = [ 1 1 -1 -1 ] | - | - | + | - | + | + | - | - | - | - | +  | +  |
-	 |N13 = [ 1 1 -1 1 ]  | - | - | - | - | + | + | - | + | - | - | +  | -  |
-	 |N14 = [ 1 1 1 -1 ]  | - | - | - | - | + | + | + | - | - | - | -  | +  |
-	 |N15 = [ 1 1 1 1 ]   | - | - | - | - | + | + | + | + | - | - | -  | -  |
-	 */
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 12)
+   |                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
+   |N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
+   |N1 = [ -1 -1 -1 1 ] | - | - | - | - | - | - | - | + | + | + | +  | -  |
+   |N2 = [ -1 -1 1 -1 ] | - | - | - | - | - | - | + | - | + | + | -  | +  |
+   |N3 = [ -1 -1 1 1 ]  | - | - | - | - | - | - | + | + | + | + | -  | -  |
+   |N4 = [ -1 1 -1 -1 ] | - | - | + | - | - | + | - | - | + | - | +  | +  |
+   |N5 = [ -1 1 -1 1 ]  | - | - | - | - | - | + | - | + | + | - | +  | -  |
+   |N6 = [ -1 1 1 -1 ]  | - | - | - | - | - | + | + | - | + | - | -  | +  |
+   |N7 = [ -1 1 1 1 ]   | - | - | - | - | - | + | + | + | + | - | -  | -  |
+   |N8 = [ 1 -1 -1 -1 ] | - | + | + | - | + | - | - | - | - | + | +  | +  |
+   |N9 = [ 1 -1 -1 1 ]  | - | - | - | - | + | - | - | + | - | + | +  | -  |
+   |N10 = [ 1 -1 1 -1 ] | - | - | - | - | + | - | + | - | - | + | -  | +  |
+   |N11 = [ 1 -1 1 1 ]  | - | - | - | - | + | - | + | + | - | + | -  | -  |
+   |N12 = [ 1 1 -1 -1 ] | - | - | + | - | + | + | - | - | - | - | +  | +  |
+   |N13 = [ 1 1 -1 1 ]  | - | - | - | - | + | + | - | + | - | - | +  | -  |
+   |N14 = [ 1 1 1 -1 ]  | - | - | - | - | + | + | + | - | - | - | -  | +  |
+   |N15 = [ 1 1 1 1 ]   | - | - | - | - | + | + | + | + | - | - | -  | -  |
+   */
     val vecs = s(
       iv(-1, -1, -1, -1),
       iv(-1, -1, -1, 1),
@@ -481,7 +467,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(4, 5, 7, 10),
       s(4, 5, 6, 11),
       s(4, 5, 6, 7))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(12, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 3
@@ -581,9 +567,7 @@ class SurfaceBuilderImplTest extends FunSuite {
   }
 
   test("Bruno, unknown ex.") {
-    // Some random vectors - I haven't found actual ones 
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, 20)
+    // Some random vectors - I haven't found actual ones
     val vecs = s(
       iv(-1, 0, 0, 0),
       iv(0, -1, 0, 0),
@@ -602,7 +586,7 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(4, 5, 8, 9, 12, 13, 16, 17),
       s(4, 6, 8, 10, 12, 14, 16, 18),
       s(12, 13, 14, 15, 16, 17, 18, 19))
-    (vecs zip marked) map { case (vec, marked) => markInTable(lookupTable)(vec)(marked) }
+    val lookupTable = markedTable(20, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 3

@@ -3,9 +3,7 @@ package org.newtonpolyhedron.solve.poly
 import java.io.PrintWriter
 import java.util.Comparator
 
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.fs.utils.collection.table.KeyTable
-import org.fs.utils.collection.table.KeyTables
+import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
 import org.newtonpolyhedron.utils.NullPrintWriter
@@ -41,21 +39,15 @@ class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolv
   }
 
   def fillTableWith(allSolutions: Seq[Seq[IntVec]]): KeyTable[IntVec, Int, Boolean] = {
-    val lookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(lookupTable, allSolutions.size)
+    var lookupTable = KeyTable.empty[IntVec, Int, Boolean]
+    for (i <- 0 until allSolutions.size)
+      lookupTable = lookupTable.withEmptyCol(i)
     for {
       (coneSols, i) <- allSolutions.zipWithIndex
       sol <- coneSols
-    } lookupTable.put(sol, i, true)
-    KeyTables.sortByRowHeaders(lookupTable, intVecOrdering, true)
-    KeyTables.sortByColHeaders(lookupTable, intComparator, true)
+    } lookupTable = lookupTable + (sol, i, true)
+    lookupTable = lookupTable.sortedCols
+    lookupTable = lookupTable.sortedRows
     lookupTable
-  }
-
-  def fillTableIdxKeys(lookupTable: KeyTable[IntVec, Int, Boolean],
-                       upTo: Int): Unit = {
-    for (i <- 0 until upTo)
-      lookupTable.put(null, i, false)
-    lookupTable.removeRow(null)
   }
 }

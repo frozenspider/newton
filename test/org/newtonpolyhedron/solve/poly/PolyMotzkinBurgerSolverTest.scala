@@ -1,15 +1,13 @@
 package org.newtonpolyhedron.solve.poly
 
-import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
+import org.fs.utility.collection.table.KeyTable
+import org.newtonpolyhedron.test._
 import org.newtonpolyhedron.solve.cone.MotzkinBurger
+import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.vector.VectorImports._
 import java.io.PrintWriter
-import org.fs.utils.collection.table.KeyTables
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.fs.utils.collection.table.KeyTable
 import java.util.Comparator
 
 @RunWith(classOf[JUnitRunner])
@@ -30,14 +28,13 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(0, 0, 4),
       fv(2, 0, 2))
     /*-
-	   ==================| Q0  Q1  Q2  Q3  Q4
-	   N1 = [ -2 -1 -1 ] |  +   -   +   +   -
-	   N2 = [ -1 -2 -1 ] |  +   +   -   +   +
-	   N3 = [ -1 -1 -2 ] |  +   +   +   -   -
-	   N4 = [  1  1  1 ] |  -   +   +   +   +
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 5)
+     ==================| Q0  Q1  Q2  Q3  Q4
+     N1 = [ -2 -1 -1 ] |  +   -   +   +   -
+     N2 = [ -1 -2 -1 ] |  +   +   -   +   +
+     N3 = [ -1 -1 -2 ] |  +   +   +   -   -
+     N4 = [  1  1  1 ] |  -   +   +   +   +
+   */
+
     val expectedVecs = s(
       iv(-2, -1, -1),
       iv(-1, -2, -1),
@@ -48,7 +45,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(0, 1, 3, 4),
       s(0, 1, 2),
       s(1, 2, 3, 4))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(5, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -69,27 +66,24 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(0, 0, -4, 0),
       fv(0, 0, 0, -4))
     /*-
-	|                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
-	|N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
-	|N1 = [ -1 -1 -1 1 ] | - | - | - | - | - | - | - | + | + | + | +  | -  |
-	|N2 = [ -1 -1 1 -1 ] | - | - | - | - | - | - | + | - | + | + | -  | +  |
-	|N3 = [ -1 -1 1 1 ]  | - | - | - | - | - | - | + | + | + | + | -  | -  |
-	|N4 = [ -1 1 -1 -1 ] | - | - | + | - | - | + | - | - | + | - | +  | +  |
-	|N5 = [ -1 1 -1 1 ]  | - | - | - | - | - | + | - | + | + | - | +  | -  |
-	|N6 = [ -1 1 1 -1 ]  | - | - | - | - | - | + | + | - | + | - | -  | +  |
-	|N7 = [ -1 1 1 1 ]   | - | - | - | - | - | + | + | + | + | - | -  | -  |
-	|N8 = [ 1 -1 -1 -1 ] | - | + | + | - | + | - | - | - | - | + | +  | +  |
-	|N9 = [ 1 -1 -1 1 ]  | - | - | - | - | + | - | - | + | - | + | +  | -  |
-	|N10 = [ 1 -1 1 -1 ] | - | - | - | - | + | - | + | - | - | + | -  | +  |
-	|N11 = [ 1 -1 1 1 ]  | - | - | - | - | + | - | + | + | - | + | -  | -  |
-	|N12 = [ 1 1 -1 -1 ] | - | - | + | - | + | + | - | - | - | - | +  | +  |
-	|N13 = [ 1 1 -1 1 ]  | - | - | - | - | + | + | - | + | - | - | +  | -  |
-	|N14 = [ 1 1 1 -1 ]  | - | - | - | - | + | + | + | - | - | - | -  | +  |
-	|N15 = [ 1 1 1 1 ]   | - | - | - | - | + | + | + | + | - | - | -  | -  |
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 12)
-    def mark = markInTable(expectedLookupTable)_
+  |                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
+  |N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
+  |N1 = [ -1 -1 -1 1 ] | - | - | - | - | - | - | - | + | + | + | +  | -  |
+  |N2 = [ -1 -1 1 -1 ] | - | - | - | - | - | - | + | - | + | + | -  | +  |
+  |N3 = [ -1 -1 1 1 ]  | - | - | - | - | - | - | + | + | + | + | -  | -  |
+  |N4 = [ -1 1 -1 -1 ] | - | - | + | - | - | + | - | - | + | - | +  | +  |
+  |N5 = [ -1 1 -1 1 ]  | - | - | - | - | - | + | - | + | + | - | +  | -  |
+  |N6 = [ -1 1 1 -1 ]  | - | - | - | - | - | + | + | - | + | - | -  | +  |
+  |N7 = [ -1 1 1 1 ]   | - | - | - | - | - | + | + | + | + | - | -  | -  |
+  |N8 = [ 1 -1 -1 -1 ] | - | + | + | - | + | - | - | - | - | + | +  | +  |
+  |N9 = [ 1 -1 -1 1 ]  | - | - | - | - | + | - | - | + | - | + | +  | -  |
+  |N10 = [ 1 -1 1 -1 ] | - | - | - | - | + | - | + | - | - | + | -  | +  |
+  |N11 = [ 1 -1 1 1 ]  | - | - | - | - | + | - | + | + | - | + | -  | -  |
+  |N12 = [ 1 1 -1 -1 ] | - | - | + | - | + | + | - | - | - | - | +  | +  |
+  |N13 = [ 1 1 -1 1 ]  | - | - | - | - | + | + | - | + | - | - | +  | -  |
+  |N14 = [ 1 1 1 -1 ]  | - | - | - | - | + | + | + | - | - | - | -  | +  |
+  |N15 = [ 1 1 1 1 ]   | - | - | - | - | + | + | + | + | - | - | -  | -  |
+   */
     val expectedVecs = s(
       iv(-1, -1, -1, -1),
       iv(-1, -1, -1, 1),
@@ -124,7 +118,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(4, 5, 7, 10),
       s(4, 5, 6, 11),
       s(4, 5, 6, 7))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(12, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -150,25 +144,23 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       iv(0, 0, 1, 0),
       iv(0, 0, 0, 1))
     /*-
-	|                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
-	|N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
-	|N1 = [ -1 -1 -1 0 ] | - | - | - | - | - | - | - | - | + | + | +  | -  |
-	|N2 = [ -1 -1 0 -1 ] | - | - | - | - | - | - | - | - | + | + | -  | +  |
-	|N3 = [ -1 -1 0 0 ]  | - | - | - | - | - | - | - | - | + | + | -  | -  |
-	|N4 = [ -1 0 -1 -1 ] | - | - | + | - | - | - | - | - | + | - | +  | +  |
-	|N5 = [ -1 0 -1 0 ]  | - | - | - | - | - | - | - | - | + | - | +  | -  |
-	|N6 = [ -1 0 0 -1 ]  | - | - | - | - | - | - | - | - | + | - | -  | +  |
-	|N7 = [ -1 0 0 0 ]   | - | - | - | - | - | - | - | - | + | - | -  | -  |
-	|N8 = [ 0 -1 -1 -1 ] | - | + | + | - | - | - | - | - | - | + | +  | +  |
-	|N9 = [ 0 -1 -1 0 ]  | - | - | - | - | - | - | - | - | - | + | +  | -  |
-	|N10 = [ 0 -1 0 -1 ] | - | - | - | - | - | - | - | - | - | + | -  | +  |
-	|N11 = [ 0 -1 0 0 ]  | - | - | - | - | - | - | - | - | - | + | -  | -  |
-	|N12 = [ 0 0 -1 -1 ] | - | - | + | - | - | - | - | - | - | - | +  | +  |
-	|N13 = [ 0 0 -1 0 ]  | - | - | - | - | - | - | - | - | - | - | +  | -  |
-	|N14 = [ 0 0 0 -1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  |
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 12)
+  |                    | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11|
+  |N0 = [ -1 -1 -1 -1 ]| + | + | + | - | - | - | - | - | + | + | +  | +  |
+  |N1 = [ -1 -1 -1 0 ] | - | - | - | - | - | - | - | - | + | + | +  | -  |
+  |N2 = [ -1 -1 0 -1 ] | - | - | - | - | - | - | - | - | + | + | -  | +  |
+  |N3 = [ -1 -1 0 0 ]  | - | - | - | - | - | - | - | - | + | + | -  | -  |
+  |N4 = [ -1 0 -1 -1 ] | - | - | + | - | - | - | - | - | + | - | +  | +  |
+  |N5 = [ -1 0 -1 0 ]  | - | - | - | - | - | - | - | - | + | - | +  | -  |
+  |N6 = [ -1 0 0 -1 ]  | - | - | - | - | - | - | - | - | + | - | -  | +  |
+  |N7 = [ -1 0 0 0 ]   | - | - | - | - | - | - | - | - | + | - | -  | -  |
+  |N8 = [ 0 -1 -1 -1 ] | - | + | + | - | - | - | - | - | - | + | +  | +  |
+  |N9 = [ 0 -1 -1 0 ]  | - | - | - | - | - | - | - | - | - | + | +  | -  |
+  |N10 = [ 0 -1 0 -1 ] | - | - | - | - | - | - | - | - | - | + | -  | +  |
+  |N11 = [ 0 -1 0 0 ]  | - | - | - | - | - | - | - | - | - | + | -  | -  |
+  |N12 = [ 0 0 -1 -1 ] | - | - | + | - | - | - | - | - | - | - | +  | +  |
+  |N13 = [ 0 0 -1 0 ]  | - | - | - | - | - | - | - | - | - | - | +  | -  |
+  |N14 = [ 0 0 0 -1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  |
+   */
     val expectedVecs = s(
       iv(-1, -1, -1, -1),
       iv(-1, -1, -1, 0),
@@ -201,7 +193,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(2, 10, 11),
       s(10),
       s(11))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(12, expectedVecs, marked)
 
     val lookupTable = solve(points, Some(commonLimits), None)
     assert(lookupTable === expectedLookupTable)
@@ -215,15 +207,13 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(2, 4, 0),
       fv(2, 2, 4))
     /*-
-	   =================| Q0   Q1   Q2   Q3   Q4  
-	   N1 = [ 0 0 -1 ]  |  +    +    +    +    -    
-	   N2 = [ -2 -2 1 ] |  +    +    -    -    +    
-	   N4 = [ -2 2 1 ]  |  -    -    -    +    +    
-	   N3 = [ 2 -2 1 ]  |  -    +    +    -    +    
-	   N5 = [ 2 2 1 ]   |  -    -    -    -    + 
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 5)
+     =================| Q0   Q1   Q2   Q3   Q4
+     N1 = [ 0 0 -1 ]  |  +    +    +    +    -
+     N2 = [ -2 -2 1 ] |  +    +    -    -    +
+     N4 = [ -2 2 1 ]  |  -    -    -    +    +
+     N3 = [ 2 -2 1 ]  |  -    +    +    -    +
+     N5 = [ 2 2 1 ]   |  -    -    -    -    +
+   */
     val expectedVecs = s(
       iv(0, 0, -1),
       iv(-2, -2, 1),
@@ -236,7 +226,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(0, 3, 4),
       s(1, 2, 4),
       s(2, 3, 4))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(5, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -270,24 +260,22 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(6, 2, 4),
       fv(2, 6, 4))
     /*-
-	   |                 | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11| Q12| Q13| Q14| Q15| Q16| Q17| Q18| Q19| Q20| Q21| Q22| Q23| Q24|
-	   |N0 = [ -6 -4 3 ] | + | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  |
-	   |N1 = [ -1 -1 -2 ]| + | - | - | + | + | + | - | - | + | + | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N2 = [ -3 -1 0 ] | + | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N3 = [ -2 -2 1 ] | + | - | - | - | - | + | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  |
-	   |N4 = [ -1 1 0 ]  | - | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  | -  | -  | -  |
-	   |N5 = [ -2 2 1 ]  | - | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  | +  | -  | -  |
-	   |N6 = [ 0 0 -1 ]  | - | - | - | + | + | - | - | - | + | + | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | -  | -  |
-	   |N7 = [ -4 -6 3 ] | - | - | - | - | - | + | + | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | -  | -  | -  |
-	   |N8 = [ -1 -3 0 ] | - | - | - | - | - | + | + | - | + | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N9 = [ 1 -1 0 ]  | - | - | - | - | - | - | + | - | + | - | -  | +  | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
-	   |N10 = [ 2 -2 1 ] | - | - | - | - | - | - | + | - | - | - | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  |
-	   |N11 = [ 2 2 1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  |
-	   |N12 = [ 1 1 0 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | +  | +  | -  | +  | +  | +  | +  | -  | -  | -  | -  | -  |
-	   |N13 = [ -1 -1 1 ]| - | - | - | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | +  | -  | -  |
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 25)
+     |                 | Q0| Q1| Q2| Q3| Q4| Q5| Q6| Q7| Q8| Q9| Q10| Q11| Q12| Q13| Q14| Q15| Q16| Q17| Q18| Q19| Q20| Q21| Q22| Q23| Q24|
+     |N0 = [ -6 -4 3 ] | + | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  |
+     |N1 = [ -1 -1 -2 ]| + | - | - | + | + | + | - | - | + | + | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N2 = [ -3 -1 0 ] | + | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N3 = [ -2 -2 1 ] | + | - | - | - | - | + | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  |
+     |N4 = [ -1 1 0 ]  | - | - | + | - | + | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | +  | -  | -  | -  | -  | -  |
+     |N5 = [ -2 2 1 ]  | - | - | + | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  | -  | +  | -  | -  |
+     |N6 = [ 0 0 -1 ]  | - | - | - | + | + | - | - | - | + | + | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | -  | -  |
+     |N7 = [ -4 -6 3 ] | - | - | - | - | - | + | + | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | -  | -  | -  |
+     |N8 = [ -1 -3 0 ] | - | - | - | - | - | + | + | - | + | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N9 = [ 1 -1 0 ]  | - | - | - | - | - | - | + | - | + | - | -  | +  | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  |
+     |N10 = [ 2 -2 1 ] | - | - | - | - | - | - | + | - | - | - | -  | +  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | -  | -  | -  |
+     |N11 = [ 2 2 1 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  | -  | +  | +  | -  | -  |
+     |N12 = [ 1 1 0 ]  | - | - | - | - | - | - | - | - | - | - | -  | +  | +  | +  | +  | -  | +  | +  | +  | +  | -  | -  | -  | -  | -  |
+     |N13 = [ -1 -1 1 ]| - | - | - | - | - | - | - | - | - | - | -  | -  | -  | -  | -  | -  | -  | -  | -  | -  | +  | +  | +  | -  | -  |
+   */
     val expectedVecs = s(
       iv(-6, -4, 3),
       iv(-4, -6, 3),
@@ -318,7 +306,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(11, 12, 13, 14, 16, 17, 18, 19),
       s(6, 11, 21),
       s(11, 12, 16, 17, 21, 22))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(25, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -337,15 +325,13 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(2, 3),
       fv(2, 2))
     /*-
-	=== Normal vectors: ===
-	==============| Q0   Q1   Q2   Q3   Q4   Q5   Q6   Q7   Q8   Q9  
-	N1 = [ -1 0 ] |  +    +    +    +    +    +    -    -    -    -    
-	N2 = [ 1 -1 ] |  -    -    -    -    -    +    -    -    -    +    
-	N3 = [ 1 0 ]  |  -    -    -    -    -    -    -    -    +    +    
-	N4 = [ 1 1 ]  |  -    -    +    -    -    -    -    -    +    -
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 9)
+  === Normal vectors: ===
+  ==============| Q0   Q1   Q2   Q3   Q4   Q5   Q6   Q7   Q8   Q9
+  N1 = [ -1 0 ] |  +    +    +    +    +    +    -    -    -    -
+  N2 = [ 1 -1 ] |  -    -    -    -    -    +    -    -    -    +
+  N3 = [ 1 0 ]  |  -    -    -    -    -    -    -    -    +    +
+  N4 = [ 1 1 ]  |  -    -    +    -    -    -    -    -    +    -
+   */
     val expectedVecs = s(
       iv(-1, 0),
       iv(1, -1),
@@ -356,7 +342,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(5, 9),
       s(8, 9),
       s(2, 8))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(9, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -371,15 +357,13 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(5, 5, 1),
       fv(5, 5, 5))
     /*-
-	================| Q0   Q1   Q2   Q3   Q4   Q5  
-	N1 = [ 0 -1 1 ] |  +    +    -    +    -    +    
-	N4 = [ 0 0 -1 ] |  +    +    +    -    +    -    
-	N2 = [ -1 0 0 ] |  +    -    +    +    -    -    
-	N3 = [ 0 1 0  ] |  -    -    +    +    +    +    
-	N5 = [ 1 0 0  ] |  -    +    -    -    +    +  
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 5)
+  ================| Q0   Q1   Q2   Q3   Q4   Q5
+  N1 = [ 0 -1 1 ] |  +    +    -    +    -    +
+  N4 = [ 0 0 -1 ] |  +    +    +    -    +    -
+  N2 = [ -1 0 0 ] |  +    -    +    +    -    -
+  N3 = [ 0 1 0  ] |  -    -    +    +    +    +
+  N5 = [ 1 0 0  ] |  -    +    -    -    +    +
+   */
     val expectedVecs = s(
       iv(0, -1, 1),
       iv(0, 0, -1),
@@ -392,7 +376,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(0, 2, 3),
       s(2, 3, 4, 5),
       s(1, 4, 5))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(6, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -407,15 +391,13 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv2(bf(5, 2), bf(5, 2), bf(1, 2)),
       fv2(bf(5, 2), bf(5, 2), bf(5, 2)))
     /*-
-	================| Q0   Q1   Q2   Q3   Q4   Q5  
-	N1 = [ 0 -1 1 ] |  +    +    -    +    -    +    
-	N4 = [ 0 0 -1 ] |  +    +    +    -    +    -    
-	N2 = [ -1 0 0 ] |  +    -    +    +    -    -    
-	N3 = [ 0 1 0  ] |  -    -    +    +    +    +    
-	N5 = [ 1 0 0  ] |  -    +    -    -    +    +  
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 5)
+  ================| Q0   Q1   Q2   Q3   Q4   Q5
+  N1 = [ 0 -1 1 ] |  +    +    -    +    -    +
+  N4 = [ 0 0 -1 ] |  +    +    +    -    +    -
+  N2 = [ -1 0 0 ] |  +    -    +    +    -    -
+  N3 = [ 0 1 0  ] |  -    -    +    +    +    +
+  N5 = [ 1 0 0  ] |  -    +    -    -    +    +
+   */
     val expectedVecs = s(
       iv(0, -1, 1),
       iv(0, 0, -1),
@@ -428,7 +410,7 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       s(0, 2, 3),
       s(2, 3, 4, 5),
       s(1, 4, 5))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(6, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -441,22 +423,20 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(0, 0, 3),
       fv(1, 1, 1))
     /*-
-	 +------------+----+----+----+----+
-	 |            |0   |1   |2   |3   |
-	 +------------+----+----+----+----+
-	 |[ -1 -1 -1 ]|true|true|true|true|
-	 |[ 1 1 1 ]   |true|true|true|true|
-	 +------------+----+----+----+----+
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 4)
+   +------------+----+----+----+----+
+   |            |0   |1   |2   |3   |
+   +------------+----+----+----+----+
+   |[ -1 -1 -1 ]|true|true|true|true|
+   |[ 1 1 1 ]   |true|true|true|true|
+   +------------+----+----+----+----+
+   */
     val expectedVecs = s(
       iv(-1, -1, -1),
       iv(1, 1, 1))
     val marked = s(
       s(0, 1, 2, 3),
       s(0, 1, 2, 3))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(4, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)
@@ -469,22 +449,20 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
       fv(-1, -1, 3),
       fv(1, -1, 1))
     /*-
-	 +------------+----+----+----+----+
-	 |            |0   |1   |2   |3   |
-	 +------------+----+----+----+----+
-	 |[ -1 -1 -1 ]|true|true|true|true|
-	 |[ 1 1 1 ]   |true|true|true|true|
-	 +------------+----+----+----+----+
-	 */
-    val expectedLookupTable = new ArrayListKeyTable[IntVec, Int, Boolean]
-    fillTableIdxKeys(expectedLookupTable, 4)
+   +------------+----+----+----+----+
+   |            |0   |1   |2   |3   |
+   +------------+----+----+----+----+
+   |[ -1 -1 -1 ]|true|true|true|true|
+   |[ 1 1 1 ]   |true|true|true|true|
+   +------------+----+----+----+----+
+   */
     val expectedVecs = s(
       iv(-1, -1, -1),
       iv(1, 1, 1))
     val marked = s(
       s(0, 1, 2, 3),
       s(0, 1, 2, 3))
-    (expectedVecs zip marked) map { case (vec, marked) => markInTable(expectedLookupTable)(vec)(marked) }
+    val expectedLookupTable = markedTable(4, expectedVecs, marked)
 
     val lookupTable = solve(points, None, None)
     assert(lookupTable === expectedLookupTable)

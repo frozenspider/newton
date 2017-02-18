@@ -2,9 +2,7 @@ package org.newtonpolyhedron.solve.polyinter
 
 import scala.collection.immutable.SortedSet
 
-import org.fs.utils.collection.table.ArrayListKeyTable
-import org.fs.utils.collection.table.KeyTable
-import org.fs.utils.collection.table.KeyTables
+import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
 import org.newtonpolyhedron.utils.LanguageImplicits._
@@ -88,24 +86,23 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
    * @return { polyIdx, vector -> [ points giving this vector for this poly when intersecting ] }
    */
   def reverseTableMeaning(ptsForVectors: Map[IntVec, Seq[IndexedSeq[Int]]]): KeyTable[Int, IntVec, SortedSet[Int]] = {
-    import org.newtonpolyhedron.utils.ScalaJavaConversionUtils._
-    var vectPtTable = new ArrayListKeyTable[Int, IntVec, SortedSet[Int]]
+    var vectPtTable = KeyTable.empty[Int, IntVec, SortedSet[Int]]
     for ((vector, indicesSeq) <- ptsForVectors) {
       for (indices <- indicesSeq) {
         for (i <- 0 until indices.size) {
           val pts = vectPtTable.get(i, vector) match {
-            case null => SortedSet.empty[Int]
-            case x    => x
+            case None    => SortedSet.empty[Int]
+            case Some(x) => x
           }
-          vectPtTable.put(i, vector, pts + indices(i))
+          vectPtTable = vectPtTable + (i, vector, pts + indices(i))
         }
       }
       // Sanity check that all combinations are present
       // I.e. [0, 5], [0, 6], [0, 7], [1, 5], [1, 6], [1, 7] must all present to get [0, 1], [5, 6, 7]
       // We'll use a weaker assertion: number of combinations must be equal to product of resulting point set sizes
-      assert(vectPtTable.getCol(vector).values.map(_.size).product == indicesSeq.size, "Logic failure, please report to developer")
+      assert(vectPtTable.col(vector).values.map(_.size).product == indicesSeq.size, "Logic failure, please report to developer")
     }
-    KeyTables.sortByColHeaders(vectPtTable, intVecOrdering, true)
+    vectPtTable = vectPtTable.sortedCols
     vectPtTable
   }
 }
