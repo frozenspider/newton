@@ -21,7 +21,7 @@ class NewtonPolyhedronFrame extends SimpleSwingApplication {
   var workingThread: Option[Thread] = None
 
   def top = new MainFrame {
-    title = s"Newton ${BuildInfo.version} b${BuildInfo.buildInfoBuildNumber}"
+    title = s"Newton ${BuildInfo.version}"
     contents = ui
   }
 
