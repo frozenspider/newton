@@ -4,7 +4,7 @@ import java.awt.Rectangle
 
 import org.newtonpolyhedron.ui.NewtonPolyhedronFrame
 
-object _NewtonEntryScala {
+object NewtonEntry {
   def main(args: Array[String]): Unit = {
     val frame = new NewtonPolyhedronFrame
     val top = frame.top

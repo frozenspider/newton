@@ -1,9 +1,25 @@
-# Eclipse:
-/.project
-/.cache
-/.settings
-/.classpath
+# Eclipse
 /bin
+.settings
+.classpath
+.project
+.cache-*
 
-# Project-specific
-Инпуты/*
+# sbt
+target/
+src_managed/
+lib_managed/
+project/project/
+project/target/
+
+# Development
+/_build
+_assemble.*
+newton-*.jar
+buildinfo.*
+
+# Application
+/_inputs
+
+*.class
+*.log

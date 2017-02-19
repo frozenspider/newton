@@ -12,7 +12,7 @@ import scala.swing.event.ButtonClicked
 import org.newtonpolyhedron.NewtonLogic
 import org.newtonpolyhedron.WorkingMode
 import org.newtonpolyhedron.ex.WrongFormatException
-import org.newtonpolyhedron.utils.Version
+import org.newtonpolyhedron.BuildInfo
 
 class NewtonPolyhedronFrame extends SimpleSwingApplication {
 
@@ -21,7 +21,7 @@ class NewtonPolyhedronFrame extends SimpleSwingApplication {
   var workingThread: Option[Thread] = None
 
   def top = new MainFrame {
-    title = "Newton v." + Version.VERSION
+    title = s"Newton ${BuildInfo.version}"
     contents = ui
   }
 
