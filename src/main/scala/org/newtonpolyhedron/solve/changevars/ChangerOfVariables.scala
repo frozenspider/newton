@@ -5,6 +5,9 @@ import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 
+import spire.compat._
+import spire.implicits._
+
 trait ChangerOfVariables {
 
   /**
@@ -13,7 +16,7 @@ trait ChangerOfVariables {
    * 2) Descending powers
    */
   implicit val requiredTermOrdering: Ordering[Term] = new Ordering[Term] {
-    def compare(x: Term, y: Term): Int = {
+    override def compare(x: Term, y: Term): Int = {
       val cmp1 = x.powers.sum compare y.powers.sum
       if (cmp1 != 0) cmp1
       else -(x.powers compare y.powers)

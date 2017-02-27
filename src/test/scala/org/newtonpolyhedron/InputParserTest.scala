@@ -5,9 +5,9 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
+import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
 class InputParserTest extends FunSuite {
@@ -46,7 +46,7 @@ class InputParserTest extends FunSuite {
   //
   test("parse poly - empty") {
     val str =
-      """  
+      """
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s())
@@ -56,7 +56,7 @@ class InputParserTest extends FunSuite {
 
   test("parse poly - simplest") {
     val str =
-      """  
+      """
       3
       1 2 3
       4 5 6
@@ -72,8 +72,8 @@ class InputParserTest extends FunSuite {
       """
       3
       #
-      1 0 0 
-      0 0 1 
+      1 0 0
+      0 0 1
       3 1 -1
       2 3 4
       #
@@ -92,12 +92,12 @@ class InputParserTest extends FunSuite {
   }
 
   test("parse poly - limits") {
-    val str = // 
+    val str = //
       """
       3
       $
-      1 0 0 
-      0 0 1 
+      1 0 0
+      0 0 1
       3 1 -1
       2 3 4
       $
@@ -119,23 +119,23 @@ class InputParserTest extends FunSuite {
     val str =
       """
       3
-      $         
-      1 0 0       
-      0 0 1       
-      3 1 -1      
-      2 3  4      
-      $           
-       #          
-      0 		2 3           
-       1 9    2   
-      	#        
-      1 	2.00 3   
-        4  10/2 6     
-      
+      $
+      1 0 0
+      0 0 1
+      3 1 -1
+      2 3  4
+      $
+       #
+      0     2 3
+       1 9    2
+        #
+      1   2.00 3
+        4  10/2 6
+
       @
-      
+
       comment
-      
+
       """
     val (pointList, commonLimits, basis) = InputParser.parsePolyFromLines(toLines(str))(parseFrac)
     assert(pointList === s(fv(1, 2, 3), fv(4, 5, 6)))
@@ -245,7 +245,7 @@ class InputParserTest extends FunSuite {
       0 0 7 3
       3 2 1 4
       """
-    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[BigFrac], parseFrac).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[Rational], parseFrac).get
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 4)
     assert(matrix === matrFrac(

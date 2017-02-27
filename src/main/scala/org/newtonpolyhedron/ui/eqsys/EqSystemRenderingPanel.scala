@@ -30,13 +30,15 @@ object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
   import org.newtonpolyhedron.entity.equation._
   import org.newtonpolyhedron.utils.LanguageImplicits._
   import org.newtonpolyhedron.utils.PolynomialUtils._
+  import spire.implicits._
+  import spire.math.Rational
 
   val subj = new EqSystemRenderingPanel
-  def top = new MainFrame {
+  override def top = new MainFrame {
     contents = subj
   }
 
-  val tricky = Product(1, Map(2 -> BigFrac(15), 3 -> BigFrac(3), 5 -> BigFrac(8))).pow(BigFrac(1, 6))
+  val tricky = Product(1, Map(2 -> Rational(15), 3 -> Rational(3), 5 -> Rational(8))).pow(Rational(1, 6))
 
   val eqs: Equations = IndexedSeq[Equation](
     Equation(
@@ -54,7 +56,7 @@ object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
     ),
     Equation(
       IndexedSeq(
-        new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+        new Term(Product(Rational(-1, 2)), FracVec(Rational(-1, 2), Rational.zero, Rational(-333, 667))),
         new Term(Product(-2), FracVec(0, 0, 3))
       ),
       EquationSign.GreaterEq,

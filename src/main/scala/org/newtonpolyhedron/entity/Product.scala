@@ -3,8 +3,11 @@ package org.newtonpolyhedron.entity
 import scala.collection.immutable.ListMap
 import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
+
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.MathUtils._
+
+import spire.math.Rational
 
 /**
  * Represents a number as a product of powers of its prime factors.
@@ -13,7 +16,7 @@ import org.newtonpolyhedron.utils.MathUtils._
  * <p>
  * Only supports multiplication and power operations.
  */
-case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
+case class Product(val signum: Int, val underlying: Map[Int, Rational])
     extends ScalaNumber
     with ScalaNumericConversions
     with Ordered[Product] {
@@ -26,7 +29,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     if (this.signum == 0 || that.signum == 0) Product.ZERO
     else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying))
   def *(that: BigInt): Product = this * Product(that)
-  def *(that: BigFrac): Product = this * Product(that)
+  def *(that: Rational): Product = this * Product(that)
   def *(that: Int): Product = this * Product(that)
 
   def /(that: Product): Product = {
@@ -35,7 +38,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying map (p => (p._1, -p._2))))
   }
   def /(that: BigInt): Product = this / Product(that)
-  def /(that: BigFrac): Product = this / Product(that)
+  def /(that: Rational): Product = this / Product(that)
   def /(that: Int): Product = this / Product(that)
 
   def +(that: Product): Product = {
@@ -49,41 +52,41 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     res
   }
   def +(that: Int): Product = this + Product(that)
-  def +(that: BigFrac): Product = this + Product(that)
+  def +(that: Rational): Product = this + Product(that)
   def -(that: Product): Product = this + -that
   def -(that: Int): Product = this + Product(-that)
-  def -(that: BigFrac): Product = this + Product(-that)
+  def -(that: Rational): Product = this + Product(-that)
   def unary_- : Product = new Product(-signum, underlying)
   def abs: Product = this * signum
 
-  def sqrt = this pow BigFrac(1, 2)
-  def pow(p: BigFrac): Product = {
+  def sqrt = this pow Rational(1, 2)
+  def pow(p: Rational): Product = {
     if (this.signum == 0) p match {
       case x if x == 0 => Product.ONE
       case x if x > 0  => Product.ZERO
       case _           => throw new IllegalArgumentException("Can't raise zero to negative power")
     }
     else {
-      val newSignum = if (p == 0 || p.num % 2 == 0) 1 else this.signum
+      val newSignum = if (p == 0 || p.numerator % 2 == 0) 1 else this.signum
       val newUnderlying = this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0)
       new Product(newSignum, newUnderlying)
     }
   }
-  def pow(p: Int): Product = this pow BigFrac(p)
+  def pow(p: Int): Product = this pow Rational(p)
 
   /** Very ineffective! */
   override def compare(that: Product): Int = this.fracValue compare that.fracValue
 
   /** Whether or not this product can be represented as a precise fraction value */
-  lazy val isRational = underlying forall (_._2.den == 1)
+  lazy val isRational = underlying forall (_._2.denominator == 1)
   override def isWhole = true
   override def longValue = fracValue.toLong
   override def intValue = fracValue.toInt
   lazy val fracValue =
-    if (signum == 0) BigFrac.ZERO else {
+    if (signum == 0) Rational.zero else {
       if (!isRational) throw new ArithmeticException("Not a valid fraction")
-      val folded = (underlying foldLeft BigFrac.ONE) {
-        case (acc, (v, p)) => acc * (BigFrac(v) pow p.num.toInt)
+      val folded = (underlying foldLeft Rational.one) {
+        case (acc, (v, p)) => acc * (Rational(v) pow p.numerator.toInt)
       }
       signum * folded
     }
@@ -101,25 +104,26 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
    *
    * @return rational part along with (RootBase -> RootedValue) map
    */
-  lazy val rootedForm: (BigInt, Map[Int, BigFrac]) = {
+  lazy val rootedForm: (BigInt, Map[Int, Rational]) = {
+    import spire.compat._
     val (rationalMultipliers, irrationalMultipliers) = {
       val unzip = (underlying.toSeq collect {
-        case (base, power) if power.isInt => (Some((base, power.intValue)), None)
-        case (base, power) if power < 1   => (None, (Some((base, power))))
-        case (base, power)                => (Some((base, power.quotient.intValue)), Some((base, power - power.quotient)))
+        case (base, power) if power.isValidInt => (Some((base, power.intValue)), None)
+        case (base, power) if power < 1        => (None, (Some((base, power))))
+        case (base, power)                     => (Some((base, power.toInt)), Some((base, power - power.toSafeLong)))
       }).unzip
       (unzip._1.yieldDefined, unzip._2.yieldDefined)
     }
     val rational = (rationalMultipliers.map(p => BigInt(p._1) pow p._2) :+ BigInt(1)).product
-    val irrationalMultipliersGroups = irrationalMultipliers.groupBy(_._2.den).toSeq sortBy (_._1)
+    val irrationalMultipliersGroups = irrationalMultipliers.groupBy(_._2.denominator).toSeq sortBy (_._1)
     val roots = irrationalMultipliersGroups map {
       case (rootBase, irratMultipliers) =>
         (rootBase.intValue, (irratMultipliers.map({
           case (base, power) =>
             val multipliedPower = power * rootBase
-            assert(multipliedPower.isInt)
-            BigFrac(base) pow multipliedPower.intValue
-        }) :+ BigFrac.ONE).product)
+            assert(multipliedPower.isValidInt)
+            Rational(base) pow multipliedPower.intValue
+        }) :+ Rational.one).product)
     }
     (rational, ListMap(roots: _*))
   }
@@ -147,7 +151,7 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     str
   }
 
-  private def mergePowers(main: Map[Int, BigFrac], other: Map[Int, BigFrac]): Map[Int, BigFrac] = {
+  private def mergePowers(main: Map[Int, Rational], other: Map[Int, Rational]): Map[Int, Rational] = {
     if (other.isEmpty) main
     else {
       val (headPrime, headPow) = other.head
@@ -156,12 +160,12 @@ case class Product(val signum: Int, val underlying: Map[Int, BigFrac])
     }
   }
 
-  private def extractCommonFactors(one: Map[Int, BigFrac],
-                                   two: Map[Int, BigFrac]): (Map[Int, BigFrac], Map[Int, BigFrac], Map[Int, BigFrac]) = {
+  private def extractCommonFactors(one: Map[Int, Rational],
+                                   two: Map[Int, Rational]): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
     def extract(keys: Seq[Int],
-                acc: Map[Int, BigFrac],
-                one: Map[Int, BigFrac],
-                two: Map[Int, BigFrac]): (Map[Int, BigFrac], Map[Int, BigFrac], Map[Int, BigFrac]) = {
+                acc: Map[Int, Rational],
+                one: Map[Int, Rational],
+                two: Map[Int, Rational]): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
       if (keys.isEmpty) (acc, one, two)
       else {
         val key = keys.head
@@ -182,11 +186,11 @@ object Product {
   val ONE = new Product(1, Map.empty)
   val MINUS_ONE = new Product(-1, Map.empty)
 
-  def apply(v: Int): Product = {
-    if (v == 0) ZERO
-    else if (v == 1) ONE
-    else if (v == -1) MINUS_ONE
-    else new Product(v.signum, factorize(v.abs))
+  def apply(v: Int): Product = v match {
+    case 0  => ZERO
+    case 1  => ONE
+    case -1 => MINUS_ONE
+    case v  => new Product(v.signum, factorize(v.abs))
   }
 
   def apply(v: BigInt): Product = {
@@ -194,13 +198,13 @@ object Product {
     Product(v.toInt)
   }
 
-  def apply(v: BigFrac): Product = {
-    require(v.num.isValidInt, "Numerator is too large")
-    require(v.den.isValidInt, "Denomiator is too large")
-    if (v.num == 0) ZERO
+  def apply(v: Rational): Product = {
+    require(v.numerator.isValidInt, "Numerator is too large")
+    require(v.denominator.isValidInt, "Denomiator is too large")
+    if (v.numerator == 0) ZERO
     else {
-      val numPows = factorize(v.num.toInt.abs)
-      val denPows = factorize(v.den.toInt.abs)
+      val numPows = factorize(v.numerator.toInt.abs)
+      val denPows = factorize(v.denominator.toInt.abs)
       val powers = denPows.foldLeft(numPows) {
         case (acc, (factor, power)) => changePower(acc, factor, -power)
       }
@@ -208,9 +212,9 @@ object Product {
     }
   }
 
-  def factorize(v: Int): Map[Int, BigFrac] = {
+  def factorize(v: Int): Map[Int, Rational] = {
     require(v > 0, "Can only factorize positive numbers")
-    def rec(v: Int, primes: Seq[Int], acc: Map[Int, BigFrac]): Map[Int, BigFrac] =
+    def rec(v: Int, primes: Seq[Int], acc: Map[Int, Rational]): Map[Int, Rational] =
       if (primes.isEmpty) // v is prime itself
         incPower(acc, v)
       else if (v == 1) acc
@@ -226,11 +230,11 @@ object Product {
     rec(v, primesUpTo(sqrt(v)), Map.empty) filter (_._1 != 1)
   }
 
-  def incPower(map: Map[Int, BigFrac], key: Int): Map[Int, BigFrac] =
+  def incPower(map: Map[Int, Rational], key: Int): Map[Int, Rational] =
     changePower(map, key, 1)
 
-  def changePower(map: Map[Int, BigFrac], key: Int, diff: BigFrac): Map[Int, BigFrac] = {
-    val oldVal = map.getOrElse(key, BigFrac.ZERO)
+  def changePower(map: Map[Int, Rational], key: Int, diff: Rational): Map[Int, Rational] = {
+    val oldVal = map.getOrElse(key, Rational.zero)
     if (oldVal + diff == 0) map - key
     else map updated (key, oldVal + diff)
   }

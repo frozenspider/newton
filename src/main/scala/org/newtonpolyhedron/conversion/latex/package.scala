@@ -4,6 +4,8 @@ import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import spire.implicits._
+import spire.math.Rational
 
 package object latex {
 
@@ -18,11 +20,11 @@ package object latex {
   def textToLatex(plaintext: String): LatexString =
     "\\text{" + plaintext + "}"
 
-  def fracToLatex(frac: BigFrac): LatexString = {
-    if (frac.isInt) {
-      frac.num.toString
+  def fracToLatex(frac: Rational): LatexString = {
+    if (frac.isWhole) {
+      frac.numerator.toString
     } else {
-      val fracVal = "\\frac{" + (frac.num.abs) + "}{" + frac.den + "}"
+      val fracVal = "\\frac{" + (frac.numerator.abs) + "}{" + frac.denominator + "}"
       (if (frac.signum < 0) "-" else "") + fracVal
     }
   }
@@ -41,7 +43,7 @@ package object latex {
       "(" + rationalString + irrationalString.mkString + ")"
     }
 
-  def rootToLatex(rootBase: BigFrac, rootedValue: BigFrac): LatexString = {
+  def rootToLatex(rootBase: Rational, rootedValue: Rational): LatexString = {
     val rootBaseLatex = fracToLatex(rootBase)
     val rootedValueLatex = fracToLatex(rootedValue)
     s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"
@@ -55,7 +57,7 @@ package object latex {
     case EquationSign.LessEq    => "\\geq"
   }
 
-  private def powersToLatex(varName: String)(pows: Seq[BigFrac]): LatexString = {
+  private def powersToLatex(varName: String)(pows: Seq[Rational]): LatexString = {
     val opts = pows mapWithIndex { (power, i) =>
       if (power.isZero)
         None

@@ -7,14 +7,20 @@ import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
+import spire.implicits._
+import spire.math.Fractional
+import spire.math.Integral
+import spire.math.Numeric
+import spire.math.Rational
+
 import internal.FieldElementSupport._
 
 class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implicit wrapper: FieldElementWrapper[T])
     extends Function2[Int, Int, T]
     with Serializable {
-  import wrapper.numeric._
 
-  implicit protected[entity] val field: FieldWrapped[T] = wrapper.field
+  implicit protected[entity] def field: FieldWrapped[T] = wrapper.field
+  implicit protected[entity] def numeric: Numeric[T] = wrapper.numeric
 
   val rowCount: Int = this.matrix.getRowDimension
   val colCount: Int = this.matrix.getColumnDimension
@@ -64,7 +70,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
     if (zeroMatrix) 0
     else {
       val triangle = this.triangleForm._1
-      val dim = rowCount min colCount
+      val dim = math.min(rowCount, colCount)
       val diagonal = for (n <- 0 until dim) yield triangle(n, n)
       diagonal prefixLength (_ != zero)
     }
@@ -101,7 +107,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
    * @return matrix and {@code 1} or {@code -1} depending on whether or not determinant sign was reversed
    */
   def triangleForm: (Matrix[T], Int) = {
-    val minDim = rowCount min colCount
+    val minDim = math.min(rowCount, colCount)
     val zero = field.getZero
     var mutableCopy = contentCopy
 
@@ -193,7 +199,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
       row <- 0 until rowCount
       col <- 0 until colCount
     } {
-      colsWidth(col) = colsWidth(col) max this(row, col).toString.length
+      colsWidth(col) = math.max(colsWidth(col), this(row, col).toString.length)
     }
     val result = new StringBuilder
     for (row <- 0 until rowCount) {
@@ -208,9 +214,9 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
 object Matrix {
 
-  def apply[T](elements: Iterable[Iterable[T]])(implicit numeric: Numeric[T]): Matrix[T] = {
+  def apply[T: Numeric](elements: Iterable[Iterable[T]]): Matrix[T] = {
     require(!elements.isEmpty, "Elements was empty")
-    implicit val wrapper = wrap(numeric)
+    implicit val wrapper = wrap[T]
     val dim = elements.head.size
     val apacheMath3Matrix = MatrixUtils.createFieldMatrix(wrapper.field, elements.size, dim)
     val elsSeq = elements.toIndexedSeq
@@ -223,23 +229,23 @@ object Matrix {
     new Matrix(apacheMath3Matrix)
   }
 
-  def idenitiy[T](dim: Int)(implicit numeric: Numeric[T]): Matrix[T] = {
-    implicit val wrapper = wrap(numeric)
+  def idenitiy[T: Numeric](dim: Int): Matrix[T] = {
+    implicit val wrapper = wrap[T]
     new Matrix(MatrixUtils.createFieldIdentityMatrix(wrapper.field, dim))
   }
 
-  def zero[T](dim: Int)(implicit numeric: Numeric[T]): Matrix[T] = {
-    implicit val wrapper = wrap(numeric)
+  def zero[T: Numeric](dim: Int): Matrix[T] = {
+    implicit val wrapper = wrap[T]
     new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, dim, dim))
   }
 
-  def zero[T](rowCount: Int, colCount: Int)(implicit numeric: Numeric[T]): Matrix[T] = {
-    implicit val wrapper = wrap(numeric)
+  def zero[T: Numeric](rowCount: Int, colCount: Int): Matrix[T] = {
+    implicit val wrapper = wrap[T]
     new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, rowCount, colCount))
   }
 
-  def empty[T](implicit numeric: Numeric[T]): Matrix[T] = {
-    implicit val wrapper = wrap(numeric)
+  def empty[T: Numeric]: Matrix[T] = {
+    implicit val wrapper = wrap[T]
     new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, 0, 0))
   }
 }

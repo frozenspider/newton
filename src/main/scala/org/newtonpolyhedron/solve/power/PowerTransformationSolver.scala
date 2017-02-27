@@ -1,9 +1,9 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import spire.math.Rational
 
 trait PowerTransformationSolver {
 
@@ -12,9 +12,9 @@ trait PowerTransformationSolver {
    *
    * @param powersSeq one border per polyhedron
    */
-  def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[BigFrac]
+  def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[Rational]
 
-  def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial
+  def substitute(poly: Polynomial, alpha: Matrix[Rational]): Polynomial
 
   def solveShortSubstitutesSystem(substitutesSys: Polys): FracVec
 

@@ -1,12 +1,12 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.BigFrac._
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import spire.implicits._
+import spire.math.Rational
 
 /**
  * Solver, only capable of solving *simple* systems of equations.
@@ -35,7 +35,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
     require(canSolve(system))
     val varsCounts = system.head.head.powers.size
     val replacements = solveSimpleEqSysFor(system, (0 until varsCounts), Map.empty)
-    val res = replacements.foldLeft(IndexedSeq.fill(varsCounts)(BigFrac.ZERO)) {
+    val res = replacements.foldLeft(IndexedSeq.fill(varsCounts)(Rational.zero)) {
       case (acc, (idx, value)) => acc.updated(idx, value.fracValue)
     }
     Seq(res)
@@ -79,7 +79,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
         // Lets put secondary term to rhs and reduce
         val reducedM = mainTerm mapPowers (powers => powers.upd(replFor, 0))
         val reducedS = secTerm mapPowers (powers => powers.upd(replFor, 0))
-        val currRepl = -(reducedS / reducedM) pow powDiff.inv
+        val currRepl = -(reducedS / reducedM) pow powDiff.inverse
         val restReplaced = restEqs map representThrough(replFor, currRepl)
         val solutionForRest = solveSimpleEqSysFor(restReplaced, termIndicesToReplace.tail, replacements)
         val unrolledValue = currRepl.powers.mapWithIndex { (pow, idx) =>

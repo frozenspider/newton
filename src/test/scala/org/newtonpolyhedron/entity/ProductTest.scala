@@ -4,12 +4,13 @@ import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
 class ProductTest extends FunSuite {
 
   private def p(i: Int) = Product(i)
-  private def p(n: Int, d: Int) = Product(BigFrac(n, d))
+  private def p(n: Int, d: Int) = Product(Rational(n, d))
 
   test("standard corner cases") {
     assert(Product.ZERO.intValue === 0)
@@ -34,7 +35,7 @@ class ProductTest extends FunSuite {
 
   test("parsing fraction") {
     assert(p(0, 1).intValue === 0)
-    assert(p(0, 1).fracValue === BigFrac.ZERO)
+    assert(p(0, 1).fracValue === Rational.zero)
     assert(p(1, 2).fracValue === bf(1, 2))
     assert(p(3, 8).fracValue === bf(3, 8))
     assert(p(3, 8).underlying === p(6, 16).underlying)

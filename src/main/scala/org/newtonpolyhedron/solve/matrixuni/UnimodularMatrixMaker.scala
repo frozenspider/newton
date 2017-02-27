@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.matrixuni
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.matrix.Matrix
+import spire.math.Rational
 
 trait UnimodularMatrixMaker {
 
@@ -15,5 +15,5 @@ trait UnimodularMatrixMaker {
    *            source matrix with arbitary determinant
    * @return unimodular "alpha"-matrix (i.e. {@code det(alpha) == 1})
    */
-  def unimodularFrom(matrix: Matrix[BigFrac]): Matrix[BigFrac]
+  def unimodularFrom(matrix: Matrix[Rational]): Matrix[Rational]
 }

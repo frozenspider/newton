@@ -4,7 +4,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.PrintWriter
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
@@ -23,6 +22,7 @@ import org.newtonpolyhedron.solve.surface._
 import org.newtonpolyhedron.solverprinters._
 import org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
+import spire.math.Rational
 
 class NewtonLogic {
   import NewtonLogic._
@@ -90,24 +90,24 @@ class NewtonLogic {
 
   def launchMatrixDet(file: File,
                       writer: PrintWriter): SolverPrinter[_] = {
-    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.apply[BigFrac])(parseFrac)
+    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.apply[Rational])(parseFrac)
     new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
   def launchMatrixInverse(file: File,
                           writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[BigFrac])(parseFrac)
+    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[Rational])(parseFrac)
     new MatrixInverseSolverPrinter(matrix, writer)
   }
 
   def launchMatrixUniAlpha(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
     val matrix = {
-      val m = InputParser.parseMatrixFromFile(file, Matrix.apply[BigFrac])(parseFrac)
+      val m = InputParser.parseMatrixFromFile(file, Matrix.apply[Rational])(parseFrac)
       // Add all-zero row if necessary
       if (m.isSquare) m
       else if (m.rowCount != m.colCount - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
-      else m addRow (Seq.fill(m.colCount)(BigFrac.ZERO))
+      else m addRow (Seq.fill(m.colCount)(Rational.zero))
     }
     val uniMatrixMaker = new UnimodularMatrixMakerImpl
     new UnimodularMatrixMakerPrinter(uniMatrixMaker, matrix, writer)
@@ -115,7 +115,7 @@ class NewtonLogic {
 
   def launchMatrixMinorGCD(file: File,
                            writer: PrintWriter): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[BigFrac])(parseFrac)
+    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[Rational])(parseFrac)
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
     new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
   }

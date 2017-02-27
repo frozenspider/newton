@@ -12,6 +12,7 @@ import org.scalatest.Resources
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import spire.math.Rational
 
 /**
  * Contains test shortcuts
@@ -23,18 +24,18 @@ package object test {
     Matrix(content map (_.toIndexedSeq map BigInt.apply))
   }
 
-  def matrFrac(content: Seq[Seq[Int]]): Matrix[BigFrac] = {
-    Matrix(content map (_.toIndexedSeq map BigFrac.apply))
+  def matrFrac(content: Seq[Seq[Int]]): Matrix[Rational] = {
+    Matrix(content map (_.toIndexedSeq map Rational.apply))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
 
   def iv(ints: Int*): IntVec = IntVec((ints map BigInt.apply): _*)
-  def fv(ints: Int*): FracVec = FracVec((ints map BigFrac.apply): _*)
-  def fv2(fracs: BigFrac*): FracVec = FracVec(fracs: _*)
+  def fv(ints: Int*): FracVec = FracVec((ints map Rational.apply): _*)
+  def fv2(fracs: Rational*): FracVec = FracVec(fracs: _*)
 
-  def bf(n: Int) = BigFrac(n, 1)
-  def bf(n: Int, d: Int) = BigFrac(n, d)
+  def bf(n: Int) = Rational(n, 1)
+  def bf(n: Int, d: Int) = Rational(n, d)
 
   def makePoly(components: (Int, Seq[Int])*): Polynomial =
     components map { case (coeff, pows) => Term(Product(coeff), fv(pows: _*)) } toIndexedSeq

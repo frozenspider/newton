@@ -5,6 +5,9 @@ import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable.SortedSet
 
+import spire.math.Rational
+import spire.math.SafeLong
+
 object LanguageImplicits {
   // Mapping helpers
   implicit def funOfTwo2funOfMonad[A1, A2, T](f: (A1, A2) => T): ((A1, A2)) => T =
@@ -45,6 +48,16 @@ object LanguageImplicits {
         if (!res.isValidInt) throw new IllegalArgumentException(s"($n $k) is too large")
         res.toInt
       }
+  }
+
+  implicit class ExtRational(val r: Rational) extends AnyVal {
+    def quotient: SafeLong = {
+      r.numerator / r.denominator
+    }
+
+    def remainder: SafeLong = {
+      r.numerator % r.denominator
+    }
   }
 
   implicit class SuperSeq[T](trav: Seq[T]) {

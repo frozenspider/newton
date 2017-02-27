@@ -1,8 +1,13 @@
 package org.newtonpolyhedron.entity.matrix.internal
 
-import org.apache.commons.math3.FieldElement
 import org.apache.commons.math3.Field
-import org.newtonpolyhedron.entity.BigFrac
+import org.apache.commons.math3.FieldElement
+
+import spire.implicits._
+import spire.math.Fractional
+import spire.math.Integral
+import spire.math.Numeric
+import spire.math.Rational
 
 /**
  * Support for Apache Commons Math3's approach to fields, but using type classes instead.
@@ -16,11 +21,11 @@ private[matrix] object FieldElementSupport {
   type FieldWrapped[T] = Field[FieldElementWrapping[T]]
 
   // Main wrappers
-  val bigIntFieldWrapper: FieldElementWrapper[BigInt] = new FieldElementWrapper
-  val bigFracFieldWrapper: FieldElementWrapper[BigFrac] = new FieldElementWrapper
+  val BigIntFieldWrapper: FieldElementWrapper[BigInt] = new FieldElementWrapper
+  val RationalFieldWrapper: FieldElementWrapper[Rational] = new FieldElementWrapper
 
   // Wrapping
-  def wrap[T](implicit fractional: Numeric[T]) = new FieldElementWrapper[T]
+  def wrap[T: Numeric] = new FieldElementWrapper[T]
 
   class FieldElementWrapper[T](implicit val numeric: Numeric[T]) {
     implicit val field: FieldWrapped[T] = new Field[FieldElementWrapping[T]] {
@@ -34,7 +39,6 @@ private[matrix] object FieldElementSupport {
   }
 
   case class FieldElementWrapping[T](val pure: T)(implicit numeric: Numeric[T], field: FieldWrapped[T]) extends FieldElement[FieldElementWrapping[T]] {
-    import numeric._
 
     override def add(b: FieldElementWrapping[T]) =
       FieldElementWrapping(pure + b.pure)
@@ -46,7 +50,7 @@ private[matrix] object FieldElementSupport {
       FieldElementWrapping(-pure)
 
     override def multiply(n: Int) =
-      FieldElementWrapping(pure * fromInt(n))
+      FieldElementWrapping(pure * n)
 
     override def multiply(b: FieldElementWrapping[T]) =
       FieldElementWrapping(pure * b.pure)
@@ -56,15 +60,15 @@ private[matrix] object FieldElementSupport {
         case fractional: Fractional[T] =>
           FieldElementWrapping(fractional.div(pure, b.pure))
         case integral: Integral[T] =>
-          import integral._
+          implicit val _integral = integral
           val (quot, rem) = pure /% b.pure
           if (rem != numeric.zero) {
             throw new UnsupportedOperationException("Non-integral division not supported for this integral type")
           } else {
             FieldElementWrapping(integral.quot(pure, b.pure))
           }
-        case _ =>
-          throw new UnsupportedOperationException("Division not supported for this Numeric, where did you get it anyway?")
+        case other =>
+          FieldElementWrapping(numeric.div(pure, b.pure))
       }
 
     override def reciprocal() =

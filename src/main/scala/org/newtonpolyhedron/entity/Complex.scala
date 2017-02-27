@@ -4,6 +4,7 @@ import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
 import org.apache.commons.math3.Field
 import org.newtonpolyhedron.utils.LanguageImplicits._
+import spire.math.Rational
 
 // How to raise complex number to a fractional power?
 case class Complex(val r: Product, i: Product)
@@ -85,7 +86,7 @@ object Complex {
   def apply(r: Long, i: Long): Complex =
     Complex(Product(r), Product(i))
 
-  def apply(r: BigFrac, i: BigFrac): Complex =
+  def apply(r: Rational, i: Rational): Complex =
     Complex(Product(r), Product(i))
 
   implicit object ComplexNumeric extends Numeric[Complex] {
