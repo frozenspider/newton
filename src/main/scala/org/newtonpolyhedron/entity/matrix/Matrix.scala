@@ -8,8 +8,6 @@ import org.apache.commons.math3.linear.MatrixUtils
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
 import spire.implicits._
-import spire.math.Fractional
-import spire.math.Integral
 import spire.math.Numeric
 import spire.math.Rational
 

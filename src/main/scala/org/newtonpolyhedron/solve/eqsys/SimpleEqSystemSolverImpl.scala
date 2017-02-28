@@ -36,7 +36,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
     val varsCounts = system.head.head.powers.size
     val replacements = solveSimpleEqSysFor(system, (0 until varsCounts), Map.empty)
     val res = replacements.foldLeft(IndexedSeq.fill(varsCounts)(Rational.zero)) {
-      case (acc, (idx, value)) => acc.updated(idx, value.fracValue)
+      case (acc, (idx, value)) => acc.updated(idx, value.toRational)
     }
     Seq(res)
   }

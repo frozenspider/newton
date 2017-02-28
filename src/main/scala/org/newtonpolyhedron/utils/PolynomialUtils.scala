@@ -56,7 +56,7 @@ object PolynomialUtils {
 
     def toPlainString: String = {
       poly map (term => "(" +
-        term.coeff.fracValue +
+        term.coeff.toRational +
         ") * " +
         term.powers.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
       ) mkString ("", " + ", " = 0")

@@ -13,103 +13,103 @@ class ProductTest extends FunSuite {
   private def p(n: Int, d: Int) = Product(Rational(n, d))
 
   test("standard corner cases") {
-    assert(Product.ZERO.intValue === 0)
-    assert(Product.ONE.intValue === 1)
-    assert(Product.MINUS_ONE.intValue === -1)
-    assert((Product.ONE * Product.MINUS_ONE).intValue === -1)
-    assert((Product.ZERO * Product.MINUS_ONE).intValue === 0)
-    assert((Product.MINUS_ONE * p(3)).intValue === -3)
+    assert(Product.ZERO.toInt === 0)
+    assert(Product.ONE.toInt === 1)
+    assert(Product.MINUS_ONE.toInt === -1)
+    assert((Product.ONE * Product.MINUS_ONE).toInt === -1)
+    assert((Product.ZERO * Product.MINUS_ONE).toInt === 0)
+    assert((Product.MINUS_ONE * p(3)).toInt === -3)
   }
 
   test("parsing random numbers") {
-    assert(p(0).intValue === 0)
-    assert(p(1).intValue === 1)
-    assert(p(-1).intValue === -1)
-    assert(p(2).intValue === 2)
-    assert(p(3).intValue === 3)
-    assert(p(4).intValue === 4)
-    assert(p(10).intValue === 10)
-    assert(p(100500).intValue === 100500)
-    assert(p(-100500).intValue === -100500)
+    assert(p(0).toInt === 0)
+    assert(p(1).toInt === 1)
+    assert(p(-1).toInt === -1)
+    assert(p(2).toInt === 2)
+    assert(p(3).toInt === 3)
+    assert(p(4).toInt === 4)
+    assert(p(10).toInt === 10)
+    assert(p(100500).toInt === 100500)
+    assert(p(-100500).toInt === -100500)
   }
 
   test("parsing fraction") {
-    assert(p(0, 1).intValue === 0)
-    assert(p(0, 1).fracValue === Rational.zero)
-    assert(p(1, 2).fracValue === bf(1, 2))
-    assert(p(3, 8).fracValue === bf(3, 8))
+    assert(p(0, 1).toInt === 0)
+    assert(p(0, 1).toRational === Rational.zero)
+    assert(p(1, 2).toRational === frac(1, 2))
+    assert(p(3, 8).toRational === frac(3, 8))
     assert(p(3, 8).underlying === p(6, 16).underlying)
   }
 
   test("multiplication") {
-    assert((p(0) * p(10)).intValue === 0)
-    assert((p(10) * p(0)).intValue === 0)
-    assert((p(10) * p(0)).intValue != 10)
-    assert((p(-10) * p(-20)).intValue === 200)
-    assert((p(-10) * p(7)).intValue === -70)
-    assert((p(1, 3) * p(3)).intValue === 1)
-    assert((p(1, 3) * p(3)).fracValue === 1)
-    assert((p(3, 4) * p(8)).intValue === 6)
-    assert((p(3, 4) * p(8)).fracValue === 6)
+    assert((p(0) * p(10)).toInt === 0)
+    assert((p(10) * p(0)).toInt === 0)
+    assert((p(10) * p(0)).toInt != 10)
+    assert((p(-10) * p(-20)).toInt === 200)
+    assert((p(-10) * p(7)).toInt === -70)
+    assert((p(1, 3) * p(3)).toInt === 1)
+    assert((p(1, 3) * p(3)).toRational === 1)
+    assert((p(3, 4) * p(8)).toInt === 6)
+    assert((p(3, 4) * p(8)).toRational === 6)
   }
 
   test("division") {
-    assert((p(0) / p(10)).intValue === 0)
-    assert((p(-10) / p(-20)).fracValue === bf(1, 2))
-    assert((p(-10) / p(7)).fracValue === bf(-10, 7))
-    assert((p(1, 3) / p(3)).fracValue === bf(1, 9))
-    assert((p(1, 3) / p(1, 3)).fracValue === 1)
-    assert((p(3, 4) / p(1, 8)).fracValue === 6)
+    assert((p(0) / p(10)).toInt === 0)
+    assert((p(-10) / p(-20)).toRational === frac(1, 2))
+    assert((p(-10) / p(7)).toRational === frac(-10, 7))
+    assert((p(1, 3) / p(3)).toRational === frac(1, 9))
+    assert((p(1, 3) / p(1, 3)).toRational === 1)
+    assert((p(3, 4) / p(1, 8)).toRational === 6)
   }
 
   test("power, integer") {
-    assert((p(0) pow 0).intValue === 1)
-    assert((p(0) pow 3).intValue === 0)
-    assert((p(0) pow 10).intValue === 0)
-    assert((p(1) pow 1).intValue === 1)
-    assert((p(1) pow 3).intValue === 1)
-    assert((p(1) pow 10).intValue === 1)
-    assert((p(10) pow 0).intValue === 1)
-    assert((p(10) pow 1).intValue === 10)
-    assert((p(-10) pow 0).intValue === 1)
-    assert((p(2) pow 16).intValue === 65536)
-    assert((p(6) pow 3).intValue === 216)
-    assert((p(8) pow 6).intValue === 262144)
-    assert((p(1, 2) pow 3).fracValue === bf(1, 8))
-    assert((p(3) pow -2).fracValue === bf(1, 9))
+    assert((p(0) pow 0).toInt === 1)
+    assert((p(0) pow 3).toInt === 0)
+    assert((p(0) pow 10).toInt === 0)
+    assert((p(1) pow 1).toInt === 1)
+    assert((p(1) pow 3).toInt === 1)
+    assert((p(1) pow 10).toInt === 1)
+    assert((p(10) pow 0).toInt === 1)
+    assert((p(10) pow 1).toInt === 10)
+    assert((p(-10) pow 0).toInt === 1)
+    assert((p(2) pow 16).toInt === 65536)
+    assert((p(6) pow 3).toInt === 216)
+    assert((p(8) pow 6).toInt === 262144)
+    assert((p(1, 2) pow 3).toRational === frac(1, 8))
+    assert((p(3) pow -2).toRational === frac(1, 9))
   }
 
   test("power, fractional, precise") {
-    assert((p(0) pow bf(3, 1)).intValue === 0)
-    assert((p(1) pow bf(3, 1)).intValue === 1)
-    assert((p(0) pow bf(0, 1)).intValue === 1)
-    assert((p(1) pow bf(1, 1)).intValue === 1)
-    assert((p(1) pow bf(10, 1)).intValue === 1)
-    assert((p(4) pow bf(1, 2)).intValue === 2)
-    assert((p(65536) pow bf(1, 4)).intValue === 16)
-    assert((p(8) pow bf(1, 3)).intValue === 2)
-    assert((p(8) pow bf(-1, 3)).fracValue === bf(1, 2))
+    assert((p(0) pow frac(3, 1)).toInt === 0)
+    assert((p(1) pow frac(3, 1)).toInt === 1)
+    assert((p(0) pow frac(0, 1)).toInt === 1)
+    assert((p(1) pow frac(1, 1)).toInt === 1)
+    assert((p(1) pow frac(10, 1)).toInt === 1)
+    assert((p(4) pow frac(1, 2)).toInt === 2)
+    assert((p(65536) pow frac(1, 4)).toInt === 16)
+    assert((p(8) pow frac(1, 3)).toInt === 2)
+    assert((p(8) pow frac(-1, 3)).toRational === frac(1, 2))
   }
 
   test("power, fractional, appx") {
-    assert((p(8) pow bf(1, 2)) =~= 2.828427125)
+    assert((p(8) pow frac(1, 2)) =~= 2.828427125)
     intercept[ArithmeticException] {
-      (p(8) pow bf(1, 2)).fracValue
+      (p(8) pow frac(1, 2)).toRational
     }
   }
 
   test("addition, subtraction") {
-    assert((p(0) + p(0)).intValue === 0)
-    assert((p(0) + p(1)).intValue === 1)
-    assert((p(-1) + p(0)).intValue === -1)
-    assert((p(-1) + p(1)).intValue === 0)
-    assert((p(6) + p(7)).intValue === 13)
-    assert((p(30) + p(12)).intValue === 42)
-    assert((p(30) + p(-12)).intValue === 18)
-    assert((p(-30) + p(12)).intValue === -18)
-    assert((-p(30) + p(12)).intValue === -18)
-    assert((p(12) - p(30)).intValue === -18)
-    assert((-p(0) - -p(0)).intValue === 0)
+    assert((p(0) + p(0)).toInt === 0)
+    assert((p(0) + p(1)).toInt === 1)
+    assert((p(-1) + p(0)).toInt === -1)
+    assert((p(-1) + p(1)).toInt === 0)
+    assert((p(6) + p(7)).toInt === 13)
+    assert((p(30) + p(12)).toInt === 42)
+    assert((p(30) + p(-12)).toInt === 18)
+    assert((p(-30) + p(12)).toInt === -18)
+    assert((-p(30) + p(12)).toInt === -18)
+    assert((p(12) - p(30)).toInt === -18)
+    assert((-p(0) - -p(0)).toInt === 0)
   }
 
   test("checking divisors") {

@@ -34,8 +34,8 @@ package object test {
   def fv(ints: Int*): FracVec = FracVec((ints map Rational.apply): _*)
   def fv2(fracs: Rational*): FracVec = FracVec(fracs: _*)
 
-  def bf(n: Int) = Rational(n, 1)
-  def bf(n: Int, d: Int) = Rational(n, d)
+  def frac(n: Int) = Rational(n, 1)
+  def frac(n: Int, d: Int) = Rational(n, d)
 
   def makePoly(components: (Int, Seq[Int])*): Polynomial =
     components map { case (coeff, pows) => Term(Product(coeff), fv(pows: _*)) } toIndexedSeq

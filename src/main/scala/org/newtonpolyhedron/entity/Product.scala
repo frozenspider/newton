@@ -47,7 +47,7 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
     val part1 = new Product(this.signum, thisFactors)
     val part2 = new Product(that.signum, thatFactors)
     require(part1.isRational && part2.isRational, "Can't sum these non-rational products (not in general case)")
-    val partSum = Product(part1.fracValue + part2.fracValue)
+    val partSum = Product(part1.toRational + part2.toRational)
     val res = common * partSum
     res
   }
@@ -75,14 +75,14 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
   def pow(p: Int): Product = this pow Rational(p)
 
   /** Very ineffective! */
-  override def compare(that: Product): Int = this.fracValue compare that.fracValue
+  override def compare(that: Product): Int = this.toRational compare that.toRational
 
   /** Whether or not this product can be represented as a precise fraction value */
-  lazy val isRational = underlying forall (_._2.denominator == 1)
+  lazy val isRational = underlying forall (_._2.isWhole)
   override def isWhole = true
-  override def longValue = fracValue.toLong
-  override def intValue = fracValue.toInt
-  lazy val fracValue =
+  override def longValue = toRational.toLong
+  override def intValue = toRational.toInt
+  lazy val toRational =
     if (signum == 0) Rational.zero else {
       if (!isRational) throw new ArithmeticException("Not a valid fraction")
       val folded = (underlying foldLeft Rational.one) {
@@ -129,7 +129,7 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
   }
 
   override def toString = {
-    if (isRational) fracValue.toString
+    if (isRational) toRational.toString
     else toStructuredString
   }
 

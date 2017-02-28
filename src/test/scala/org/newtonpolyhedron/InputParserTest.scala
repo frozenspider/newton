@@ -38,7 +38,7 @@ class InputParserTest extends FunSuite {
       """1.0 2.00 009
          2.22 3/2 6/2"""
     val section = InputParser.parseVectors(3)(toLines(str))(parseFrac)
-    assert(section === s(fv(1, 2, 9), fv2(bf(222, 100), bf(3, 2), bf(6, 2))))
+    assert(section === s(fv(1, 2, 9), fv2(frac(222, 100), frac(3, 2), frac(6, 2))))
   }
 
   //

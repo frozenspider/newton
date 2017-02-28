@@ -20,18 +20,18 @@ package object latex {
   def textToLatex(plaintext: String): LatexString =
     "\\text{" + plaintext + "}"
 
-  def fracToLatex(frac: Rational): LatexString = {
-    if (frac.isWhole) {
-      frac.numerator.toString
+  def rationalToLatex(rational: Rational): LatexString = {
+    if (rational.isWhole) {
+      rational.numerator.toString
     } else {
-      val fracVal = "\\frac{" + (frac.numerator.abs) + "}{" + frac.denominator + "}"
-      (if (frac.signum < 0) "-" else "") + fracVal
+      val rationalVal = "\\frac{" + (rational.numerator.abs) + "}{" + rational.denominator + "}"
+      (if (rational.signum < 0) "-" else "") + rationalVal
     }
   }
 
   def productToLatex(product: Product): LatexString =
     if (product.isRational) {
-      fracToLatex(product.fracValue)
+      rationalToLatex(product.toRational)
     } else {
       // Irrational case
       val (rational, roots) = product.rootedForm
@@ -44,8 +44,8 @@ package object latex {
     }
 
   def rootToLatex(rootBase: Rational, rootedValue: Rational): LatexString = {
-    val rootBaseLatex = fracToLatex(rootBase)
-    val rootedValueLatex = fracToLatex(rootedValue)
+    val rootBaseLatex = rationalToLatex(rootBase)
+    val rootedValueLatex = rationalToLatex(rootedValue)
     s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"
   }
 
@@ -63,7 +63,7 @@ package object latex {
         None
       else
         Some(
-          variableToLatex(varName, Some(i + 1)) + "^{" + fracToLatex(power) + "}"
+          variableToLatex(varName, Some(i + 1)) + "^{" + rationalToLatex(power) + "}"
         )
     }
     opts.yieldDefined.mkString

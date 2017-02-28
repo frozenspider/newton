@@ -384,12 +384,12 @@ class PolyMotzkinBurgerSolverTest extends FunSuite {
 
   test("half-cube diagonal, decimal") {
     val points = s(
-      fv2(bf(1, 2), bf(1, 2), bf(1, 2)),
-      fv2(bf(5, 2), bf(1, 2), bf(1, 2)),
-      fv2(bf(1, 2), bf(5, 2), bf(1, 2)),
-      fv2(bf(1, 2), bf(5, 2), bf(5, 2)),
-      fv2(bf(5, 2), bf(5, 2), bf(1, 2)),
-      fv2(bf(5, 2), bf(5, 2), bf(5, 2)))
+      fv2(frac(1, 2), frac(1, 2), frac(1, 2)),
+      fv2(frac(5, 2), frac(1, 2), frac(1, 2)),
+      fv2(frac(1, 2), frac(5, 2), frac(1, 2)),
+      fv2(frac(1, 2), frac(5, 2), frac(5, 2)),
+      fv2(frac(5, 2), frac(5, 2), frac(1, 2)),
+      fv2(frac(5, 2), frac(5, 2), frac(5, 2)))
     /*-
   ================| Q0   Q1   Q2   Q3   Q4   Q5
   N1 = [ 0 -1 1 ] |  +    +    -    +    -    +
