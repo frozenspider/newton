@@ -2,6 +2,8 @@ package org.newtonpolyhedron.solverprinters
 
 import java.io.PrintWriter
 
+import org.fs.utility.Imports._
+
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.vector.VectorImports._

@@ -7,6 +7,8 @@ import scala.math.ScalaNumericConversions
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.MathUtils
 
+import org.fs.utility.Imports._
+
 import spire.math.Rational
 
 /**

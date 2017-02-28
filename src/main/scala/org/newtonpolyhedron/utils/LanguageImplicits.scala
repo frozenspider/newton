@@ -85,24 +85,4 @@ object LanguageImplicits {
       splitByRec(trav, IndexedSeq.empty, IndexedSeq.empty)
     }
   }
-
-  implicit class SuperIterable[A, Repr](iter: IterableLike[A, Repr]) {
-    def mapWithIndex[B, Repr2 <: GenTraversableLike[(A, Int), Repr2], That2](f: (A, Int) => B)(
-      implicit bf1: CanBuildFrom[Repr, (A, Int), Repr2], bf2: CanBuildFrom[Repr2, B, That2]): That2 =
-      {
-        iter.zipWithIndex map (x => f(x._1, x._2))
-      }
-
-    def eachWithIndex[U, That <: GenTraversableLike[(A, Int), _]](f: (A, Int) => U)(
-      implicit bf1: CanBuildFrom[Repr, (A, Int), That]): Unit =
-      {
-        iter.zipWithIndex foreach (x => f(x._1, x._2))
-      }
-  }
-
-  implicit class OptionsIterable[A, Repr](iter: IterableLike[Option[A], Repr]) {
-    def yieldDefined[Repr2 <: IterableLike[A, Repr2]](implicit bf: CanBuildFrom[Repr, A, Repr2]): Repr2 = {
-      for (o <- iter if o.isDefined) yield o.get
-    }
-  }
 }

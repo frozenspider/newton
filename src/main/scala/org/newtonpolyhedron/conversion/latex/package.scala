@@ -4,6 +4,9 @@ import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+
+import org.fs.utility.Imports._
+
 import spire.implicits._
 import spire.math.Rational
 

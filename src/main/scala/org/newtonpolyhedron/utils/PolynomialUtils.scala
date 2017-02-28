@@ -5,7 +5,10 @@ import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.utils.LanguageImplicits._
 
+import org.fs.utility.Imports._
+
 import spire.math.Rational
+
 
 object PolynomialUtils {
   type Polynomial = IndexedSeq[Term]

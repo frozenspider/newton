@@ -5,23 +5,24 @@ import java.text.MessageFormat
 
 import scala.collection.immutable.SortedSet
 
+import org.fs.utility.Imports._
 import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.polyinter.PolyIntersectionSolver
 import org.newtonpolyhedron.utils.LanguageImplicits._
 
-class PolyIntersectionSolverPrinter(solver: PolyIntersectionSolver,
+class PolyIntersectionSolverPrinter(override val solver: PolyIntersectionSolver,
                                     val polyhedrons: Seq[IndexedSeq[FracVec]],
                                     val dim: Int,
-                                    output: PrintWriter)
+                                    override val output: PrintWriter)
     extends SolverPrinter[PolyIntersectionSolver](solver, output) {
 
   override def solveFor(solver: PolyIntersectionSolver,
                         output: PrintWriter) = {
     output.println(title("Polyhedron intersection"))
     output.println(header("Original points:"))
-    polyhedrons eachWithIndex { (poly, i) =>
+    polyhedrons foreachWithIndex { (poly, i) =>
       output.println(subheader("Poly " + i))
       for (j <- 0 until poly.size) {
         output.println(MessageFormat.format(" Q{0} = {1}", int2Integer(j), poly(j)))
