@@ -5,7 +5,7 @@ import scala.math.ScalaNumber
 import scala.math.ScalaNumericConversions
 
 import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.MathUtils._
+import org.newtonpolyhedron.utils.MathUtils
 
 import spire.math.Rational
 
@@ -227,7 +227,7 @@ object Product {
         else
           rec(v, primes.tail, acc)
       }
-    rec(v, primesUpTo(sqrt(v)), Map.empty) filter (_._1 != 1)
+    rec(v, MathUtils.primesUpTo(math.sqrt(v).toInt), Map.empty) filter (_._1 != 1)
   }
 
   def incPower(map: Map[Int, Rational], key: Int): Map[Int, Rational] =
