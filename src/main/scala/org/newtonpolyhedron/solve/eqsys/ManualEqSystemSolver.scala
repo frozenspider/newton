@@ -1,9 +1,9 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.conversion.latex._
 import org.newtonpolyhedron.entity.Product
-import org.newtonpolyhedron.ex.CancelledByUserException
 import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.ex.CancelledByUserException
+import org.newtonpolyhedron.utils.LatexConversion._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 

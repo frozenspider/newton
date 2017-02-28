@@ -2,7 +2,7 @@ package org.newtonpolyhedron.ui
 
 import scala.swing.Component
 
-import org.newtonpolyhedron.conversion.latex.LatexString
+import org.newtonpolyhedron.utils.LatexConversion._
 import org.scilab.forge.jlatexmath.TeXConstants
 import org.scilab.forge.jlatexmath.TeXFormula
 

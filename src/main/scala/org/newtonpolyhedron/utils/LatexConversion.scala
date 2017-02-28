@@ -1,16 +1,16 @@
-package org.newtonpolyhedron.conversion
+package org.newtonpolyhedron.utils
+
+import org.fs.utility.Imports._
 
 import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 
-import org.fs.utility.Imports._
-
 import spire.implicits._
 import spire.math.Rational
 
-package object latex {
+object LatexConversion {
 
   sealed trait LatexStringMixin
 
@@ -41,12 +41,12 @@ package object latex {
       val rationalString = if (rational == 1) "" else rational.toString
       val irrationalString = roots.toSeq sortBy (_._1) map {
         case (_, rooted) if rooted == 0 => ""
-        case (rootBase, rooted)         => rootToLatex(rootBase, rooted)
+        case (rootBase, rooted)         => nthRootToLatex(rootBase, rooted)
       }
       "(" + rationalString + irrationalString.mkString + ")"
     }
 
-  def rootToLatex(rootBase: Rational, rootedValue: Rational): LatexString = {
+  def nthRootToLatex(rootBase: Rational, rootedValue: Rational): LatexString = {
     val rootBaseLatex = rationalToLatex(rootBase)
     val rootedValueLatex = rationalToLatex(rootedValue)
     s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"

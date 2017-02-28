@@ -19,7 +19,7 @@ import org.newtonpolyhedron.utils.PolynomialUtils._
 
 class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
   import BorderPanel.Position._
-  import org.newtonpolyhedron.conversion.latex._
+  import org.newtonpolyhedron.utils.LatexConversion._
 
   override val varName = "x"
 

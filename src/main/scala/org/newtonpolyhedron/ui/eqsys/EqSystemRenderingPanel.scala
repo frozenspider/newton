@@ -7,7 +7,7 @@ import org.newtonpolyhedron.utils.PolynomialUtils.Equations
 
 class EqSystemRenderingPanel extends BorderPanel {
   import BorderPanel.Position._
-  import org.newtonpolyhedron.conversion.latex._
+  import org.newtonpolyhedron.utils.LatexConversion._
 
   private val renderer = new LatexRenderingComponent
   renderer.fontSize = 30

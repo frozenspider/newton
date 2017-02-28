@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.eqsys
 
 import org.newtonpolyhedron.utils.PolynomialUtils.Polys
-import org.newtonpolyhedron.conversion.latex.LatexString
+import org.newtonpolyhedron.utils.LatexConversion.LatexString
 
 trait EqSystemSolutionInput {
   def varName: String
