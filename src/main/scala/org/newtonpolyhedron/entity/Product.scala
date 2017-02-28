@@ -78,8 +78,11 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
   override def compare(that: Product): Int = this.toRational compare that.toRational
 
   /** Whether or not this product can be represented as a precise fraction value */
-  lazy val isRational = underlying forall (_._2.isWhole)
-  override def isWhole = true
+  lazy val isRational = {
+    // Check that all powers are integers
+    underlying forall (_._2.isWhole)
+  }
+  override def isWhole = isRational && toRational.isWhole
   override def longValue = toRational.toLong
   override def intValue = toRational.toInt
   lazy val toRational =
