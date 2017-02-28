@@ -1,12 +1,13 @@
 package org.newtonpolyhedron.solve.eqsys
 
 import org.newtonpolyhedron.conversion.latex._
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.ex.CancelledByUserException
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
+
+import spire.math.Rational
 
 /**
  * Allows you to solve system of equations manually
@@ -27,7 +28,7 @@ class ManualEqSystemSolver(solverInput: EqSystemSolutionInput) extends EqSystemS
       if (parsedInput forall (_.isRight)) {
         val solution = parsedInput map (_.right.get)
         val s = solution map Product.apply
-        // Checking if the solution satisfies all polynomials 
+        // Checking if the solution satisfies all polynomials
         system collectFirst {
           case poly if !poly.isZeroWithValues(s) =>
             (poly, poly.totalWithValuesNonStrict(s))
@@ -44,7 +45,7 @@ class ManualEqSystemSolver(solverInput: EqSystemSolutionInput) extends EqSystemS
     solveWithMessage(None, None)
   }
 
-  private def parseInput(input: Seq[String]): Seq[Either[String, BigFrac]] = input map { s =>
+  private def parseInput(input: Seq[String]): Seq[Either[String, Rational]] = input map { s =>
     try {
       Right(parseFrac(s))
     } catch {
@@ -80,7 +81,7 @@ object ManualEqSystemSolver extends App {
       new Term(Product(4), FracVec(0, 0, 0))
     ),
     IndexedSeq(
-      new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+      new Term(Product(Rational(-1, 2)), FracVec(Rational(-1, 2), Rational.zero, Rational(-333, 667))),
       new Term(Product(-2), FracVec(0, 0, 3))
     )
   )

@@ -3,12 +3,14 @@ package org.newtonpolyhedron.entity.matrix
 import scala.annotation.tailrec
 
 import org.apache.commons.math3.linear.MatrixUtils
-import org.newtonpolyhedron.entity.BigFrac
 
 import internal.FieldElementSupport._
+import spire.implicits._
+import spire.math.Rational
+import org.newtonpolyhedron.utils.LanguageImplicits._
 
 /**
- * Provides implicit "toDiagonal" method on BigFrac matrices, which is needed for unimodular matrices maker
+ * Provides implicit "toDiagonal" method on Rational matrices, which is needed for unimodular matrices maker
  * via Euler (or whatever is its name, not sure yet) algorithm.
  */
 object MatrixToDiagonalImplicits {
@@ -16,7 +18,7 @@ object MatrixToDiagonalImplicits {
   private case object ROWS extends Orientation
   private case object COLS extends Orientation
 
-  private type M = Matrix[BigFrac]
+  private type M = Matrix[Rational]
   private type MatrixTriple = (M, M, M)
 
   implicit class FunctionalMatrix(val mt: M) {
@@ -28,13 +30,13 @@ object MatrixToDiagonalImplicits {
      */
     def toDiagonal: MatrixTriple = {
       require(mt.isSquare, "Non-square matrix")
-      val iden = Matrix.idenitiy[BigFrac](mt.rowCount)
-      val rowOnes = new Matrix(iden.contentCopy)(bigFracFieldWrapper)
-      val colOnes = new Matrix(iden.contentCopy)(bigFracFieldWrapper)
+      val iden = Matrix.idenitiy[Rational](mt.rowCount)
+      val rowOnes = new Matrix(iden.contentCopy)(RationalFieldWrapper)
+      val colOnes = new Matrix(iden.contentCopy)(RationalFieldWrapper)
       FunctionalMatrixCompanion.toDiagonalTriple((mt, rowOnes, colOnes))
     }
 
-    private[matrix] def getCornerRelative(orientation: Orientation, cornerIdx: Int, colIdx: Int): BigFrac =
+    private[matrix] def getCornerRelative(orientation: Orientation, cornerIdx: Int, colIdx: Int): Rational =
       orientation match {
         case ROWS => mt(cornerIdx, colIdx)
         case COLS => mt(colIdx, cornerIdx)
@@ -55,7 +57,7 @@ object MatrixToDiagonalImplicits {
       val col2 = copy.getColumnVector(j)
       copy.setColumnVector(i, col2)
       copy.setColumnVector(j, col1)
-      new Matrix(copy)(bigFracFieldWrapper)
+      new Matrix(copy)(RationalFieldWrapper)
     }
 
     private def fieldRowOfZeros(size: Int) =
@@ -70,27 +72,27 @@ object MatrixToDiagonalImplicits {
       val vec = copy.getColumnVector(i)
       val zeros = fieldRowOfZeros(vec.getDimension)
       copy.setColumnVector(i, zeros subtract vec)
-      new Matrix(copy)(bigFracFieldWrapper)
+      new Matrix(copy)(RationalFieldWrapper)
     }
 
-    private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): M =
+    private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: Rational, orientation: Orientation): M =
       orientation match {
         case ROWS => mt.subtractMultipliedCol(from, to, quotient)
         case COLS => mt.subtractMultipliedRow(from, to, quotient)
       }
 
-    private[matrix] def subtractMultipliedRow(from: Int, to: Int, quotient: BigFrac): M = {
+    private[matrix] def subtractMultipliedRow(from: Int, to: Int, quotient: Rational): M = {
       mt.transpose.subtractMultipliedCol(from, to, quotient).transpose
     }
 
-    private[matrix] def subtractMultipliedCol(from: Int, to: Int, quotient: BigFrac): M = {
+    private[matrix] def subtractMultipliedCol(from: Int, to: Int, quotient: Rational): M = {
       val copy = mt.contentCopy
       val srcCol = copy.getColumnVector(from)
       val dstCol = copy.getColumnVector(to)
-      val srcColMul = srcCol mapMultiply bigFracFieldWrapper(quotient)
+      val srcColMul = srcCol mapMultiply RationalFieldWrapper(quotient)
       val dstColSub = dstCol subtract srcColMul
       copy.setColumnVector(to, dstColSub)
-      new Matrix(copy)(bigFracFieldWrapper)
+      new Matrix(copy)(RationalFieldWrapper)
     }
   }
 
@@ -153,14 +155,14 @@ object MatrixToDiagonalImplicits {
       )
     }
 
-    private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: BigFrac, orientation: Orientation): MatrixTriple = {
+    private[matrix] def subtractMultiplied(from: Int, to: Int, quotient: Rational, orientation: Orientation): MatrixTriple = {
       orientation match {
         case ROWS => mt.subtractMultipliedCol(from, to, quotient)
         case COLS => mt.subtractMultipliedRow(from, to, quotient)
       }
     }
 
-    private[FunctionalMatrixTriple] def subtractMultipliedRow(from: Int, to: Int, quotient: BigFrac): MatrixTriple = {
+    private[FunctionalMatrixTriple] def subtractMultipliedRow(from: Int, to: Int, quotient: Rational): MatrixTriple = {
       (
         main.subtractMultipliedRow(from, to, quotient),
         rowOnes.subtractMultipliedRow(from, to, quotient),
@@ -168,7 +170,7 @@ object MatrixToDiagonalImplicits {
       )
     }
 
-    private[FunctionalMatrixTriple] def subtractMultipliedCol(from: Int, to: Int, quotient: BigFrac): MatrixTriple = {
+    private[FunctionalMatrixTriple] def subtractMultipliedCol(from: Int, to: Int, quotient: Rational): MatrixTriple = {
       (
         main.subtractMultipliedCol(from, to, quotient),
         rowOnes,
@@ -198,7 +200,7 @@ object MatrixToDiagonalImplicits {
           val current = mts.main.getCornerRelative(ROWS, cornerIdx, colIdx)
           val quotient = (current / corner).quotient
           if (quotient != 0) {
-            mts.subtractMultiplied(cornerIdx, colIdx, BigFrac(quotient), ROWS)
+            mts.subtractMultiplied(cornerIdx, colIdx, Rational(quotient), ROWS)
           } else {
             mts
           }
@@ -207,7 +209,7 @@ object MatrixToDiagonalImplicits {
           val current = mts.main.getCornerRelative(COLS, cornerIdx, rowIdx)
           val quotient = (current / corner).quotient
           if (quotient != 0) {
-            mts.subtractMultiplied(cornerIdx, rowIdx, BigFrac(quotient), COLS)
+            mts.subtractMultiplied(cornerIdx, rowIdx, Rational(quotient), COLS)
           } else {
             mts
           }
@@ -254,7 +256,7 @@ object MatrixToDiagonalImplicits {
               val div = current / corner
               if (div.remainder != 0) {
                 val mts2 = if (div.quotient != 0) {
-                  mts subtractMultiplied (cornerIdx, currIdx, BigFrac(div.quotient), orientation)
+                  mts subtractMultiplied (cornerIdx, currIdx, Rational(div.quotient), orientation)
                 } else {
                   mts
                 }

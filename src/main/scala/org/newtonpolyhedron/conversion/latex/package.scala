@@ -4,6 +4,8 @@ import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import spire.implicits._
+import spire.math.Rational
 
 package object latex {
 
@@ -18,18 +20,18 @@ package object latex {
   def textToLatex(plaintext: String): LatexString =
     "\\text{" + plaintext + "}"
 
-  def fracToLatex(frac: BigFrac): LatexString = {
-    if (frac.isInt) {
-      frac.num.toString
+  def rationalToLatex(rational: Rational): LatexString = {
+    if (rational.isWhole) {
+      rational.numerator.toString
     } else {
-      val fracVal = "\\frac{" + (frac.num.abs) + "}{" + frac.den + "}"
-      (if (frac.signum < 0) "-" else "") + fracVal
+      val rationalVal = "\\frac{" + (rational.numerator.abs) + "}{" + rational.denominator + "}"
+      (if (rational.signum < 0) "-" else "") + rationalVal
     }
   }
 
   def productToLatex(product: Product): LatexString =
     if (product.isRational) {
-      fracToLatex(product.fracValue)
+      rationalToLatex(product.toRational)
     } else {
       // Irrational case
       val (rational, roots) = product.rootedForm
@@ -41,9 +43,9 @@ package object latex {
       "(" + rationalString + irrationalString.mkString + ")"
     }
 
-  def rootToLatex(rootBase: BigFrac, rootedValue: BigFrac): LatexString = {
-    val rootBaseLatex = fracToLatex(rootBase)
-    val rootedValueLatex = fracToLatex(rootedValue)
+  def rootToLatex(rootBase: Rational, rootedValue: Rational): LatexString = {
+    val rootBaseLatex = rationalToLatex(rootBase)
+    val rootedValueLatex = rationalToLatex(rootedValue)
     s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"
   }
 
@@ -55,13 +57,13 @@ package object latex {
     case EquationSign.LessEq    => "\\geq"
   }
 
-  private def powersToLatex(varName: String)(pows: Seq[BigFrac]): LatexString = {
+  private def powersToLatex(varName: String)(pows: Seq[Rational]): LatexString = {
     val opts = pows mapWithIndex { (power, i) =>
       if (power.isZero)
         None
       else
         Some(
-          variableToLatex(varName, Some(i + 1)) + "^{" + fracToLatex(power) + "}"
+          variableToLatex(varName, Some(i + 1)) + "^{" + rationalToLatex(power) + "}"
         )
     }
     opts.yieldDefined.mkString

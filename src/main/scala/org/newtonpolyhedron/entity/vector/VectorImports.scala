@@ -1,13 +1,17 @@
 package org.newtonpolyhedron.entity.vector
 
-import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.utils.LanguageImplicits._
+
+import spire.implicits._
+import spire.math.Rational
 
 import internal.SeqVectorSupport
+import spire.math.SafeLong
 
 object VectorImports extends SeqVectorSupport {
 
   type IntVec = IndexedSeq[BigInt]
-  type FracVec = IndexedSeq[BigFrac]
+  type FracVec = IndexedSeq[Rational]
 
   object IntVec {
     def apply(vs: BigInt*) = IndexedSeq.apply[BigInt](vs: _*)
@@ -18,19 +22,18 @@ object VectorImports extends SeqVectorSupport {
       fromFrac(fs: _*)
     }
 
-    def fromFrac(fs: BigFrac*) = {
-      val one = BigInt(1)
-      val multiplier = fs.foldLeft(one)((m, el) =>
-        if (m % el.den == 0) m else m * el.den)
-      val ints = fs map (x => x.num * multiplier / x.den)
-      ints.toIndexedSeq.reduced
+    def fromFrac(fs: Rational*) = {
+      val multiplier = fs.foldLeft(SafeLong.one)((m, el) =>
+        if (m % el.denominator == 0) m else m * el.denominator)
+      val ints = fs map (x => x.numerator * multiplier / x.denominator)
+      ints.map(_.toBigInt).toIndexedSeq.reduced
     }
   }
 
   object FracVec {
-    def apply(vs: BigFrac*) = IndexedSeq.apply[BigFrac](vs: _*)
+    def apply(vs: Rational*) = IndexedSeq.apply[Rational](vs: _*)
 
-    def zero(dimension: Int) = IndexedSeq.fill[BigFrac](dimension)(0)
+    def zero(dimension: Int) = IndexedSeq.fill[Rational](dimension)(0)
   }
 
   implicit lazy val intVecOrdering: Ordering[IntVec] = Ordering.Implicits.seqDerivedOrdering
@@ -47,7 +50,7 @@ object VectorImports extends SeqVectorSupport {
     }
 
     def toFracVec: FracVec =
-      seq map BigFrac.apply
+      seq map Rational.apply
 
     def toTupleString: String =
       seq mkString ("(", ", ", ")")

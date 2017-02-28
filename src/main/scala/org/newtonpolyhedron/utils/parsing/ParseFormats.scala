@@ -1,14 +1,14 @@
 package org.newtonpolyhedron.utils.parsing
 
-import org.newtonpolyhedron.entity.BigFrac
+import spire.math.Rational
 
 object ParseFormats {
   type Parse[A] = (String => A)
 
   val parseInt: Parse[BigInt] =
     (s => BigInt(trimLeadingPlus(s)))
-  val parseFrac: Parse[BigFrac] =
-    (s => BigFracFormat.parse(trimLeadingPlus(s)).asInstanceOf[BigFrac])
+  val parseFrac: Parse[Rational] =
+    (s => RationalFormat.parse(trimLeadingPlus(s)).asInstanceOf[Rational])
 
   private def trimLeadingPlus(s: String): String = {
     val s2 = s.trim

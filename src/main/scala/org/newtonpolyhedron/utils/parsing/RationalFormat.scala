@@ -6,17 +6,19 @@ import scala.math.BigDecimal
 
 import org.apache.commons.math3.fraction.AbstractFormat
 import org.apache.commons.math3.fraction.BigFractionFormat
-import org.newtonpolyhedron.entity.BigFrac
 
-object BigFracFormat extends AbstractFormat {
+import spire.implicits._
+import spire.math.Rational
+
+object RationalFormat extends AbstractFormat {
 
   private val bigFrationFormat = new BigFractionFormat
 
-  override def parse(source: String, pos: ParsePosition): BigFrac = {
+  override def parse(source: String, pos: ParsePosition): Rational = {
     // Try to parse fraction as usual
     val defaultResult = bigFrationFormat.parse(source, pos)
     if (defaultResult != null)
-      BigFrac(defaultResult)
+      Rational(defaultResult.getNumerator, defaultResult.getDenominator)
     else {
       // Usual parsing failed (errorIndex has been set)
       val initialIndex = pos.getIndex
@@ -37,9 +39,9 @@ object BigFracFormat extends AbstractFormat {
           val scale = dec.scale
           val ten = BigInt(10)
           if (scale >= 0)
-            BigFrac(unscaled, ten pow scale)
+            Rational(unscaled, ten pow scale)
           else
-            BigFrac(unscaled * (ten pow (-scale)))
+            Rational(unscaled * (ten pow (-scale)))
         }
       }
 

@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.entity.matrix.Matrix
-import org.newtonpolyhedron.entity.BigFrac
+import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
 class UnimodularMatrixMakerImplTest extends FunSuite {
@@ -14,7 +14,7 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
 
   test("non-square") {
     intercept[IllegalArgumentException] {
-      maker.unimodularFrom(Matrix.zero(1, 2))
+      maker.unimodularFrom(Matrix.zero[Rational](1, 2))
     }
   }
 
@@ -51,7 +51,7 @@ class UnimodularMatrixMakerImplTest extends FunSuite {
   }
 
   test("3x3 power transform article") {
-    // Article by Sollev and Khakimov 
+    // Article by Sollev and Khakimov
     val source = matrFrac(s(
       s(2, -3, 1),
       s(-1, -1, 1),

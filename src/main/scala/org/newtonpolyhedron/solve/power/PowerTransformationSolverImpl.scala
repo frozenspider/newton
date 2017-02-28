@@ -1,6 +1,5 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.matrix.Matrix
@@ -9,6 +8,7 @@ import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import spire.math.Rational
 
 class PowerTransformationSolverImpl(
   val umm: UnimodularMatrixMaker,
@@ -18,12 +18,12 @@ class PowerTransformationSolverImpl(
   private type Powers = Seq[FracVec]
   private type Coeffs = Seq[Product]
 
-  private def vecf(s: Seq[BigFrac]) = FracVec(s: _*)
+  private def vecf(s: Seq[Rational]) = FracVec(s: _*)
 
-  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[BigFrac] = {
+  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[Rational] = {
     // TODO: Make sure this works for more than 2 polys
     val dimension = powersSeqs.size + 1
-    def lastRowMinors(m: Matrix[BigFrac]): Seq[BigFrac] = {
+    def lastRowMinors(m: Matrix[Rational]): Seq[Rational] = {
       (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
     require(powersSeqs forall (_ forall (_.length == dimension)),
@@ -42,10 +42,10 @@ class PowerTransformationSolverImpl(
     }
     if (nonZeroMatrices.isEmpty)
       throw new IllegalArgumentException("All pre-alpha matrices have zero minors")
-    val alphasStream: Stream[Matrix[BigFrac]] =
+    val alphasStream: Stream[Matrix[Rational]] =
       nonZeroMatrices map { matrix =>
         val alpha = umm unimodularFrom matrix
-        assert(alpha.elementsByRow map (_._3) forall (v => v.den == 1))
+        assert(alpha.elementsByRow map (_._3) forall (_.isWhole))
         assert(alpha.det == 1)
         alpha
       }
@@ -77,19 +77,19 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  private def matrixByRows(m: Matrix[BigFrac]): Seq[FracVec] =
+  private def matrixByRows(m: Matrix[Rational]): Seq[FracVec] =
     m.elementsByRow map (_._3) grouped (m.colCount) map vecf toIndexedSeq
 
-  private def inverse(m: Matrix[BigFrac]): Matrix[BigFrac] = {
+  private def inverse(m: Matrix[Rational]): Matrix[Rational] = {
     val inv = m.inv
-    assert(inv.elementsByRow map (_._3) forall (_.den == 1))
+    assert(inv.elementsByRow map (_._3) forall (_.denominator == 1))
     inv
   }
 
   private def getLowestPowers(powers: Powers) =
     vecf(powers reduce ((_, _).zipped map (_ min _)))
 
-  override def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial = {
+  override def substitute(poly: Polynomial, alpha: Matrix[Rational]): Polynomial = {
     require(alpha.isSquare, "Alpha matrix should be square")
     val alphaInvByRows = matrixByRows(inverse(alpha))
     val rawPows =
@@ -112,7 +112,7 @@ class PowerTransformationSolverImpl(
     val sol: Powers = eqSysSolver.solve(truncatedSimpleSys)
     assert(sol.tail.isEmpty)
     // Add it back
-    sol.head :+ BigFrac.ZERO
+    sol.head :+ Rational.zero
   }
 
   //

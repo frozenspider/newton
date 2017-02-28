@@ -24,6 +24,7 @@ libraryDependencies ++= Seq(
   // Math
   "org.apache.commons"      %  "commons-math3"        % "3.6.1",
   "org.scilab.forge"        %  "jlatexmath"           % "1.0.4",
+  "org.spire-math"          %% "spire"                % "0.13.0",
   // Visual
   "org.scala-lang.modules"  %% "scala-swing"          % "2.0.0",
   "java3d"                  %  "j3d-core"             % "1.5.1",

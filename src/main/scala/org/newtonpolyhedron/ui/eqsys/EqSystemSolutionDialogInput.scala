@@ -125,6 +125,8 @@ object EqSystemSolutionDialogInput extends App {
   import org.newtonpolyhedron.entity.equation._
   import org.newtonpolyhedron.utils.LanguageImplicits._
   import org.newtonpolyhedron.utils.PolynomialUtils._
+  import spire.implicits._
+  import spire.math.Rational
 
   val s = new EqSystemSolutionDialogInput
 
@@ -137,7 +139,7 @@ object EqSystemSolutionDialogInput extends App {
       new Term(Product(4), FracVec(0, 0, 0))
     ),
     IndexedSeq(
-      new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
+      new Term(Product(Rational(-1, 2)), FracVec(Rational(-1, 2), Rational.zero, Rational(-333, 667))),
       new Term(Product(-2), FracVec(0, 0, 3))
     )
   )

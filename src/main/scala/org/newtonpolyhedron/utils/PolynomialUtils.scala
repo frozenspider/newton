@@ -1,10 +1,11 @@
 package org.newtonpolyhedron.utils
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.utils.LanguageImplicits._
+
+import spire.math.Rational
 
 object PolynomialUtils {
   type Polynomial = IndexedSeq[Term]
@@ -12,7 +13,7 @@ object PolynomialUtils {
   type Equations = IndexedSeq[Equation]
 
   def zeroPoly(dim: Int): Polynomial =
-    IndexedSeq(Term(Product.ZERO, IndexedSeq.fill[BigFrac](dim)(BigFrac.ZERO)))
+    IndexedSeq(Term(Product.ZERO, IndexedSeq.fill[Rational](dim)(Rational.zero)))
 
   /**
    * Contains some basic polynomial-related operations - multiplication, raising to powers, etc.
@@ -55,7 +56,7 @@ object PolynomialUtils {
 
     def toPlainString: String = {
       poly map (term => "(" +
-        term.coeff.fracValue +
+        term.coeff.toRational +
         ") * " +
         term.powers.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
       ) mkString ("", " + ", " = 0")

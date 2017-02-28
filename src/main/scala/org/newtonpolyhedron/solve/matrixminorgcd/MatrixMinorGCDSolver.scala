@@ -1,7 +1,7 @@
 package org.newtonpolyhedron.solve.matrixminorgcd
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.matrix.Matrix
+import spire.math.Rational
 
 trait MatrixMinorGCDSolver {
   /**
@@ -13,5 +13,5 @@ trait MatrixMinorGCDSolver {
    * @throws SingularMatrixException
    *             if matrix is singular
    */
-  def lastRowGcd(matrix: Matrix[BigFrac]): (BigInt, Seq[BigInt])
+  def lastRowGcd(matrix: Matrix[Rational]): (BigInt, Seq[BigInt])
 }

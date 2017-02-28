@@ -4,7 +4,6 @@ import java.io.File
 
 import scala.io.Source
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.matrix.Matrix
@@ -12,6 +11,7 @@ import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
+import spire.math.Rational
 
 object InputParser {
   private type Lines = Seq[String]
@@ -20,7 +20,7 @@ object InputParser {
   private type OptISeqSeq[E] = Option[ISeqSeq[E]]
   private type ISeqSeqSeq[E] = ISeq[ISeqSeq[E]]
   private type IV = ISeq[BigInt]
-  private type FV = ISeq[BigFrac]
+  private type FV = ISeq[Rational]
   private type MatrixFactory[A] = (ISeqSeq[A] => Matrix[A])
 
   //

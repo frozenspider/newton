@@ -24,7 +24,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(1, -1) map bf
+    val expected = s(1, -1) map frac
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)
@@ -41,7 +41,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(1, -1) map bf
+    val expected = s(1, -1) map frac
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)
@@ -58,7 +58,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(bf(2), bf(-1, 16))
+    val expected = s(frac(2), frac(-1, 16))
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)
@@ -82,7 +82,7 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(-1, 3, 2) map bf
+    val expected = s(-1, 3, 2) map frac
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)

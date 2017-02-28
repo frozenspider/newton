@@ -2,11 +2,11 @@ package org.newtonpolyhedron.solverprinters
 
 import java.io.PrintWriter
 
-import org.newtonpolyhedron.entity.BigFrac
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
+import spire.math.Rational
 
-class MatrixDetSolverPrinter(val baseMatrix: Matrix[BigFrac],
+class MatrixDetSolverPrinter(val baseMatrix: Matrix[Rational],
                              val skipRow: Int,
                              val skipCol: Int,
                              output: PrintWriter)
