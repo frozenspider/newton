@@ -27,18 +27,18 @@ case class Term(val coeff: Product, val powers: FracVec) {
 
   def unary_- : Term = withCoeff(-coeff)
 
-  def pow(that: Int): Term =
-    new Term(this.coeff pow that, this.powers * that)
+  def ** (that: Int): Term =
+    new Term(this.coeff ** that, this.powers * that)
 
-  def pow(that: Rational): Term =
-    new Term(this.coeff pow that, this.powers * that)
+  def ** (that: Rational): Term =
+    new Term(this.coeff ** that, this.powers * that)
 
-  def powInv(that: Int): Term =
-    this pow Rational(1, that)
+  def root(that: Int): Term =
+    this ** Rational(1, that)
 }
 
 object Term {
   def apply(pair: (Product, Vector[Rational])): Term = Term(pair._1, pair._2)
-  def zero(dim: Int): Term = Term(Product.ZERO, IndexedSeq.fill(dim)(Rational.zero))
-  def one(dim: Int): Term = Term(Product.ONE, IndexedSeq.fill(dim)(Rational.zero))
+  def zero(dim: Int): Term = Term(Product.zero, IndexedSeq.fill(dim)(Rational.zero))
+  def one(dim: Int): Term = Term(Product.one, IndexedSeq.fill(dim)(Rational.zero))
 }

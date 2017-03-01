@@ -38,7 +38,7 @@ object EqSystemRenderingPanel extends scala.swing.SimpleSwingApplication {
     contents = subj
   }
 
-  val tricky = Product(1, Map(2 -> Rational(15), 3 -> Rational(3), 5 -> Rational(8))).pow(Rational(1, 6))
+  val tricky = Product(1, Map(2 -> Rational(15), 3 -> Rational(3), 5 -> Rational(8))) ** Rational(1, 6)
 
   val eqs: Equations = IndexedSeq[Equation](
     Equation(

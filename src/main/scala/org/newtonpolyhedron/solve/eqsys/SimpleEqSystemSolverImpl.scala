@@ -59,7 +59,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
       // This will also include zero-powers (since 0 == 0)
       if (unsolved forall replPowsAreEqual) {
         // Variable isn't used, can just put anything. Zero is the easiest choice
-        solveSimpleEqSysFor(unsolved, termIndicesToReplace.tail, replacements.updated(replFor, Product.ZERO))
+        solveSimpleEqSysFor(unsolved, termIndicesToReplace.tail, replacements.updated(replFor, Product.zero))
       } else {
         val (chosenEq, restEqs) = {
           val foundIdx = unsolved indexWhere replPowsAreUnequal
@@ -82,11 +82,11 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
         // Lets put secondary term to rhs and reduce
         val reducedM = mainTerm mapPowers (powers => powers.upd(replFor, 0))
         val reducedS = secTerm mapPowers (powers => powers.upd(replFor, 0))
-        val currRepl = -(reducedS / reducedM) pow powDiff.inverse
+        val currRepl = -(reducedS / reducedM) ** powDiff.inverse
         val restReplaced = restEqs map representThrough(replFor, currRepl)
         val solutionForRest = solveSimpleEqSysFor(restReplaced, termIndicesToReplace.tail, replacements)
         val unrolledValue = currRepl.powers.mapWithIndex { (pow, idx) =>
-          if (pow == 0) Product.ONE else solutionForRest(idx).pow(pow)
+          if (pow == 0) Product.one else (solutionForRest(idx) ** pow)
         }
         val reduced = unrolledValue.reduce(_ * _) * currRepl.coeff
         require(reduced.isRational, s"Irratinal replacement for ${replFor + 1}'st term: ${reduced}")
@@ -99,7 +99,7 @@ class SimpleEqSystemSolverImpl extends EqSystemSolver {
     require(repr.powers(termIdx) == 0)
     val res = for (term <- eq) yield {
       val srcPow = term.powers(termIdx)
-      val poweredRepr = repr pow srcPow
+      val poweredRepr = repr ** srcPow
       val powerlessTerm = term mapPowers (_.upd(termIdx, 0))
       val newTerm = poweredRepr * powerlessTerm
       newTerm

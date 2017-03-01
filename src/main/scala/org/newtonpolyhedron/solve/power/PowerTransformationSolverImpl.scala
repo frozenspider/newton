@@ -125,7 +125,7 @@ class PowerTransformationSolverImpl(
     // 0,0,0  1,0,0
     // 0,0,0  0,1,0
     // 0,0,0  0,0,1
-    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(Product(solVal), Product.ONE))
+    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(Product(solVal), Product.one))
     val powersSeq: Seq[Powers] = (0 until dimension) map (i => Seq(zeroVec, zeroOneVec(i)))
     val tPolys: Polys = (coeffsSeq, powersSeq).zipped.toIndexedSeq map coeffRowsSeqToPoly
     tPolys map (_.skipZeroTerms)

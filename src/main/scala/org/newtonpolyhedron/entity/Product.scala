@@ -28,7 +28,7 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
   def isZero = signum == 0
 
   def *(that: Product): Product =
-    if (this.signum == 0 || that.signum == 0) Product.ZERO
+    if (this.signum == 0 || that.signum == 0) Product.zero
     else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying))
   def *(that: BigInt): Product = this * Product(that)
   def *(that: Rational): Product = this * Product(that)
@@ -36,7 +36,7 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
 
   def /(that: Product): Product = {
     require(that.signum != 0, "Divide by zero")
-    if (this.signum == 0) Product.ZERO
+    if (this.signum == 0) Product.zero
     else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying map (p => (p._1, -p._2))))
   }
   def /(that: BigInt): Product = this / Product(that)
@@ -61,11 +61,11 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
   def unary_- : Product = new Product(-signum, underlying)
   def abs: Product = this * signum
 
-  def sqrt = this pow Rational(1, 2)
-  def pow(p: Rational): Product = {
+  def sqrt = this ** Rational(1, 2)
+  def ** (p: Rational): Product = {
     if (this.signum == 0) p match {
-      case x if x == 0 => Product.ONE
-      case x if x > 0  => Product.ZERO
+      case x if x == 0 => Product.one
+      case x if x > 0  => Product.zero
       case _           => throw new IllegalArgumentException("Can't raise zero to negative power")
     }
     else {
@@ -74,7 +74,7 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
       new Product(newSignum, newUnderlying)
     }
   }
-  def pow(p: Int): Product = this pow Rational(p)
+  def ** (p: Int): Product = this ** Rational(p)
 
   /** Very ineffective! */
   override def compare(that: Product): Int = this.toRational compare that.toRational
@@ -187,14 +187,14 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
 
 object Product {
 
-  val ZERO = new Product(0, Map.empty)
-  val ONE = new Product(1, Map.empty)
-  val MINUS_ONE = new Product(-1, Map.empty)
+  val zero = new Product(0, Map.empty)
+  val one = new Product(1, Map.empty)
+  val minusOne = new Product(-1, Map.empty)
 
   def apply(v: Int): Product = v match {
-    case 0  => ZERO
-    case 1  => ONE
-    case -1 => MINUS_ONE
+    case 0  => zero
+    case 1  => one
+    case -1 => minusOne
     case v  => new Product(v.signum, factorize(v.abs))
   }
 
@@ -206,7 +206,7 @@ object Product {
   def apply(v: Rational): Product = {
     require(v.numerator.isValidInt, "Numerator is too large")
     require(v.denominator.isValidInt, "Denomiator is too large")
-    if (v.numerator == 0) ZERO
+    if (v.numerator == 0) zero
     else {
       val numPows = factorize(v.numerator.toInt.abs)
       val denPows = factorize(v.denominator.toInt.abs)

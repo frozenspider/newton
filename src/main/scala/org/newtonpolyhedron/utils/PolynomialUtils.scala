@@ -16,7 +16,7 @@ object PolynomialUtils {
   type Equations = IndexedSeq[Equation]
 
   def zeroPoly(dim: Int): Polynomial =
-    IndexedSeq(Term(Product.ZERO, IndexedSeq.fill[Rational](dim)(Rational.zero)))
+    IndexedSeq(Term(Product.zero, IndexedSeq.fill[Rational](dim)(Rational.zero)))
 
   /**
    * Contains some basic polynomial-related operations - multiplication, raising to powers, etc.
@@ -72,9 +72,7 @@ object PolynomialUtils {
       val substitutedTerms = p map { term =>
         require(vs.size == term.powers.length, s"Dimension of term $term doesn't equal ${vs.size}")
         val powered = vs zip term.powers map {
-          case (value, power) =>
-            val v = value pow power
-            v
+          case (value, power) => value ** power
         }
         term.coeff * powered.product
       }
