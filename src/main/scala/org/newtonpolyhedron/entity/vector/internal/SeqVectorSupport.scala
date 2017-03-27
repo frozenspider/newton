@@ -34,6 +34,10 @@ private[vector] trait SeqVectorSupport {
       seq map (_ * that)
     }
 
+    def /(that: T): IndexedSeq[T] = {
+      seq map (_ / that)
+    }
+
     //    def *(that: T): IndexedSeq[T] = {
     //      require(seq.size == that.size, "Dimension of other vector was different")
     //      (seq zip that) map { case (a, b) => numeric.times(a, b) }

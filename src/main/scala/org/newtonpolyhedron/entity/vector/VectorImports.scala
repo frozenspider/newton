@@ -1,5 +1,7 @@
 package org.newtonpolyhedron.entity.vector
 
+import org.newtonpolyhedron.math.MPNumber
+import org.newtonpolyhedron.math.MathProcessor
 import org.newtonpolyhedron.utils.LanguageImplicits._
 
 import spire.implicits._
@@ -8,10 +10,11 @@ import spire.math.Rational
 import internal.SeqVectorSupport
 import spire.math.SafeLong
 
-object VectorImports extends SeqVectorSupport {
+trait VectorImports extends SeqVectorSupport {
 
   type IntVec = IndexedSeq[BigInt]
   type FracVec = IndexedSeq[Rational]
+  type NumVec[N <: MPNumber] = IndexedSeq[N]
 
   object IntVec {
     def apply(vs: BigInt*) = IndexedSeq.apply[BigInt](vs: _*)
@@ -34,6 +37,12 @@ object VectorImports extends SeqVectorSupport {
     def apply(vs: Rational*) = IndexedSeq.apply[Rational](vs: _*)
 
     def zero(dimension: Int) = IndexedSeq.fill[Rational](dimension)(0)
+  }
+
+  object NumVec {
+    def apply[N <: MPNumber](vs: N*) = IndexedSeq.apply[N](vs: _*)
+
+    def zero[N <: MPNumber](dimension: Int)(implicit mp: MathProcessor[N]) = IndexedSeq.fill[N](dimension)(mp.zero)
   }
 
   implicit lazy val intVecOrdering: Ordering[IntVec] = Ordering.Implicits.seqDerivedOrdering
@@ -60,4 +69,11 @@ object VectorImports extends SeqVectorSupport {
     def toTupleString: String =
       seq mkString ("(", ", ", ")")
   }
+
+  implicit class RichNumVec[N <: MPNumber](val seq: NumVec[N]) {
+    def toTupleString: String =
+      seq mkString ("(", ", ", ")")
+  }
 }
+
+object VectorImports extends VectorImports

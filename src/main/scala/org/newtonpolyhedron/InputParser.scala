@@ -4,7 +4,6 @@ import java.io.File
 
 import scala.io.Source
 
-import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.ex.WrongFormatException

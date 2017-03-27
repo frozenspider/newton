@@ -1,24 +1,21 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron.entity.Product
-import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.matrix.Matrix
-import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
 import spire.math.Rational
 
-class PowerTransformationSolverImpl(
+class PowerTransformationSolverImpl[N <: MPNumber](
   val umm: UnimodularMatrixMaker,
-  val eqSysSolver: EqSystemSolver)
-    extends PowerTransformationSolver {
+  val eqSysSolver: EqSystemSolver[N])(implicit mp: MathProcessor[N])
+    extends PowerTransformationSolver[N] {
 
-  private type Powers = Seq[FracVec]
-  private type Coeffs = Seq[Product]
+  private type Powers = Seq[NumVec[N]]
+  private type Coeffs = Seq[N]
 
-  private def vecf(s: Seq[Rational]) = FracVec(s: _*)
+  private def vecn(s: Seq[N]) = NumVec(s: _*)
+  private def vecf(s: Seq[Rational]) = NumVec(s.map(mp.fromRational): _*)
 
   override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[Rational] = {
     // TODO: Make sure this works for more than 2 polys
@@ -77,7 +74,7 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  private def matrixByRows(m: Matrix[Rational]): Seq[FracVec] =
+  private def matrixByRows(m: Matrix[Rational]): Seq[NumVec[N]] =
     m.elementsByRow map (_._3) grouped (m.colCount) map vecf toIndexedSeq
 
   private def inverse(m: Matrix[Rational]): Matrix[Rational] = {
@@ -87,13 +84,13 @@ class PowerTransformationSolverImpl(
   }
 
   private def getLowestPowers(powers: Powers) =
-    vecf(powers reduce ((_, _).zipped map (_ min _)))
+    vecn(powers reduce ((_, _).zipped map (spire.math.min[N])))
 
-  override def substitute(poly: Polynomial, alpha: Matrix[Rational]): Polynomial = {
+  override def substitute(poly: Polynomial[N], alpha: Matrix[Rational]): Polynomial[N] = {
     require(alpha.isSquare, "Alpha matrix should be square")
     val alphaInvByRows = matrixByRows(inverse(alpha))
     val rawPows =
-      poly.powers map (p => (alphaInvByRows, p).zipped map ((alphaRow, polyPow) => alphaRow * polyPow) reduce (_ + _))
+      poly.powers map (p => (alphaInvByRows, p).zipped map ((alphaRow, polyPow) => alphaRow * mp.fromRational(polyPow)) reduce (_ + _))
     val lowestPows = getLowestPowers(rawPows)
     val resPows = rawPows map (_ - lowestPows)
     //    println(" === Alpha Inv:       " + alphaInvByRows)
@@ -105,33 +102,33 @@ class PowerTransformationSolverImpl(
   //
   // =========================
   //
-  override def solveShortSubstitutesSystem(simpleSys: Polys): FracVec = {
+  override def solveShortSubstitutesSystem(simpleSys: Polys[N]): NumVec[N] = {
     require(simpleSys forall (_ forall (t => t.powers.last == 0)))
     // Remove last (zero) component
-    val truncatedSimpleSys: Polys = simpleSys map (_ map (_.mapPowers(_ dropRight 1)))
+    val truncatedSimpleSys: Polys[N] = simpleSys map (_ map (_.mapPowers(_ dropRight 1)))
     val sol: Powers = eqSysSolver.solve(truncatedSimpleSys)
     assert(sol.tail.isEmpty)
     // Add it back
-    sol.head :+ Rational.zero
+    sol.head :+ mp.zero
   }
 
   //
   // =========================
   //
-  override def varChangeFromShortSubsSolution(vecs: FracVec): Polys = {
+  override def varChangeFromShortSubsSolution(vecs: FracVec): Polys[N] = {
     val dimension = vecs.size
-    val zeroVec = FracVec.zero(dimension)
+    val zeroVec = NumVec.zero[N](dimension)
     def zeroOneVec(i: Int) = zeroVec upd (i, 1)
     // 0,0,0  1,0,0
     // 0,0,0  0,1,0
     // 0,0,0  0,0,1
-    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(Product(solVal), Product.one))
+    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(mp.fromRational(solVal), mp.one))
     val powersSeq: Seq[Powers] = (0 until dimension) map (i => Seq(zeroVec, zeroOneVec(i)))
-    val tPolys: Polys = (coeffsSeq, powersSeq).zipped.toIndexedSeq map coeffRowsSeqToPoly
+    val tPolys: Polys[N] = (coeffsSeq, powersSeq).zipped.toIndexedSeq map coeffRowsSeqToPoly
     tPolys map (_.skipZeroTerms)
   }
 
-  private def coeffRowsSeqToPoly(coeffs: Coeffs, powers: Powers): Polynomial = {
+  private def coeffRowsSeqToPoly(coeffs: Coeffs, powers: Powers): Polynomial[N] = {
     (coeffs zip powers).toIndexedSeq map Term.apply
   }
 }

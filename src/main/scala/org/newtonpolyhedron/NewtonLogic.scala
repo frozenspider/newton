@@ -8,6 +8,7 @@ import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.ex.WrongFormatException
+import org.newtonpolyhedron.math.internal.InternalMathProcessor
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
 import org.newtonpolyhedron.solve.cone._
 import org.newtonpolyhedron.solve.eqsys.EqSystemChainSolver
@@ -28,6 +29,8 @@ class NewtonLogic {
   import NewtonLogic._
 
   val coneSolver: ConeSolver = new MotzkinBurger
+
+  implicit val mp = new InternalMathProcessor
 
   /**
    * Starts the processing thread.

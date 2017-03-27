@@ -1,10 +1,8 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.entity.Product
-import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.ex.CancelledByUserException
 import org.newtonpolyhedron.utils.LatexConversion._
-import org.newtonpolyhedron.utils.PolynomialUtils._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
 import spire.math.Rational
@@ -12,11 +10,12 @@ import spire.math.Rational
 /**
  * Allows you to solve system of equations manually
  */
-class ManualEqSystemSolver(solverInput: EqSystemSolutionInput) extends EqSystemSolver {
+class ManualEqSystemSolver[N <: MPNumber](solverInput: EqSystemSolutionInput[N])(implicit mp: MathProcessor[N])
+    extends EqSystemSolver[N] {
 
-  def whyCantSolve(system: Polys): Option[String] = None
+  def whyCantSolve(system: Polys[N]): Option[String] = None
 
-  def solve(system: Polys): Seq[FracVec] = {
+  def solve(system: Polys[N]): Seq[FracVec] = {
     def solveWithMessage(msgOption: Option[LatexString], valsOption: Option[Seq[String]]): Seq[FracVec] = {
       solverInput.getInputFor(system, valsOption, msgOption) match {
         case Some(input) => proceedWithInput(input)
@@ -27,7 +26,7 @@ class ManualEqSystemSolver(solverInput: EqSystemSolutionInput) extends EqSystemS
       val parsedInput = parseInput(input)
       if (parsedInput forall (_.isRight)) {
         val solution = parsedInput map (_.right.get)
-        val s = solution map Product.apply
+        val s = solution map mp.fromRational
         // Checking if the solution satisfies all polynomials
         system collectFirst {
           case poly if !poly.isZeroWithValues(s) =>
@@ -53,7 +52,7 @@ class ManualEqSystemSolver(solverInput: EqSystemSolutionInput) extends EqSystemS
     }
   }
 
-  private def notSatisfiedMessage(poly: Polynomial, substitution: Seq[Product]): LatexString = {
+  private def notSatisfiedMessage(poly: Polynomial[N], substitution: Seq[N]): LatexString = {
     val signedSubstitutionStrings = substitution map { s => (s.signum, productToLatex(s.abs)) }
     latex(textToLatex("Solution does not satisfy ")
       + polynomialToLatex(solverInput.varName)(poly)
@@ -62,31 +61,4 @@ class ManualEqSystemSolver(solverInput: EqSystemSolutionInput) extends EqSystemS
       + textToLatex("it evaluates to ")
       + signedAbsSeqToLatex(signedSubstitutionStrings))
   }
-}
-
-object ManualEqSystemSolver extends App {
-  import org.newtonpolyhedron._
-  import org.newtonpolyhedron.entity._
-  import org.newtonpolyhedron.entity.vector._
-  import org.newtonpolyhedron.entity.equation._
-
-  val i = new org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
-
-  val tricky = org.newtonpolyhedron.ui.eqsys.EqSystemRenderingPanel.tricky
-
-  val eqs: Polys = IndexedSeq[Polynomial](
-    IndexedSeq(
-      new Term(Product(1), FracVec(1, 2, 3)),
-      new Term(tricky, FracVec(1, 2, 3)),
-      new Term(Product(4), FracVec(0, 0, 0))
-    ),
-    IndexedSeq(
-      new Term(Product(Rational(-1, 2)), FracVec(Rational(-1, 2), Rational.zero, Rational(-333, 667))),
-      new Term(Product(-2), FracVec(0, 0, 3))
-    )
-  )
-
-  val s = new ManualEqSystemSolver(i)
-
-  println(s.solve(eqs))
 }

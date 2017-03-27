@@ -2,12 +2,9 @@ package org.newtonpolyhedron.solve.changevars
 
 import scala.collection.IndexedSeq
 
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
+import org.newtonpolyhedron.NewtonImports._
 
-class ChangerOfVariablesImpl extends ChangerOfVariables {
+class ChangerOfVariablesImpl[N <: MPNumber](implicit mp: MathProcessor[N]) extends ChangerOfVariables[N] {
   private val s = IndexedSeq
 
   //  val lowerstPowersToTake = 4
@@ -33,15 +30,15 @@ class ChangerOfVariablesImpl extends ChangerOfVariables {
   //    }
 
   // FIXME: Change vars and banish together
-  def changeVars(poly: Polynomial, substs: Polys): Polynomial = {
+  override def changeVars(poly: Polynomial[N], substs: Polys[N]): Polynomial[N] = {
     require(poly forall (_.powers.size == substs.size), "Original polynomial terms dimension should be" +
       "equal to replacement polynomials count")
     val changedVarsPolyWithDup = poly.par flatMap changeVarInTerm(substs)
-    val changedVarsPoly: Polynomial = changedVarsPolyWithDup.toIndexedSeq.collapseDups
+    val changedVarsPoly: Polynomial[N] = changedVarsPolyWithDup.toIndexedSeq.collapseDups
     changedVarsPoly sorted
   }
 
-  def changeVarInTerm(substs: Polys)(term: Term): Polynomial = {
+  def changeVarInTerm(substs: Polys[N])(term: Term[N]): Polynomial[N] = {
     assert(substs.size == term.powers.size)
     val powered = (substs zip term.powers).par map {
       case (changeVarPoly, pow) => {

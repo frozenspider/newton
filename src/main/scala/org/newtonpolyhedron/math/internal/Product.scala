@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.entity
+package org.newtonpolyhedron.math.internal
 
 import scala.collection.immutable.ListMap
 import scala.math.ScalaNumber
@@ -19,87 +19,21 @@ import spire.math.Rational
  * Only supports multiplication and power operations.
  */
 case class Product(val signum: Int, val underlying: Map[Int, Rational])
-    extends ScalaNumber
-    with ScalaNumericConversions
-    with Ordered[Product] {
+    extends InternalNumber {
   require((-1 to 1) contains signum, "Sign should be -1, 0 or 1")
   require(if (signum == 0) underlying.isEmpty else true, "For zero product, multipliers should be empty")
-
-  def isZero = signum == 0
-
-  def *(that: Product): Product =
-    if (this.signum == 0 || that.signum == 0) Product.zero
-    else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying))
-  def *(that: BigInt): Product = this * Product(that)
-  def *(that: Rational): Product = this * Product(that)
-  def *(that: Int): Product = this * Product(that)
-
-  def /(that: Product): Product = {
-    require(that.signum != 0, "Divide by zero")
-    if (this.signum == 0) Product.zero
-    else new Product(this.signum * that.signum, mergePowers(this.underlying, that.underlying map (p => (p._1, -p._2))))
-  }
-  def /(that: BigInt): Product = this / Product(that)
-  def /(that: Rational): Product = this / Product(that)
-  def /(that: Int): Product = this / Product(that)
-
-  def +(that: Product): Product = {
-    val (commonFactors, thisFactors, thatFactors) = extractCommonFactors(this.underlying, that.underlying)
-    val common = new Product(1, commonFactors)
-    val part1 = new Product(this.signum, thisFactors)
-    val part2 = new Product(that.signum, thatFactors)
-    require(part1.isRational && part2.isRational, "Can't sum these non-rational products (not in general case)")
-    val partSum = Product(part1.toRational + part2.toRational)
-    val res = common * partSum
-    res
-  }
-  def +(that: Int): Product = this + Product(that)
-  def +(that: Rational): Product = this + Product(that)
-  def -(that: Product): Product = this + -that
-  def -(that: Int): Product = this + Product(-that)
-  def -(that: Rational): Product = this + Product(-that)
-  def unary_- : Product = new Product(-signum, underlying)
-  def abs: Product = this * signum
-
-  def sqrt = this ** Rational(1, 2)
-  def ** (p: Rational): Product = {
-    if (this.signum == 0) p match {
-      case x if x == 0 => Product.one
-      case x if x > 0  => Product.zero
-      case _           => throw new IllegalArgumentException("Can't raise zero to negative power")
-    }
-    else {
-      val newSignum = if (p == 0 || p.numerator % 2 == 0) 1 else this.signum
-      val newUnderlying = this.underlying map (e => (e._1, e._2 * p)) filter (_._2 != 0)
-      new Product(newSignum, newUnderlying)
-    }
-  }
-  def ** (p: Int): Product = this ** Rational(p)
-
-  /** Very ineffective! */
-  override def compare(that: Product): Int = this.toRational compare that.toRational
 
   /** Whether or not this product can be represented as a precise fraction value */
   lazy val isRational = {
     // Check that all powers are integers
     underlying forall (_._2.isWhole)
   }
-  override def isWhole = isRational && toRational.isWhole
-  override def longValue = toRational.toLong
-  override def intValue = toRational.toInt
+  def isWhole = isRational && toRational.isWhole
   lazy val toRational =
     if (signum == 0) Rational.zero else {
       if (!isRational) throw new ArithmeticException("Not a valid fraction")
       val folded = (underlying foldLeft Rational.one) {
         case (acc, (v, p)) => acc * (Rational(v) pow p.numerator.toInt)
-      }
-      signum * folded
-    }
-  override def floatValue = doubleValue.toFloat
-  override lazy val doubleValue =
-    if (signum == 0) 0.0d else {
-      val folded = (underlying foldLeft 1.0d) {
-        case (acc, (v, p)) => acc * math.pow(v, p.doubleValue)
       }
       signum * folded
     }
@@ -154,34 +88,6 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
       }
     }
     str
-  }
-
-  private def mergePowers(main: Map[Int, Rational], other: Map[Int, Rational]): Map[Int, Rational] = {
-    if (other.isEmpty) main
-    else {
-      val (headPrime, headPow) = other.head
-      val updatedMain = Product.changePower(main, headPrime, headPow)
-      mergePowers(updatedMain, other.tail)
-    }
-  }
-
-  private def extractCommonFactors(one: Map[Int, Rational],
-                                   two: Map[Int, Rational]): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
-    def extract(keys: Seq[Int],
-                acc: Map[Int, Rational],
-                one: Map[Int, Rational],
-                two: Map[Int, Rational]): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
-      if (keys.isEmpty) (acc, one, two)
-      else {
-        val key = keys.head
-        val min = one(key) min two(key)
-        val newOne = Product.changePower(one, key, -min)
-        val newTwo = Product.changePower(two, key, -min)
-        extract(keys.tail, acc + (key -> min), newOne, newTwo)
-      }
-    }
-    val commonKeys = one.keys.toSeq intersect two.keys.toSeq
-    extract(commonKeys, Map.empty, one, two)
   }
 }
 
@@ -243,18 +149,4 @@ object Product {
     if (oldVal + diff == 0) map - key
     else map updated (key, oldVal + diff)
   }
-
-  implicit object ProductNumeric extends Numeric[Product] {
-    override def compare(a: Product, b: Product) = a compare b
-    override def plus(x: Product, y: Product): Product = x + y
-    override def minus(x: Product, y: Product): Product = x - y
-    override def times(x: Product, y: Product): Product = x * y
-    override def negate(x: Product): Product = -x
-    override def fromInt(x: Int): Product = Product(x)
-    override def toInt(x: Product): Int = x.intValue
-    override def toLong(x: Product): Long = x.longValue
-    override def toFloat(x: Product): Float = x.floatValue
-    override def toDouble(x: Product): Double = x.doubleValue
-  }
-
 }

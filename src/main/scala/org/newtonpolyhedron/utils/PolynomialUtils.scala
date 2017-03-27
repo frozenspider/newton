@@ -1,29 +1,29 @@
 package org.newtonpolyhedron.utils
 
-import org.newtonpolyhedron.entity.Product
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.equation.Equation
-import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.math.MathProcessor
+import org.newtonpolyhedron.math.MPNumber
+import org.newtonpolyhedron.math.Imports._
 
 import org.fs.utility.Imports._
 
 import spire.math.Rational
 
+trait PolynomialUtils {
+  type Polynomial[N <: MPNumber] = IndexedSeq[Term[N]]
+  type Polys[N <: MPNumber] = IndexedSeq[Polynomial[N]]
+  type Equations[N <: MPNumber] = IndexedSeq[Equation[N]]
 
-object PolynomialUtils {
-  type Polynomial = IndexedSeq[Term]
-  type Polys = IndexedSeq[Polynomial]
-  type Equations = IndexedSeq[Equation]
-
-  def zeroPoly(dim: Int): Polynomial =
-    IndexedSeq(Term(Product.zero, IndexedSeq.fill[Rational](dim)(Rational.zero)))
+  def zeroPoly[N <: MPNumber](dim: Int)(implicit mp: MathProcessor[N]): Polynomial[N] =
+    IndexedSeq(Term(mp.zero, IndexedSeq.fill[Rational](dim)(Rational.zero)))
 
   /**
    * Contains some basic polynomial-related operations - multiplication, raising to powers, etc.
    */
-  implicit class RichPolynomial(poly: Polynomial) {
+  implicit class RichPolynomial[N <: MPNumber](poly: Polynomial[N])(implicit mp: MathProcessor[N]) {
 
-    def pow(pow: Int): Polynomial = {
+    def pow(pow: Int): Polynomial[N] = {
       require(pow >= 0, "Can't raise polynomial to negative power")
       if (pow == 0) IndexedSeq(Term.one(poly.headOption map (_.powers.size) getOrElse 0))
       else if (pow == 1) poly
@@ -33,7 +33,7 @@ object PolynomialUtils {
       }
     }
 
-    def *(that: Polynomial): Polynomial = {
+    def *(that: Polynomial[N]): Polynomial[N] = {
       val preRes = for {
         t1 <- poly
         t2 <- that
@@ -42,13 +42,13 @@ object PolynomialUtils {
     }
 
     /** Collapses duplicates and removes zeros */
-    def collapseDups: Polynomial = {
+    def collapseDups: Polynomial[N] = {
       val res = poly groupBy (_.powers) map (group => group._2) map (_.reduceLeft((t1, t2) => t1 withCoeff (t1.coeff + t2.coeff)))
       res.toIndexedSeq.skipZeroTerms
     }
 
     /** Skip zeros - terms with zero coefficient */
-    def skipZeroTerms: Polynomial =
+    def skipZeroTerms: Polynomial[N] =
       poly filterNot (_.coeff.isZero)
 
     def powers =
@@ -59,20 +59,20 @@ object PolynomialUtils {
 
     def toPlainString: String = {
       poly map (term => "(" +
-        term.coeff.toRational +
+        term.coeff.toString + // TODO: term.coeff.toRational
         ") * " +
         term.powers.mapWithIndex((pow, i) => s"x${i + 1}^($pow)").mkString(" * ")
       ) mkString ("", " + ", " = 0")
     }
   }
 
-  implicit class SubstitutionPolynomial(p: Polynomial) {
+  implicit class SubstitutionPolynomial[N <: MPNumber](p: Polynomial[N])(implicit mp: MathProcessor[N]) {
     /** Substitute variables in all terms with the given values */
-    def withValues(vs: Seq[Product]): Seq[Product] = {
+    def withValues(vs: Seq[N]): Seq[N] = {
       val substitutedTerms = p map { term =>
         require(vs.size == term.powers.length, s"Dimension of term $term doesn't equal ${vs.size}")
         val powered = vs zip term.powers map {
-          case (value, power) => value ** power
+          case (value, power) => value ** mp.fromRational(power)
         }
         term.coeff * powered.product
       }
@@ -80,24 +80,24 @@ object PolynomialUtils {
     }
 
     /** Substitute variables in all terms with the given values and sum the result */
-    def totalWithValues(vs: Seq[Product]): Product = {
+    def totalWithValues(vs: Seq[N]): N = {
       withValues(vs).sum
     }
 
     /** Substitute variables in all terms with the given values and sum the result as far as possible */
-    def totalWithValuesNonStrict(vs: Seq[Product]): Seq[Product] = {
+    def totalWithValuesNonStrict(vs: Seq[N]): Seq[N] = {
       reduceSum(withValues(vs))
     }
 
     /** Substitute variables in all terms with the given values and checks the resulting sum for being zero */
-    def isZeroWithValues(vs: Seq[Product]): Boolean = {
+    def isZeroWithValues(vs: Seq[N]): Boolean = {
       val substituted = withValues(vs)
       val reduced = reduceSum(substituted)
       reduced.tail.isEmpty && reduced.head.isZero
     }
   }
 
-  private def isSummable(p1: Product, p2: Product): Boolean =
+  private def isSummable[N <: MPNumber](p1: N, p2: N)(implicit mp: MathProcessor[N]): Boolean =
     try {
       p1 + p2
       true
@@ -105,8 +105,8 @@ object PolynomialUtils {
       case ex: IllegalArgumentException => false
     }
 
-  private def reduceSum(sum: Seq[Product]): Seq[Product] = {
-    def reduceSumInner(accUnreducible: Seq[Product], remainings: Seq[Product]): Seq[Product] =
+  private def reduceSum[N <: MPNumber](sum: Seq[N])(implicit mp: MathProcessor[N]): Seq[N] = {
+    def reduceSumInner(accUnreducible: Seq[N], remainings: Seq[N]): Seq[N] =
       remainings match {
         case e if e.isEmpty =>
           accUnreducible
@@ -125,3 +125,5 @@ object PolynomialUtils {
   }
 
 }
+
+object PolynomialUtils extends PolynomialUtils
