@@ -1,17 +1,20 @@
 package org.newtonpolyhedron
 
 import java.util.Comparator
+
 import scala.collection.immutable.SortedSet
+
 import org.fs.utility.collection.table._
 import org.newtonpolyhedron.entity._
+import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.scalatest.Suite
-import org.scalatest.FailureMessages
-import org.scalatest.Resources
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
+import org.scalactic.Prettifier
+import org.scalactic.source.Position
+import org.scalatest.Assertions
+import org.scalatest.compatible.Assertion
+
 import spire.math.Rational
 
 /**
@@ -77,13 +80,17 @@ package object test {
     addToMap(Map(), points.size - 1, points.head, points.tail)
   }
 
+  //
+  // Assertions
+  // (Sorry, found no way to form a pretty message in Scalatest 3.0.4)
+  //
+
   implicit def toDoubleApproximateEquals[T1 <: DoubleConvertible](thisDouble: T1) = new {
     val eps = 0.000001
 
     /** This approximately equals that */
-    def =~=[T2 <: DoubleConvertible](that: T2): Option[String] = {
-      if ((thisDouble.toDouble - that.toDouble).abs < eps) None
-      else Some(s"$thisDouble is not close to $that")
+    def =~=[T2 <: DoubleConvertible](that: T2): Boolean = {
+      (thisDouble.toDouble - that.toDouble).abs < eps
     }
   }
 }

@@ -99,7 +99,7 @@ class ProductTest extends FunSuite {
   }
 
   test("addition, subtraction") {
-    assert((p(0) + p(0)).toInt === 0)
+    assert((p(0) + p(0)).toInt === 0, "")
     assert((p(0) + p(1)).toInt === 1)
     assert((p(-1) + p(0)).toInt === -1)
     assert((p(-1) + p(1)).toInt === 0)
