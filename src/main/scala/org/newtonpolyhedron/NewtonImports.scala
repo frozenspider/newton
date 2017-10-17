@@ -8,15 +8,12 @@ package org.newtonpolyhedron
 trait NewtonImports
     extends org.newtonpolyhedron.utils.PolynomialUtils
     with org.newtonpolyhedron.utils.LanguageImplicits
-    with org.newtonpolyhedron.math.Imports
+    with org.newtonpolyhedron.math.MathImports
     with org.newtonpolyhedron.entity.vector.VectorImports
     with org.fs.utility.Imports {
 
   type Term[N <: MPNumber] = org.newtonpolyhedron.entity.Term[N]
   val Term = org.newtonpolyhedron.entity.Term
-
-  type Rational = spire.math.Rational
-  val Rational = spire.math.Rational
 }
 
 object NewtonImports extends NewtonImports

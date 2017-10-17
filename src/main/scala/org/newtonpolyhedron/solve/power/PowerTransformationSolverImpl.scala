@@ -7,7 +7,7 @@ import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import spire.math.Rational
 
 class PowerTransformationSolverImpl[N <: MPNumber](
-  val umm: UnimodularMatrixMaker,
+  val umm:         UnimodularMatrixMaker[N],
   val eqSysSolver: EqSystemSolver[N])(implicit mp: MathProcessor[N])
     extends PowerTransformationSolver[N] {
 
@@ -17,19 +17,20 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   private def vecn(s: Seq[N]) = NumVec(s: _*)
   private def vecf(s: Seq[Rational]) = NumVec(s.map(mp.fromRational): _*)
 
-  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[Rational] = {
+  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[NumVec[N]]]): Matrix[N] = {
     // TODO: Make sure this works for more than 2 polys
     val dimension = powersSeqs.size + 1
-    def lastRowMinors(m: Matrix[Rational]): Seq[Rational] = {
+    def lastRowMinors(m: Matrix[N]): Seq[N] = {
       (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
-    require(powersSeqs forall (_ forall (_.length == dimension)),
+    require(
+      powersSeqs forall (_ forall (_.length == dimension)),
       "Each term should have the same dimension: number of pairs + 1")
-    val pairsStream: Stream[Seq[(FracVec, FracVec)]] = choosePairs(powersSeqs)
+    val pairsStream: Stream[Seq[(NumVec[N], NumVec[N])]] = choosePairs(powersSeqs)
     val matrices = pairsStream map { pairs =>
       val matrixBase = (pairs map {
         case (powers1, powers2) => powers1 - powers2
-      }) :+ FracVec.zero(dimension)
+      }) :+ NumVec.zero(dimension)
       Matrix(matrixBase)
     }
     if (matrices.isEmpty)
@@ -39,10 +40,10 @@ class PowerTransformationSolverImpl[N <: MPNumber](
     }
     if (nonZeroMatrices.isEmpty)
       throw new IllegalArgumentException("All pre-alpha matrices have zero minors")
-    val alphasStream: Stream[Matrix[Rational]] =
+    val alphasStream: Stream[Matrix[N]] =
       nonZeroMatrices map { matrix =>
         val alpha = umm unimodularFrom matrix
-        assert(alpha.elementsByRow map (_._3) forall (_.isWhole))
+        assert(alpha.elementsByRow map (_._3) forall (_.isIntegral))
         assert(alpha.det == 1)
         alpha
       }
@@ -74,29 +75,29 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
-  private def matrixByRows(m: Matrix[Rational]): Seq[NumVec[N]] =
-    m.elementsByRow map (_._3) grouped (m.colCount) map vecf toIndexedSeq
+  private def matrixByRows(m: Matrix[N]): Seq[NumVec[N]] =
+    (m.elementsByRow map (_._3) grouped (m.colCount) map vecn).toIndexedSeq
 
-  private def inverse(m: Matrix[Rational]): Matrix[Rational] = {
+  private def inverse(m: Matrix[N]): Matrix[N] = {
     val inv = m.inv
-    assert(inv.elementsByRow map (_._3) forall (_.denominator == 1))
+    assert(inv.elementsByRow map (_._3) forall (_.isIntegral))
     inv
   }
 
   private def getLowestPowers(powers: Powers) =
     vecn(powers reduce ((_, _).zipped map (spire.math.min[N])))
 
-  override def substitute(poly: Polynomial[N], alpha: Matrix[Rational]): Polynomial[N] = {
+  override def substitute(poly: Polynomial[N], alpha: Matrix[N]): Polynomial[N] = {
     require(alpha.isSquare, "Alpha matrix should be square")
     val alphaInvByRows = matrixByRows(inverse(alpha))
-    val rawPows =
-      poly.powers map (p => (alphaInvByRows, p).zipped map ((alphaRow, polyPow) => alphaRow * mp.fromRational(polyPow)) reduce (_ + _))
+    val rawPows: IndexedSeq[NumVec[N]] =
+      poly.powers map (p => (alphaInvByRows, p).zipped map ((alphaRow, polyPow) => alphaRow * polyPow) reduce (_ + _))
     val lowestPows = getLowestPowers(rawPows)
     val resPows = rawPows map (_ - lowestPows)
     //    println(" === Alpha Inv:       " + alphaInvByRows)
     //    println(" === Unreduced:       " + rawPows)
     //    println(" === Lowest powers:   " + lowestPows)
-    poly.coeffs zip resPows map Term.apply
+    poly.coeffs zip resPows map (p => Term(p))
   }
 
   //
@@ -115,20 +116,20 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
-  override def varChangeFromShortSubsSolution(vecs: FracVec): Polys[N] = {
+  override def varChangeFromShortSubsSolution(vecs: NumVec[N]): Polys[N] = {
     val dimension = vecs.size
     val zeroVec = NumVec.zero[N](dimension)
-    def zeroOneVec(i: Int) = zeroVec upd (i, 1)
+    def zeroOneVec(i: Int) = zeroVec upd (i, mp.one)
     // 0,0,0  1,0,0
     // 0,0,0  0,1,0
     // 0,0,0  0,0,1
-    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(mp.fromRational(solVal), mp.one))
+    val coeffsSeq: Seq[Coeffs] = vecs map (solVal => Seq(solVal, mp.one))
     val powersSeq: Seq[Powers] = (0 until dimension) map (i => Seq(zeroVec, zeroOneVec(i)))
     val tPolys: Polys[N] = (coeffsSeq, powersSeq).zipped.toIndexedSeq map coeffRowsSeqToPoly
     tPolys map (_.skipZeroTerms)
   }
 
   private def coeffRowsSeqToPoly(coeffs: Coeffs, powers: Powers): Polynomial[N] = {
-    (coeffs zip powers).toIndexedSeq map Term.apply
+    (coeffs zip powers).toIndexedSeq map (p => Term(p))
   }
 }

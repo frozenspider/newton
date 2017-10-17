@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.eqsys
 
 import org.newtonpolyhedron.NewtonImports._
 
-import spire.implicits._
+import spire.compat._
 import spire.math.Rational
 
 /**
@@ -63,9 +63,9 @@ class SimpleEqSystemSolverImpl[N <: MPNumber](implicit mp: MathProcessor[N]) ext
         val (mainTerm, secTerm) = {
           val (t1, t2) = (chosenEq(0), chosenEq(1))
           val (p1, p2) = (t1.powers(replFor), t2.powers(replFor))
-          val minPow = p1 min p2
-          def adaptToMinPow(t: Term[N]) =
-            if (minPow < 0) t.mapPowers(pows => pows.updated(replFor, pows(replFor) - minPow)) else t
+          val minPow = spire.math.min(p1, p2)
+          def adaptToMinPow(t: Term[N]): Term[N] =
+            if (minPow < mp.zero) t.mapPowers(pows => pows.updated(replFor, pows(replFor) - minPow)) else t
           val (t1n, t2n) = (adaptToMinPow(t1), adaptToMinPow(t2))
           if (p1 > p2)
             (t1n, t2n)
@@ -74,13 +74,13 @@ class SimpleEqSystemSolverImpl[N <: MPNumber](implicit mp: MathProcessor[N]) ext
         }
         val powDiff = mainTerm.powers(replFor) - secTerm.powers(replFor)
         // Lets put secondary term to rhs and reduce
-        val reducedM = mainTerm mapPowers (powers => powers.upd(replFor, 0))
-        val reducedS = secTerm mapPowers (powers => powers.upd(replFor, 0))
+        val reducedM = mainTerm mapPowers (powers => powers.upd(replFor, mp.zero))
+        val reducedS = secTerm mapPowers (powers => powers.upd(replFor, mp.zero))
         val currRepl = -(reducedS / reducedM) ** powDiff.inverse
         val restReplaced = restEqs map representThrough(replFor, currRepl)
         val solutionForRest = solveSimpleEqSysFor(restReplaced, termIndicesToReplace.tail, replacements)
         val unrolledValue = currRepl.powers.mapWithIndex { (pow, idx) =>
-          if (pow == 0) mp.one else (solutionForRest(idx) ** mp.fromRational(pow))
+          if (pow.isZero) mp.one else (solutionForRest(idx) ** pow)
         }
         val reduced = unrolledValue.reduce(_ * _) * currRepl.coeff
         require(reduced.isRational, s"Irratinal replacement for ${replFor + 1}'st term: ${reduced}")
@@ -94,7 +94,7 @@ class SimpleEqSystemSolverImpl[N <: MPNumber](implicit mp: MathProcessor[N]) ext
     val res = for (term <- eq) yield {
       val srcPow = term.powers(termIdx)
       val poweredRepr = repr ** srcPow
-      val powerlessTerm = term mapPowers (_.upd(termIdx, 0))
+      val powerlessTerm = term mapPowers (_.upd(termIdx, mp.zero))
       val newTerm = poweredRepr * powerlessTerm
       newTerm
     }

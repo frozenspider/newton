@@ -5,32 +5,29 @@ import org.newtonpolyhedron.ex.CancelledByUserException
 import org.newtonpolyhedron.utils.LatexConversion._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
-import spire.math.Rational
-
 /**
  * Allows you to solve system of equations manually
  */
 class ManualEqSystemSolver[N <: MPNumber](solverInput: EqSystemSolutionInput[N])(implicit mp: MathProcessor[N])
     extends EqSystemSolver[N] {
 
-  def whyCantSolve(system: Polys[N]): Option[String] = None
+  override def whyCantSolve(system: Polys[N]): Option[String] = None
 
-  def solve(system: Polys[N]): Seq[FracVec] = {
-    def solveWithMessage(msgOption: Option[LatexString], valsOption: Option[Seq[String]]): Seq[FracVec] = {
+  override def solve(system: Polys[N]): Seq[NumVec[N]] = {
+    def solveWithMessage(msgOption: Option[LatexString], valsOption: Option[Seq[String]]): Seq[NumVec[N]] = {
       solverInput.getInputFor(system, valsOption, msgOption) match {
         case Some(input) => proceedWithInput(input)
         case None        => throw CancelledByUserException
       }
     }
-    def proceedWithInput(input: Seq[String]): Seq[FracVec] = {
+    def proceedWithInput(input: Seq[String]): Seq[NumVec[N]] = {
       val parsedInput = parseInput(input)
       if (parsedInput forall (_.isRight)) {
         val solution = parsedInput map (_.right.get)
-        val s = solution map mp.fromRational
         // Checking if the solution satisfies all polynomials
         system collectFirst {
-          case poly if !poly.isZeroWithValues(s) =>
-            (poly, poly.totalWithValuesNonStrict(s))
+          case poly if !poly.isZeroWithValues(solution) =>
+            (poly, poly.totalWithValuesNonStrict(solution))
         } match {
           case None                => Seq(solution.toIndexedSeq)
           case Some((poly, subst)) => solveWithMessage(Some(notSatisfiedMessage(poly, subst)), Some(input))
@@ -44,16 +41,16 @@ class ManualEqSystemSolver[N <: MPNumber](solverInput: EqSystemSolutionInput[N])
     solveWithMessage(None, None)
   }
 
-  private def parseInput(input: Seq[String]): Seq[Either[String, Rational]] = input map { s =>
+  private def parseInput(input: Seq[String]): Seq[Either[String, N]] = input map { s =>
     try {
-      Right(parseFrac(s))
+      Right(mp.fromRational(parseFrac(s)))
     } catch {
       case e: Exception => Left(s"""Failed to parse "$s" as a fraction""")
     }
   }
 
   private def notSatisfiedMessage(poly: Polynomial[N], substitution: Seq[N]): LatexString = {
-    val signedSubstitutionStrings = substitution map { s => (s.signum, productToLatex(s.abs)) }
+    val signedSubstitutionStrings = substitution map { s => (s.signum, s.abs.toLatexString) }
     latex(textToLatex("Solution does not satisfy ")
       + polynomialToLatex(solverInput.varName)(poly)
       + textToLatex(":")

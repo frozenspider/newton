@@ -32,6 +32,9 @@ case class Term[N <: MPNumber](val coeff: N, val powers: NumVec[N]) {
   def **(that: Rational)(implicit mp: MathProcessor[N]): Term[N] =
     new Term(this.coeff ** mp.fromRational(that), this.powers * mp.fromRational(that))
 
+  def **(that: N)(implicit mp: MathProcessor[N]): Term[N] =
+    new Term(this.coeff ** that, this.powers * that)
+
   def root(that: Int)(implicit mp: MathProcessor[N]): Term[N] =
     this ** Rational(1, that)
 }

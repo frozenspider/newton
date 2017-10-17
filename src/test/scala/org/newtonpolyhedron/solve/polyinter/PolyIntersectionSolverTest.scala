@@ -1,10 +1,9 @@
 package org.newtonpolyhedron.solve.polyinter
 
 import scala.collection.immutable.SortedSet
-import org.fs.utility.Imports._
+import org.newtonpolyhedron.NewtonImports._
 import org.fs.utility.collection.table.KeyTable
 import org.junit.runner.RunWith
-import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.solve.cone.MotzkinBurger
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite

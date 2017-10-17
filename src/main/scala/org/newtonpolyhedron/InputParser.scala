@@ -4,13 +4,9 @@ import java.io.File
 
 import scala.io.Source
 
-import org.newtonpolyhedron.entity.Term
-import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.ex.WrongFormatException
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
-import spire.math.Rational
 
 object InputParser {
   private type Lines = Seq[String]
@@ -122,9 +118,10 @@ object InputParser {
   /** @return (poly1, poly2, ...; dim) */
   def parsePolysFromLines[C](lines: Lines)(parseElement: Parse[C]): (ISeqSeqSeq[C], Int) = {
     val sep = "%"
-    def readRec(dim: Int,
-                travLines: Lines,
-                acc: ISeqSeqSeq[C]): ISeqSeqSeq[C] =
+    def readRec(
+        dim:       Int,
+        travLines: Lines,
+        acc:       ISeqSeqSeq[C]): ISeqSeqSeq[C] =
       if (travLines.isEmpty)
         acc
       else {
@@ -141,6 +138,7 @@ object InputParser {
   //
   // Matrix
   //
+
   /** @return matrix */
   def parseMatrixFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): Matrix[R] = {
     val res = genParseFile(file)(lines => parseMatrixFromLines(lines)(mFactory, parseElement))
@@ -176,16 +174,16 @@ object InputParser {
     }
   }
 
-  def parsePowerTransfBaseFromFile(file: File): (Polys, ISeqSeq[Int]) = {
-    genParseFile(file)(parsePowerTransfBaseFromLines)
+  def parsePowerTransfBaseFromFile[N <: MPNumber](file: File)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
+    genParseFile(file)(lines => parsePowerTransfBaseFromLines(lines))
   }
 
-  def parsePowerTransfBaseFromLines(lines: Lines): (Polys, ISeqSeq[Int]) = {
+  def parsePowerTransfBaseFromLines[N <: MPNumber](lines: Lines)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
     def empty = throw new WrongFormatException("File was empty")
-    genParseLines(lines, empty)(parsePowerTransfBaseFromRefLines)
+    genParseLines(lines, empty)((dim, lines) => parsePowerTransfBaseFromRefLines(dim, lines))
   }
 
-  def parsePowerTransfBaseFromRefLines(dim: Int, lines: Lines): (Polys, ISeqSeq[Int]) = {
+  def parsePowerTransfBaseFromRefLines[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
     if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
     val (polyLines, chosenLines) = {
       val delimIdx = lines.indexOf("#")
@@ -202,14 +200,15 @@ object InputParser {
     (polys, indices)
   }
 
-  def parsePowerTransfBasePoly(dim: Int, lines: Lines): Polynomial = {
+  def parsePowerTransfBasePoly[N <: MPNumber: MathProcessor](dim: Int, lines: Lines): Polynomial[N] = {
+    val mp = implicitly[MathProcessor[N]]
     val res = lines map { line =>
       val split = (line split ' ').toVector
       val coeffStr = split.head.trim
       if (!coeffStr.endsWith(",")) throw new WrongFormatException(s"Incorrect line format '$line'")
       val coeff = parseInt(coeffStr.dropRight(1))
-      val powers = split.tail map parseFrac
-      new Term(Product(coeff), powers)
+      val powers = split.tail map parseFrac map mp.fromRational
+      Term(mp.fromBigInt(coeff), powers)
     }
     res.toIndexedSeq
   }

@@ -1,8 +1,7 @@
 package org.newtonpolyhedron.entity.equation
 
 import org.newtonpolyhedron.utils.PolynomialUtils._
-import org.newtonpolyhedron.math.MathProcessor
-import org.newtonpolyhedron.math.MPNumber
+import org.newtonpolyhedron.math.MathImports._
 
 case class Equation[N <: MPNumber](lhs: Polynomial[N], sign: EquationSign, rhs: Polynomial[N])
 

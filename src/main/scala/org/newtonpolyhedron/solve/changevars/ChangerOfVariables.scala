@@ -3,9 +3,8 @@ package org.newtonpolyhedron.solve.changevars
 import org.newtonpolyhedron.NewtonImports._
 
 import spire.compat._
-import spire.implicits._
 
-trait ChangerOfVariables[N <: MPNumber] {
+abstract class ChangerOfVariables[N <: MPNumber](implicit mp: MathProcessor[N]) {
 
   /**
    * Ordered by

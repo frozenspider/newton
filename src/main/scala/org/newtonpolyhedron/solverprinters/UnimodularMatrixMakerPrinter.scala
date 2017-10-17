@@ -2,19 +2,20 @@ package org.newtonpolyhedron.solverprinters
 
 import java.io.PrintWriter
 
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.utils.StringUtils
-import spire.math.Rational
 
-class UnimodularMatrixMakerPrinter(override val solver: UnimodularMatrixMaker,
-                                   val baseMatrix: Matrix[Rational],
-                                   override val output: PrintWriter)
-    extends SolverPrinter[UnimodularMatrixMaker](solver, output) {
+class UnimodularMatrixMakerPrinter[N <: MPNumber](
+    override val solver: UnimodularMatrixMaker[N],
+    val baseMatrix:      Matrix[N],
+    override val output: PrintWriter)
+  extends SolverPrinter[UnimodularMatrixMaker[N]](solver, output) {
 
-  override def solveFor(solver: UnimodularMatrixMaker,
-                        output: PrintWriter) = {
+  override def solveFor(
+      solver: UnimodularMatrixMaker[N],
+      output: PrintWriter) = {
     val alpha = solver.unimodularFrom(baseMatrix)
     val alphaInv = alpha.inv
     output.println(title("Unimodular \"Alpha\" matrix"))

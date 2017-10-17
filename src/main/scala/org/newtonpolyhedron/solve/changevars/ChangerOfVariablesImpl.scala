@@ -4,6 +4,8 @@ import scala.collection.IndexedSeq
 
 import org.newtonpolyhedron.NewtonImports._
 
+import spire.compat._
+
 class ChangerOfVariablesImpl[N <: MPNumber](implicit mp: MathProcessor[N]) extends ChangerOfVariables[N] {
   private val s = IndexedSeq
 
@@ -35,15 +37,15 @@ class ChangerOfVariablesImpl[N <: MPNumber](implicit mp: MathProcessor[N]) exten
       "equal to replacement polynomials count")
     val changedVarsPolyWithDup = poly.par flatMap changeVarInTerm(substs)
     val changedVarsPoly: Polynomial[N] = changedVarsPolyWithDup.toIndexedSeq.collapseDups
-    changedVarsPoly sorted
+    changedVarsPoly.sorted
   }
 
   def changeVarInTerm(substs: Polys[N])(term: Term[N]): Polynomial[N] = {
     assert(substs.size == term.powers.size)
     val powered = (substs zip term.powers).par map {
       case (changeVarPoly, pow) => {
-        require(pow.isValidInt, "Power is either too large or fractional!")
-        changeVarPoly pow pow.toInt
+        require(pow.isIntegral, "Power is not a valid integer!")
+        changeVarPoly ** pow.intValue
       }
     } map (_.collapseDups) filter (_.size > 0)
     val crossMultiplied = powered reduceLeft (_ * _)

@@ -9,24 +9,24 @@ import java.io.Writer
 import scala.swing._
 import scala.swing.event.ButtonClicked
 
+import org.newtonpolyhedron.BuildInfo
 import org.newtonpolyhedron.NewtonLogic
 import org.newtonpolyhedron.WorkingMode
 import org.newtonpolyhedron.ex.WrongFormatException
-import org.newtonpolyhedron.BuildInfo
+import org.newtonpolyhedron.math.MathImports._
 
-class NewtonPolyhedronFrame extends SimpleSwingApplication {
+class NewtonPolyhedronFrame[N <: MPNumber](logic: NewtonLogic[N]) extends SimpleSwingApplication {
 
   val printWriter = new PrintWriter(new NewtonTextAreaOutput)
-  val logic = new NewtonLogic
   var workingThread: Option[Thread] = None
 
-  def top = new MainFrame {
+  override def top = new MainFrame {
     title = s"Newton ${BuildInfo.version}"
     contents = ui
   }
 
   val ui = new BorderPanel {
-    import BorderPanel.Position._
+    import scala.swing.BorderPanel.Position._
     val browseBtn = new Button("Browse")
     listenTo(startBtn, browseBtn)
 

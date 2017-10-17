@@ -2,18 +2,16 @@ package org.newtonpolyhedron.entity.vector
 
 import org.newtonpolyhedron.math.MPNumber
 import org.newtonpolyhedron.math.MathProcessor
+import org.newtonpolyhedron.math.MathImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 
-import spire.implicits._
-import spire.math.Rational
+import org.newtonpolyhedron.entity.vector.internal.SeqVectorSupport
 
-import internal.SeqVectorSupport
 import spire.math.SafeLong
 
 trait VectorImports extends SeqVectorSupport {
 
   type IntVec = IndexedSeq[BigInt]
-  type FracVec = IndexedSeq[Rational]
   type NumVec[N <: MPNumber] = IndexedSeq[N]
 
   object IntVec {
@@ -21,22 +19,18 @@ trait VectorImports extends SeqVectorSupport {
 
     def zero(dimension: Int) = IndexedSeq.fill[BigInt](dimension)(0)
 
-    def fromFracVec(fs: FracVec) = {
-      fromFrac(fs: _*)
+    def fromNumVec[N <: MPNumber](ns: NumVec[N])(implicit mp: MathProcessor[N]) = {
+      fromNum(ns: _*)
     }
 
-    def fromFrac(fs: Rational*) = {
-      val multiplier = fs.foldLeft(SafeLong.one)((m, el) =>
-        if (m % el.denominator == 0) m else m * el.denominator)
-      val ints = fs map (x => x.numerator * multiplier / x.denominator)
+    def fromNum[N <: MPNumber](ns: N*)(implicit mp: MathProcessor[N]) = {
+      val rs = ns map (_.toRational)
+      val multiplier = rs.foldLeft(SafeLong.one)((m, el) => {
+        if (m % el.denominator == 0) m else m * el.denominator
+      })
+      val ints = rs map (x => x.numerator * multiplier / x.denominator)
       ints.map(_.toBigInt).toIndexedSeq.reduced
     }
-  }
-
-  object FracVec {
-    def apply(vs: Rational*) = IndexedSeq.apply[Rational](vs: _*)
-
-    def zero(dimension: Int) = IndexedSeq.fill[Rational](dimension)(0)
   }
 
   object NumVec {
@@ -45,8 +39,13 @@ trait VectorImports extends SeqVectorSupport {
     def zero[N <: MPNumber](dimension: Int)(implicit mp: MathProcessor[N]) = IndexedSeq.fill[N](dimension)(mp.zero)
   }
 
-  implicit lazy val intVecOrdering: Ordering[IntVec] = Ordering.Implicits.seqDerivedOrdering
-  implicit lazy val fracVecOrdering: Ordering[FracVec] = Ordering.Implicits.seqDerivedOrdering
+  implicit lazy val intVecOrdering: Ordering[IntVec] =
+    Ordering.Implicits.seqDerivedOrdering[IndexedSeq, BigInt](Ordering.BigInt)
+
+  implicit def numVecOrdering[N <: MPNumber](implicit mp: MathProcessor[N]): Ordering[NumVec[N]] = {
+    val ordering = spire.compat.ordering(mpNumberSupport)
+    Ordering.Implicits.seqDerivedOrdering[IndexedSeq, N](ordering)
+  }
 
   implicit class RichIntVec(val seq: IntVec) {
     /** Divided by GCD*/
@@ -58,21 +57,22 @@ trait VectorImports extends SeqVectorSupport {
         seq map (_ / gcd)
     }
 
-    def toFracVec: FracVec =
-      seq map Rational.apply
+    def toNumVec[N <: MPNumber](implicit mp: MathProcessor[N]): NumVec[N] =
+      seq map mp.fromBigInt
 
     def toTupleString: String =
       seq mkString ("(", ", ", ")")
   }
 
-  implicit class RichFracVec(val seq: FracVec) {
-    def toTupleString: String =
-      seq mkString ("(", ", ", ")")
-  }
+  implicit class RichNumVec[N <: MPNumber](val x: NumVec[N]) {
+    def compare(y: NumVec[N])(implicit mp: MathProcessor[N]): Int =
+      (x lengthCompare y.length) match {
+        case 0 => (x zip y).toStream map (mp.compare) find (_ != 0) getOrElse 0
+        case x => x
+      }
 
-  implicit class RichNumVec[N <: MPNumber](val seq: NumVec[N]) {
     def toTupleString: String =
-      seq mkString ("(", ", ", ")")
+      x mkString ("(", ", ", ")")
   }
 }
 

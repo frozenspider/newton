@@ -2,37 +2,50 @@ package org.newtonpolyhedron.math.internal
 
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.math.MathProcessor
-import org.newtonpolyhedron.math.Imports._
+import org.newtonpolyhedron.math.MathImports._
 import spire.math.Rational
+import org.newtonpolyhedron.utils.LatexConversion
 
 /**
  * @author FS
  */
-class InternalMathProcessor extends MathProcessor[InternalNumber] {
+class InternalMathProcessor extends MathProcessor[Product] {
   private implicit val mp = this
 
-  override def zero: InternalNumber =
+  override def zero: Product =
     Product.zero
 
-  override def one: InternalNumber =
+  override def one: Product =
     Product.one
 
-  override def isZero(x: InternalNumber): Boolean = x match {
+  override def isZero(x: Product): Boolean = x match {
     case x: Product => x.signum == 0
   }
 
-  override def compare(x: InternalNumber, y: InternalNumber): Int = (x, y) match {
+  override def isIntegral(x: Product): Boolean = x match {
+    case x: Product => x.isWhole
+  }
+
+  override def isRational(x: Product): Boolean = x match {
+    case x: Product => x.isRational
+  }
+
+  override def compare(x: Product, y: Product): Int = (x, y) match {
     case (x: Product, y: Product) => x.toRational compare y.toRational
   }
 
-  override def negate(x: InternalNumber): InternalNumber = x match {
+  override def signum(x: Product): Int = x.signum
+
+  override def abs(x: Product): Product = x.abs
+
+  override def negate(x: Product): Product = x match {
     case x: Product => new Product(-x.signum, x.underlying)
   }
 
-  override def inverse(x: InternalNumber): InternalNumber =
+  override def inverse(x: Product): Product =
     one / x
 
-  override def add(x: InternalNumber, y: InternalNumber): InternalNumber = x match {
+  override def add(x: Product, y: Product): Product = x match {
     case x: Product => y match {
       case y: Product =>
         val (commonFactors, thisFactors, thatFactors) = extractCommonFactors(x.underlying, y.underlying)
@@ -46,9 +59,9 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
     }
   }
 
-  override def subtract(x: InternalNumber, y: InternalNumber): InternalNumber = add(x, negate(y))
+  override def subtract(x: Product, y: Product): Product = add(x, negate(y))
 
-  override def multiply(x: InternalNumber, y: InternalNumber): InternalNumber = x match {
+  override def multiply(x: Product, y: Product): Product = x match {
     case x: Product => y match {
       case y: Product =>
         if (x.signum == 0 || y.signum == 0) Product.zero
@@ -56,7 +69,7 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
     }
   }
 
-  override def divide(x: InternalNumber, y: InternalNumber): InternalNumber = x match {
+  override def divide(x: Product, y: Product): Product = x match {
     case x: Product => y match {
       case y: Product =>
         require(y.signum != 0, "Divide by zero")
@@ -65,7 +78,7 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
     }
   }
 
-  override def raise(x: InternalNumber, y: InternalNumber): InternalNumber = x match {
+  override def raise(x: Product, y: Product): Product = x match {
     case x: Product => y match {
       case y: Product if y.isRational =>
         val yr = y.toRational
@@ -83,7 +96,7 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
     }
   }
 
-  override def proot(x: InternalNumber, y: InternalNumber): InternalNumber = x match {
+  override def proot(x: Product, y: Product): Product = x match {
     case x: Product => y match {
       case y: Product if y.isRational =>
         x ** inverse(y)
@@ -91,21 +104,23 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
     }
   }
 
-  override def fromInt(x: Int): InternalNumber = InternalMathProcessor.int2product(x)
+  override def fromInt(x: Int): Product = InternalMathProcessor.int2product(x)
 
-  override def fromBigInt(x: BigInt): InternalNumber = InternalMathProcessor.bint2product(x)
+  override def fromBigInt(x: BigInt): Product = InternalMathProcessor.bint2product(x)
 
-  override def fromRational(x: Rational): InternalNumber = InternalMathProcessor.rat2product(x)
+  override def fromRational(x: Rational): Product = InternalMathProcessor.rat2product(x)
 
-  override def toInt(x: InternalNumber): Int = x match {
+  override def fromDouble(x: Double): Product = InternalMathProcessor.rat2product(Rational(x))
+
+  override def toInt(x: Product): Int = x match {
     case x: Product => x.toRational.toInt
   }
 
-  override def toLong(x: InternalNumber): Long = x match {
+  override def toLong(x: Product): Long = x match {
     case x: Product => x.toRational.toLong
   }
 
-  override def toDouble(x: InternalNumber): Double = x match {
+  override def toDouble(x: Product): Double = x match {
     case x: Product =>
       if (x.signum == 0) 0.0d else {
         val folded = (x.underlying foldLeft 1.0d) {
@@ -115,12 +130,22 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
       }
   }
 
-  private def extractCommonFactors(one: Map[Int, Rational],
-                                   two: Map[Int, Rational]): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
-    def extract(keys: Seq[Int],
-                acc: Map[Int, Rational],
-                one: Map[Int, Rational],
-                two: Map[Int, Rational]): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
+  def toRational(x: Product): Rational = x.toRational
+
+  def toLatexString(x: Product): String = {
+    LatexConversion.productToLatex(x)
+  }
+
+  private def extractCommonFactors(
+      one: Map[Int, Rational],
+      two: Map[Int, Rational]
+  ): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
+    def extract(
+        keys: Seq[Int],
+        acc:  Map[Int, Rational],
+        one:  Map[Int, Rational],
+        two:  Map[Int, Rational]
+    ): (Map[Int, Rational], Map[Int, Rational], Map[Int, Rational]) = {
       if (keys.isEmpty) (acc, one, two)
       else {
         val key = keys.head
@@ -141,6 +166,10 @@ class InternalMathProcessor extends MathProcessor[InternalNumber] {
       val updatedMain = Product.changePower(main, headPrime, headPow)
       mergePowers(updatedMain, other.tail)
     }
+  }
+
+  override def diagonalize(m: Matrix[Product]): MatrixTriple[Product] = {
+    ??? // FIXME: Use MatrixToDiagonalImplicits
   }
 }
 

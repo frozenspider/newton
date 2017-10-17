@@ -1,13 +1,10 @@
 package org.newtonpolyhedron.math.internal
 
 import scala.collection.immutable.ListMap
-import scala.math.ScalaNumber
-import scala.math.ScalaNumericConversions
-
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.MathUtils
 
 import org.fs.utility.Imports._
+import org.newtonpolyhedron.math.MPNumber
+import org.newtonpolyhedron.utils.MathUtils
 
 import spire.math.Rational
 
@@ -19,9 +16,11 @@ import spire.math.Rational
  * Only supports multiplication and power operations.
  */
 case class Product(val signum: Int, val underlying: Map[Int, Rational])
-    extends InternalNumber {
+    extends MPNumber {
   require((-1 to 1) contains signum, "Sign should be -1, 0 or 1")
   require(if (signum == 0) underlying.isEmpty else true, "For zero product, multipliers should be empty")
+
+  def isValid: Boolean = true
 
   /** Whether or not this product can be represented as a precise fraction value */
   lazy val isRational = {

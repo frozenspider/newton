@@ -4,15 +4,16 @@ import scala.annotation.tailrec
 
 import org.apache.commons.math3.linear.MatrixUtils
 
-import internal.FieldElementSupport._
 import spire.implicits._
 import spire.math.Rational
 import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.entity.matrix.internal.FieldElementSupport._
 
 /**
  * Provides implicit "toDiagonal" method on Rational matrices, which is needed for unimodular matrices maker
  * via Euler (or whatever is its name, not sure yet) algorithm.
  */
+// TODO: Merge somewhere
 object MatrixToDiagonalImplicits {
   private sealed trait Orientation
   private case object ROWS extends Orientation
