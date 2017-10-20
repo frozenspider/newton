@@ -42,9 +42,10 @@ trait MathProcessor[N <: MPNumber] {
 
   def divide(x: N, y: N): N
 
+  /** Raise a number to a specified power */
   def raise(x: N, y: N): N
 
-  /** Principal root */
+  /** Extract the principal root of the given number */
   def proot(x: N, y: N): N
 
   def fromDouble(x: Double): N

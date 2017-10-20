@@ -90,7 +90,7 @@ class SimpleEqSystemSolverImpl[N <: MPNumber](implicit mp: MathProcessor[N]) ext
   }
 
   def representThrough(termIdx: Int, repr: Term[N])(eq: Polynomial[N]): Polynomial[N] = {
-    require(repr.powers(termIdx) == 0)
+    require(repr.powers(termIdx) == mp.zero)
     val res = for (term <- eq) yield {
       val srcPow = term.powers(termIdx)
       val poweredRepr = repr ** srcPow

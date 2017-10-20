@@ -33,10 +33,12 @@ trait MathImports {
     def *(y: N): N = mp.multiply(x, y)
     def /(y: N): N = mp.divide(x, y)
 
-    /** Raise a number to a specified power */
+    def **(y: BigInt): N = mp.raise(x, mp.fromBigInt(y))
+    def **(y: Rational): N = mp.raise(x, mp.fromRational(y))
     def **(y: N): N = mp.raise(x, y)
 
-    /** Extract the principal root of the given number */
+    def proot(y: BigInt): N = mp.proot(x, mp.fromBigInt(y))
+    def proot(y: Rational): N = mp.proot(x, mp.fromRational(y))
     def proot(y: N): N = mp.proot(x, y)
 
     def intValue: Int = toInt

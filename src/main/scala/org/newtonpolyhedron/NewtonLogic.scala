@@ -79,7 +79,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
       illustrate: Boolean,
       writer:     PrintWriter
   ): SolverPrinter[_] = {
-    val (pointList, commonLimitsOption, basisOption) = InputParser.parsePolyFromFile(file)(parseFrac andThen mp.fromRational)
+    val (pointList, commonLimitsOption, basisOption) = InputParser.parsePolyFromFile(file)(parseNum)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
     val surfaceBuilder = new SurfaceBuilderImpl
     new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimitsOption, basisOption, illustrate, writer)
@@ -89,7 +89,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
-    val (polys, dim) = InputParser.parsePolysFromFile(file)(parseFrac andThen mp.fromRational)
+    val (polys, dim) = InputParser.parsePolysFromFile(file)(parseNum)
     val polySolver = new PolyIntersectionSolverImpl(coneSolver)
     new PolyIntersectionSolverPrinter(polySolver, polys, dim, writer)
   }

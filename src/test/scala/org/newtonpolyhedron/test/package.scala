@@ -5,17 +5,9 @@ import java.util.Comparator
 import scala.collection.immutable.SortedSet
 
 import org.fs.utility.collection.table._
-import org.newtonpolyhedron.entity._
-import org.newtonpolyhedron.entity.Term
+import org.newtonpolyhedron.NewtonImports._
+import org.newtonpolyhedron.entity.Surface
 import org.newtonpolyhedron.entity.matrix.Matrix
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.PolynomialUtils._
-import org.scalactic.Prettifier
-import org.scalactic.source.Position
-import org.scalatest.Assertions
-import org.scalatest.compatible.Assertion
-
-import spire.math.Rational
 
 /**
  * Contains test shortcuts
@@ -31,17 +23,23 @@ package object test {
     Matrix(content map (_.toIndexedSeq map Rational.apply))
   }
 
+  def matrNum[N <: MPNumber](content: Seq[Seq[Int]])(implicit mp: MathProcessor[N]): Matrix[N] = {
+    Matrix(content map (_.toIndexedSeq map mp.fromInt))
+  }
+
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
 
   def iv(ints: Int*): IntVec = IntVec((ints map BigInt.apply): _*)
-  def fv(ints: Int*): FracVec = FracVec((ints map Rational.apply): _*)
-  def fv2(fracs: Rational*): FracVec = FracVec(fracs: _*)
+  def nv[N <: MPNumber](ints: Int*)(implicit mp: MathProcessor[N]): NumVec[N] =
+    NumVec[N]((ints map mp.fromInt): _*)
+  def nv2[N <: MPNumber](fracs: Rational*)(implicit mp: MathProcessor[N]): NumVec[N] =
+    NumVec[N]((fracs map mp.fromRational): _*)
 
   def frac(n: Int) = Rational(n, 1)
   def frac(n: Int, d: Int) = Rational(n, d)
 
-  def makePoly(components: (Int, Seq[Int])*): Polynomial =
-    components map { case (coeff, pows) => Term(Product(coeff), fv(pows: _*)) } toIndexedSeq
+  def makePoly[N <: MPNumber](components: (Int, Seq[Int])*)(implicit mp: MathProcessor[N]): Polynomial[N] =
+    components map { case (coeff, pows) => Term(mp.fromInt(coeff), nv(pows: _*)) } toIndexedSeq
 
   val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
 
@@ -64,10 +62,12 @@ package object test {
    *         in order of descending dimensinon. Last sequence will get the dimension of 0
    */
   def chainSurfaces(points: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]): Map[Int, SortedSet[Surface]] = {
-    def addToMap(acc: Map[Int, SortedSet[Surface]],
-                 dim: Int,
-                 current: IndexedSeq[(Seq[Int], Seq[Int])],
-                 remaining: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]): Map[Int, SortedSet[Surface]] = {
+    def addToMap(
+        acc:       Map[Int, SortedSet[Surface]],
+        dim:       Int,
+        current:   IndexedSeq[(Seq[Int], Seq[Int])],
+        remaining: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]
+    ): Map[Int, SortedSet[Surface]] = {
       val upperLevel = (acc getOrElse (dim + 1, IndexedSeq())).toIndexedSeq
       val currentSurfaces = current map { s => new Surface(s._1, s._2 map upperLevel) }
       val newAcc = acc + (dim -> SortedSet(currentSurfaces: _*))

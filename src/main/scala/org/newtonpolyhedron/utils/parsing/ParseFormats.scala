@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.utils.parsing
 
-import spire.math.Rational
+import org.newtonpolyhedron.NewtonImports._
 
 object ParseFormats {
   type Parse[A] = (String => A)
@@ -9,6 +9,8 @@ object ParseFormats {
     (s => BigInt(trimLeadingPlus(s)))
   val parseFrac: Parse[Rational] =
     (s => RationalFormat.parse(trimLeadingPlus(s)).asInstanceOf[Rational])
+  def parseNum[N <: MPNumber](implicit mp: MathProcessor[N]): Parse[N] =
+    parseFrac andThen mp.fromRational
 
   private def trimLeadingPlus(s: String): String = {
     val s2 = s.trim
