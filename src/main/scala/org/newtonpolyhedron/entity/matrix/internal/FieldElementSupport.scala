@@ -2,6 +2,7 @@ package org.newtonpolyhedron.entity.matrix.internal
 
 import org.apache.commons.math3.Field
 import org.apache.commons.math3.FieldElement
+import org.newtonpolyhedron.math.MathImports._
 
 import spire.implicits._
 import spire.math.Fractional
@@ -16,13 +17,14 @@ import spire.math.Rational
  *
  * @author FS
  */
-private[matrix] object FieldElementSupport {
+object FieldElementSupport {
 
   type FieldWrapped[T] = Field[FieldElementWrapping[T]]
 
   // Main wrappers
   val BigIntFieldWrapper: FieldElementWrapper[BigInt] = new FieldElementWrapper
   val RationalFieldWrapper: FieldElementWrapper[Rational] = new FieldElementWrapper
+  def mpNumberFieldWrapper[N <: MPNumber: MathProcessor]: FieldElementWrapper[N] = new FieldElementWrapper
 
   // Wrapping
   def wrap[T: Numeric] = new FieldElementWrapper[T]

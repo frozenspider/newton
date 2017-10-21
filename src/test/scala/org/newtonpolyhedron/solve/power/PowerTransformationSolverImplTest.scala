@@ -1,9 +1,7 @@
 package org.newtonpolyhedron.solve.power
 
-import scala.collection.immutable.SortedSet
-
 import org.junit.runner.RunWith
-import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.solve.eqsys.SimpleEqSystemSolverImpl
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
 import org.newtonpolyhedron.test._
@@ -11,7 +9,9 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class PowerTransformationSolverImplTest extends FunSuite {
+class PowerTransformationSolverImplTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   val solver = new PowerTransformationSolverImpl(new UnimodularMatrixMakerImpl, new SimpleEqSystemSolverImpl)
 
@@ -19,7 +19,8 @@ class PowerTransformationSolverImplTest extends FunSuite {
     val source = s(
       s(1, 2, 3),
       s(0.1, 0.2),
-      s("a", "b", "c"))
+      s("a", "b", "c")
+    )
     val expected = s(
       s((1, 2), (0.1, 0.2), ("a", "b")),
       s((1, 2), (0.1, 0.2), ("b", "c")),

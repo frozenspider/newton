@@ -1,13 +1,16 @@
-package org.newtonpolyhedron.entity
+package org.newtonpolyhedron.math.internal
 
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import spire.math.Rational
+import org.newtonpolyhedron.NewtonImports._
 
 @RunWith(classOf[JUnitRunner])
-class ProductTest extends FunSuite {
+class InternalMathTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   private def p(i: Int) = Product(i)
   private def p(n: Int, d: Int) = Product(Rational(n, d))
@@ -92,10 +95,20 @@ class ProductTest extends FunSuite {
   }
 
   test("power, fractional, appx") {
-    assert((p(8) ** frac(1, 2)) =~= 2.828427125)
+    assert((p(8) ** frac(1, 2)).toDouble =~= 2.828427125)
     intercept[ArithmeticException] {
       (p(8) ** frac(1, 2)).toRational
     }
+  }
+
+  test("power, product - integer and fractional") {
+    assert((p(0) ** p(0)).toInt === 1)
+    assert((p(3) ** p(-2)).toRational === frac(1, 9))
+    assert((p(-10) ** p(0)).toInt === 1)
+    assert((p(2) ** p(16)).toInt === 65536)
+    assert((p(65536) ** p(1, 4)).toInt === 16)
+    assert((p(8) ** p(1, 3)).toInt === 2)
+    assert((p(8) ** p(-1, 3)).toRational === frac(1, 2))
   }
 
   test("addition, subtraction") {

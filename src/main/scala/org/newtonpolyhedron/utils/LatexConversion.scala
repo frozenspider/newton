@@ -1,19 +1,15 @@
 package org.newtonpolyhedron.utils
 
-import org.fs.utility.Imports._
+import org.newtonpolyhedron.NewtonImports._
 
-import org.newtonpolyhedron.entity._
 import org.newtonpolyhedron.entity.equation._
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
 
-import spire.implicits._
 import spire.math.Rational
+import org.newtonpolyhedron.math.internal.Product
 
 object LatexConversion {
 
   sealed trait LatexStringMixin
-
   type LatexString = String with LatexStringMixin
 
   def latex(s: String) = stringToLatex(s)
@@ -32,12 +28,12 @@ object LatexConversion {
     }
   }
 
-  def productToLatex(product: Product): LatexString =
-    if (product.isRational) {
-      rationalToLatex(product.toRational)
+  def productToLatex(value: Product): LatexString = {
+    if (value.isRational) {
+      rationalToLatex(value.toRational)
     } else {
       // Irrational case
-      val (rational, roots) = product.rootedForm
+      val (rational, roots) = value.rootedForm
       val rationalString = if (rational == 1) "" else rational.toString
       val irrationalString = roots.toSeq sortBy (_._1) map {
         case (_, rooted) if rooted == 0 => ""
@@ -45,6 +41,7 @@ object LatexConversion {
       }
       "(" + rationalString + irrationalString.mkString + ")"
     }
+  }
 
   def nthRootToLatex(rootBase: Rational, rootedValue: Rational): LatexString = {
     val rootBaseLatex = rationalToLatex(rootBase)
@@ -60,13 +57,13 @@ object LatexConversion {
     case EquationSign.LessEq    => "\\geq"
   }
 
-  private def powersToLatex(varName: String)(pows: Seq[Rational]): LatexString = {
+  private def powersToLatex[N <: MPNumber](varName: String)(pows: Seq[N])(implicit mp: MathProcessor[N]): LatexString = {
     val opts = pows mapWithIndex { (power, i) =>
       if (power.isZero)
         None
       else
         Some(
-          variableToLatex(varName, Some(i + 1)) + "^{" + rationalToLatex(power) + "}"
+          variableToLatex(varName, Some(i + 1)) + "^{" + power.toLatexString + "}"
         )
     }
     opts.yieldDefined.mkString
@@ -78,14 +75,15 @@ object LatexConversion {
       case Some(i) => varName + "_{" + i + "}"
     }
 
-  def polynomialToLatex(varName: String)(poly: Polynomial): LatexString = {
+  def polynomialToLatex[N <: MPNumber](varName: String)(poly: Polynomial[N])(implicit mp: MathProcessor[N]): LatexString = {
     if (poly.isEmpty) {
       ""
     } else {
       val termsSignedStrings = poly map { term =>
+        val signum = term.coeff.signum
         (
-          term.coeff.signum,
-          productToLatex(term.coeff * term.coeff.signum) + powersToLatex(varName)(term.powers)
+          signum,
+          (term.coeff * mp.fromInt(signum)).toLatexString + powersToLatex(varName)(term.powers)
         )
       }
       signedAbsSeqToLatex(termsSignedStrings)
@@ -105,13 +103,13 @@ object LatexConversion {
     termsString
   }
 
-  def equationToLatex(varName1: String, varName2: String)(eq: Equation): LatexString = {
+  def equationToLatex[N <: MPNumber](varName1: String, varName2: String)(eq: Equation[N])(implicit mp: MathProcessor[N]): LatexString = {
     val lhs = polynomialToLatex(varName1)(eq.lhs)
     val rhs = polynomialToLatex(varName2)(eq.rhs)
     val sign = signToLatex(eq.sign)
     lhs + sign + rhs
   }
 
-  def equationsToLatex(eqs: Equations, varName1: String, varName2: String): LatexString =
+  def equationsToLatex[N <: MPNumber](eqs: Equations[N], varName1: String, varName2: String)(implicit mp: MathProcessor[N]): LatexString =
     (eqs map equationToLatex(varName1, varName2)) mkString ("\\begin{cases}", """\\""" + "\n", "\\end{cases}")
 }

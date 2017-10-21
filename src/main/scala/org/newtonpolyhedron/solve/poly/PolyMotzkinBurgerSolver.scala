@@ -4,25 +4,29 @@ import java.io.PrintWriter
 import java.util.Comparator
 
 import org.fs.utility.collection.table.KeyTable
-import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
-import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PointUtils
 
-class PolyMotzkinBurgerSolver(val coneSolver: ConeSolver) extends PolyhedronSolver {
+class PolyMotzkinBurgerSolver[N <: MPNumber](val coneSolver: ConeSolver)(implicit mp: MathProcessor[N])
+    extends PolyhedronSolver[N] {
 
-  override def solve(points: Seq[FracVec],
-                     commonLimitsOption: Option[Seq[IntVec]],
-                     wishfulBasisOption: Option[Seq[IntVec]],
-                     output: PrintWriter): KeyTable[IntVec, Int, Boolean] = {
+  override def solve(
+      points:             Seq[NumVec[N]],
+      commonLimitsOption: Option[Seq[IntVec]],
+      wishfulBasisOption: Option[Seq[IntVec]],
+      output:             PrintWriter
+  ): KeyTable[IntVec, Int, Boolean] = {
     val allSolutions = solveForEachPoint(points, commonLimitsOption, wishfulBasisOption, output)
     fillTableWith(allSolutions)
   }
 
-  def solveForEachPoint(points: Seq[FracVec],
-                        commonLimitsOption: Option[Seq[IntVec]],
-                        wishfulBasisOption: Option[Seq[IntVec]],
-                        output: PrintWriter): Seq[Seq[IntVec]] = {
+  def solveForEachPoint(
+      points:             Seq[NumVec[N]],
+      commonLimitsOption: Option[Seq[IntVec]],
+      wishfulBasisOption: Option[Seq[IntVec]],
+      output:             PrintWriter
+  ): Seq[Seq[IntVec]] = {
     val dim = points.head.size
     val allSolutions = for (currPtIdx <- 0 until points.size) yield {
       val commonLimits = commonLimitsOption getOrElse IndexedSeq.empty

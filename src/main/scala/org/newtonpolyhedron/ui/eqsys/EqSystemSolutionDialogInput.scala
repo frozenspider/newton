@@ -9,15 +9,13 @@ import scala.swing.Panel
 import scala.swing.TextField
 import scala.swing.event.ButtonClicked
 
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
 
-class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
+class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N]) extends EqSystemSolutionInput[N] {
   import BorderPanel.Position._
   import org.newtonpolyhedron.utils.LatexConversion._
 
@@ -26,8 +24,9 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
   //
   // UI
   //
+
   private lazy val inputDialog = new Dialog {
-    def resetDialog(headerText: LatexString, inputPanels: Seq[Panel], eqSys: Equations) = {
+    def resetDialog(headerText: LatexString, inputPanels: Seq[Panel], eqSys: Equations[N]) = {
       ok = false
       header.content = headerText
       inputsContainer.contents.clear()
@@ -86,11 +85,13 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
       (inputField, panel)
     }).unzip
 
-  private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial, EquationSign.Equals, zeroPoly(dim))
+  private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial[N], EquationSign.Equals, zeroPoly(dim))
 
-  override def getInputFor(system: Polys,
-                           initialValuesOption: Option[Seq[String]],
-                           headerTextOption: Option[LatexString]): Option[Seq[String]] = {
+  override def getInputFor(
+      system:              Polys[N],
+      initialValuesOption: Option[Seq[String]],
+      headerTextOption:    Option[LatexString]
+  ): Option[Seq[String]] = {
     val dim = system collectFirst {
       case poly if !poly.isEmpty => poly.head.powers.length
     } getOrElse (throw new IllegalArgumentException("Can't get dimension of polys"))
@@ -103,9 +104,9 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
     }
 
     inputDialog.resetDialog(
-      headerText = headerTextOption getOrElse latex(textToLatex(s"Please solve for ") + varName + ":"),
+      headerText  = headerTextOption getOrElse latex(textToLatex(s"Please solve for ") + varName + ":"),
       inputPanels = inputPanels,
-      eqSys = system map asEqualsZeroEquation(dim)
+      eqSys       = system map asEqualsZeroEquation(dim)
     )
     inputDialog.visible = true
     inputDialog.dispose
@@ -120,27 +121,35 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
 }
 
 object EqSystemSolutionDialogInput extends App {
-  import org.newtonpolyhedron.entity._
   import org.newtonpolyhedron.entity.vector._
   import org.newtonpolyhedron.entity.equation._
-  import org.newtonpolyhedron.utils.LanguageImplicits._
-  import org.newtonpolyhedron.utils.PolynomialUtils._
+  import org.newtonpolyhedron.math.internal.InternalMathProcessor
+  import org.newtonpolyhedron.math.internal.Product
   import spire.implicits._
   import spire.math.Rational
 
-  val s = new EqSystemSolutionDialogInput
+  private type N = Product
+  private implicit val mp: MathProcessor[N] = new InternalMathProcessor
+
+  val s = new EqSystemSolutionDialogInput[N]
 
   val tricky = EqSystemRenderingPanel.tricky
 
-  val eqs: Polys = IndexedSeq[Polynomial](
+  val eqs: Polys[N] = IndexedSeq[Polynomial[N]](
     IndexedSeq(
-      new Term(Product(1), FracVec(1, 2, 3)),
-      new Term(tricky, FracVec(1, 2, 3)),
-      new Term(Product(4), FracVec(0, 0, 0))
+      new Term(Product(1), NumVec[N](1, 2, 3)),
+      new Term(tricky, NumVec[N](1, 2, 3)),
+      new Term(Product(4), NumVec[N](0, 0, 0))
     ),
     IndexedSeq(
-      new Term(Product(Rational(-1, 2)), FracVec(Rational(-1, 2), Rational.zero, Rational(-333, 667))),
-      new Term(Product(-2), FracVec(0, 0, 3))
+      new Term(
+        mp.fromRational(Rational(-1, 2)),
+        NumVec[N](mp.fromRational(Rational(-1, 2)), mp.zero, mp.fromRational(Rational(-333, 667)))
+      ),
+      new Term(
+        mp.fromInt(-2),
+        NumVec[N](0, 0, 3)
+      )
     )
   )
 

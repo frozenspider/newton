@@ -2,11 +2,9 @@ package org.newtonpolyhedron.solve.surface
 
 import scala.collection.immutable.SortedSet
 
-import org.fs.utility.Imports._
+import org.newtonpolyhedron.NewtonImports._
 import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.LanguageImplicits._
 
 class SurfaceBuilderImpl extends SurfaceBuilder {
   override def surfaces(lookupTable: KeyTable[IntVec, Int, Boolean],

@@ -9,15 +9,17 @@ import org.newtonpolyhedron.entity.matrix.Matrix
 import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
-class AlphaMatrixTest extends FunSuite {
+class AlphaMatrixTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   val maker = new UnimodularMatrixMakerImpl
 
-  private def matrixFromDraft(draft: Seq[Seq[Int]]): Matrix[Rational] = {
-    matrFrac(draft :+ Seq.fill(draft.size + 1)(0))
+  private def matrixFromDraft(draft: Seq[Seq[Int]]): Matrix[N] = {
+    matrNum(draft :+ Seq.fill(draft.size + 1)(0))
   }
 
-  private def performTheTest(source: Seq[Seq[Int]], expected: Matrix[Rational]): Unit = {
+  private def performTheTest(source: Seq[Seq[Int]], expected: Matrix[N]): Unit = {
     val alpha = maker.unimodularFrom(matrixFromDraft(source))
     assert(alpha === expected)
   }
@@ -29,7 +31,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(2, 4, 5),
       s(3, 5, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 4, 5),
       s(3, 5, 1),
       s(1, 2, 2)
@@ -40,7 +42,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(-3, 5, -3),
       s(4, -7, 3)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, 5, -3),
       s(4, -7, 3),
       s(0, 0, 1)
@@ -51,7 +53,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(1, 2, 3),
       s(-1, 1, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, 2, 3),
       s(-1, 1, 1),
       s(0, -1, -1)
@@ -63,7 +65,7 @@ class AlphaMatrixTest extends FunSuite {
       s(2, 0, 1, 1),
       s(-2, 1, 0, 1),
       s(-1, 1, 1, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 0, 1, 1),
       s(-2, 1, 0, 1),
       s(-1, 1, 1, 1),
@@ -78,7 +80,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(5, 8, 3),
       s(3, 5, 4)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-5, -8, -3),
       s(-3, -5, -4),
       s(0, 0, 1)
@@ -89,7 +91,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(-3, -4, 1),
       s(4, 5, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(3, 4, -1),
       s(-4, -5, -2),
       s(0, 0, 1)
@@ -100,7 +102,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(2, -3, 4),
       s(4, -2, 3)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-2, 3, -4),
       s(-4, 2, -3),
       s(-3, 3, -4)
@@ -111,7 +113,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(-1, 4, 5),
       s(4, 5, 6)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, -4, -5),
       s(-4, -5, -6),
       s(0, -4, -5)
@@ -122,7 +124,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(7, -2, 8),
       s(-6, 1, -7)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-7, 2, -8),
       s(6, -1, 7),
       s(-6, 2, -7)
@@ -134,7 +136,7 @@ class AlphaMatrixTest extends FunSuite {
       s(3, 2, 1, 2),
       s(1, 1, 1, 1),
       s(2, 2, 1, -5)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, -2, -1, -2),
       s(-1, -1, -1, -1),
       s(-2, -2, -1, 5),
@@ -149,7 +151,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(3, 5, 4),
       s(5, 8, 3)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, -5, -4),
       s(-7, -12, -13),
       s(0, 0, 1)
@@ -160,7 +162,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(3, 5, 1),
       s(2, 4, 5)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, -5, -1),
       s(2, 4, 5),
       s(1, 2, 2)
@@ -171,7 +173,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(2, -3, 2),
       s(-3, 4, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-2, 3, -2),
       s(1, -2, 5),
       s(0, 0, 1)
@@ -182,7 +184,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(-3, 4, 1),
       s(-2, 3, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, 4, 1),
       s(-4, 5, 0),
       s(0, 0, 1)
@@ -193,7 +195,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(4, 5, 2),
       s(-3, -4, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(4, 5, 2),
       s(-5, -6, -5),
       s(0, 0, 1)
@@ -204,7 +206,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(4, -7, 3),
       s(-3, 5, -3)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-4, 7, -3),
       s(5, -9, 3),
       s(0, 0, 1)
@@ -215,7 +217,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(4, 5, 6),
       s(-1, 4, 5)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(4, 5, 6),
       s(41, 46, 55),
       s(-5, -5, -6)
@@ -226,7 +228,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(-6, 1, -7),
       s(7, -2, 8)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-6, 1, -7),
       s(17, -2, 20),
       s(1, 0, 1)
@@ -237,7 +239,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(1, -6, -7),
       s(-2, 7, 8)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, -6, -7),
       s(-2, 17, 20),
       s(0, -1, -1)
@@ -248,7 +250,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(-7, 1, -6),
       s(8, -2, 7)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-7, 1, -6),
       s(20, -2, 17),
       s(-1, 0, -1)
@@ -259,7 +261,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(1, 3, 4),
       s(-4, 1, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, 3, 4),
       s(-4, -25, -33),
       s(0, -3, -4)
@@ -270,7 +272,7 @@ class AlphaMatrixTest extends FunSuite {
     performTheTest(s(
       s(3, 4, 2),
       s(2, 1, 3)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(3, 4, 2),
       s(-4, -5, -3),
       s(0, 0, 1)
@@ -282,7 +284,7 @@ class AlphaMatrixTest extends FunSuite {
       s(1, 1, 1, 1),
       s(2, 2, 1, -5),
       s(3, 2, 1, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, 1, 1, 1),
       s(2, 2, 3, 9),
       s(3, 2, 5, 30),
@@ -295,7 +297,7 @@ class AlphaMatrixTest extends FunSuite {
       s(2, 2, 1, -5),
       s(1, 1, 1, 1),
       s(3, 2, 1, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 2, 1, -5),
       s(3, 3, 1, -11),
       s(1, 2, 1, -12),
@@ -308,7 +310,7 @@ class AlphaMatrixTest extends FunSuite {
       s(3, 2, 1, 2),
       s(2, 2, 1, -5),
       s(1, 1, 1, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, -2, -1, -2),
       s(2, 2, 1, -5),
       s(3, 3, 1, -11),
@@ -321,7 +323,7 @@ class AlphaMatrixTest extends FunSuite {
       s(2, 2, 1, -5),
       s(3, 2, 1, 2),
       s(1, 1, 1, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 2, 1, -5),
       s(1, 2, 1, -12),
       s(3, 1, 1, 15),
@@ -334,7 +336,7 @@ class AlphaMatrixTest extends FunSuite {
       s(1, 2, 3, 1),
       s(2, 2, 1, -5),
       s(3, 2, 1, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, 2, 3, 1),
       s(2, 6, 11, 9),
       s(3, 10, 17, 4),
@@ -347,7 +349,7 @@ class AlphaMatrixTest extends FunSuite {
       s(3, 2, 1, 2),
       s(2, 2, 1, -5),
       s(1, 2, 3, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, -2, -1, -2),
       s(2, 2, 1, -5),
       s(7, 6, 5, 5),
@@ -360,7 +362,7 @@ class AlphaMatrixTest extends FunSuite {
       s(1, 2, 3, 1),
       s(3, 2, 1, 2),
       s(2, 2, 1, -5)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, 2, 3, 1),
       s(3, 10, 17, 4),
       s(2, 58, 113, 9),
@@ -373,7 +375,7 @@ class AlphaMatrixTest extends FunSuite {
       s(2, 2, 1, -5),
       s(3, 2, 1, 2),
       s(1, 2, 3, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 2, 1, -5),
       s(1, 2, 1, -12),
       s(11, 10, 3, -31),
@@ -386,7 +388,7 @@ class AlphaMatrixTest extends FunSuite {
       s(3, 2, 1, 2),
       s(1, 2, 3, 1),
       s(2, 2, 1, -5)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(-3, -2, -1, -2),
       s(7, 6, 5, 5),
       s(2, 2, 1, -5),
@@ -399,7 +401,7 @@ class AlphaMatrixTest extends FunSuite {
       s(-1, 1, 1, 1),
       s(2, 0, 1, 1),
       s(-2, 1, 0, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, -1, -1, -1),
       s(-2, 4, 5, 5),
       s(2, -5, -6, -7),
@@ -412,7 +414,7 @@ class AlphaMatrixTest extends FunSuite {
       s(2, 0, 1, 1),
       s(-1, 1, 1, 1),
       s(-2, 1, 0, 1)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 0, 1, 1),
       s(-1, 1, 1, 1),
       s(-4, 1, 0, -1),
@@ -425,7 +427,7 @@ class AlphaMatrixTest extends FunSuite {
       s(2, 2, 1, -5),
       s(1, 2, 3, 1),
       s(3, 2, 1, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(2, 2, 1, -5),
       s(1, 2, 3, 1),
       s(11, 10, 1, -44),
@@ -438,7 +440,7 @@ class AlphaMatrixTest extends FunSuite {
       s(1, 2, 3, 1),
       s(1, 1, 1, 1),
       s(3, 2, 1, 2)
-    ), matrFrac(s(
+    ), matrNum(s(
       s(1, 2, 3, 1),
       s(1, 3, 5, 1),
       s(3, 10, 17, 4),
