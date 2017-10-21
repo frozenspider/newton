@@ -77,6 +77,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
+
   private def matrixByRows(m: Matrix[N]): Seq[NumVec[N]] =
     (m.elementsByRow map (_._3) grouped (m.colCount) map vecn).toIndexedSeq
 
@@ -105,6 +106,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
+
   override def solveShortSubstitutesSystem(simpleSys: Polys[N]): NumVec[N] = {
     require(simpleSys forall (_ forall (t => t.powers.last == mp.zero)))
     // Remove last (zero) component
@@ -118,6 +120,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
+
   override def varChangeFromShortSubsSolution(vecs: NumVec[N]): Polys[N] = {
     val dimension = vecs.size
     val zeroVec = NumVec.zero[N](dimension)

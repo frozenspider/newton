@@ -35,6 +35,7 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
   //
   // Standard
   //
+
   override def equals(that: Any) = that match {
     case that: Surface => this.pointIndices == that.pointIndices && this.upperSurfaces == that.upperSurfaces
     case _             => false

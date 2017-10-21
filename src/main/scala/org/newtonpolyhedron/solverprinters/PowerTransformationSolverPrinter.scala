@@ -91,6 +91,7 @@ class PowerTransformationSolverPrinter[N <: MPNumber](
   //
   // TODO: Extract logic
   //
+
   private def getVarIdx(t: Term[N]) = t.powers indexWhere (_ != mp.zero)
 
   private def countNonZeroPowers(t: Term[N]) = t.powers count (_ != mp.zero)

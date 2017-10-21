@@ -13,7 +13,7 @@ class EqSystemChainSolver[N <: MPNumber](solversChain: Seq[EqSystemSolver[N]]) e
     assert(
       solutionOption.isDefined,
       "Chain solver for system of equations was unable to solve provided system! "
-        + "That's a bug, at one solver in chain must be manual and omniscient"
+        + "That's a bug, as one solver in chain must be manual and omniscient"
     )
     solutionOption.get
   }

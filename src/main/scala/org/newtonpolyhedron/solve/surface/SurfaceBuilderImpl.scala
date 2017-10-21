@@ -72,6 +72,7 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
     // List may contains semi-duplicates and nothing is yet known
     // about higher-dimension surface associations
     //
+
     val surfacesLists: Seq[Seq[Surface]] = (for {
       pointListCombination <- lookupTableData.combinations(width)
     } yield {
