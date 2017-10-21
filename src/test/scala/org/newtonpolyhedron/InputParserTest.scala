@@ -18,6 +18,7 @@ class InputParserTest
   //
   // Parse vectors
   //
+
   test("parse vectors - integer") {
     val str =
       """1 2 3
@@ -45,6 +46,7 @@ class InputParserTest
   //
   // Parse single poly
   //
+
   test("parse poly - empty") {
     val str =
       """
@@ -155,6 +157,7 @@ class InputParserTest
   //
   // Parse multiple polys
   //
+
   test("parse polys - two") {
     val str =
       """
@@ -237,6 +240,7 @@ class InputParserTest
   //
   // Parse matrix
   //
+
   test("parse matrix - fractions 1") {
     val str =
       """

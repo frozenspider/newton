@@ -27,13 +27,15 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(-2, -2, 1),
       iv(-2, 2, 1),
       iv(2, -2, 1),
-      iv(2, 2, 1))
+      iv(2, 2, 1)
+    )
     val marked = s(
       s(0, 1, 2, 3),
       s(0, 1, 4),
       s(0, 3, 4),
       s(1, 2, 4),
-      s(2, 3, 4))
+      s(2, 3, 4)
+    )
     val lookupTable = markedTable(5, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -43,7 +45,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(0, 1, 4), s()),
         (s(0, 3, 4), s()),
         (s(1, 2, 4), s()),
-        (s(2, 3, 4), s())),
+        (s(2, 3, 4), s())
+      ),
 
       // Dimension: 1
       s(
@@ -54,7 +57,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(1, 4), s(1, 3)),
         (s(2, 3), s(0, 4)),
         (s(2, 4), s(3, 4)),
-        (s(3, 4), s(2, 4))),
+        (s(3, 4), s(2, 4))
+      ),
 
       // Dimension: 0
       s(
@@ -62,7 +66,9 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(1), s(0, 3, 4)),
         (s(2), s(3, 5, 6)),
         (s(3), s(1, 5, 7)),
-        (s(4), s(2, 4, 6, 7)))))
+        (s(4), s(2, 4, 6, 7))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
     assert(actualSurfaces === expectedSurfaces)
@@ -100,7 +106,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(1, -1, 0),
       iv(1, 1, 0),
       iv(2, -2, 1),
-      iv(2, 2, 1))
+      iv(2, 2, 1)
+    )
     val marked = s(
       s(0, 2, 20, 22),
       s(5, 6, 20, 21),
@@ -115,7 +122,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(6, 8, 11, 13),
       s(11, 12, 13, 14, 16, 17, 18, 19),
       s(6, 11, 21),
-      s(11, 12, 16, 17, 21, 22))
+      s(11, 12, 16, 17, 21, 22)
+    )
     val lookupTable = markedTable(25, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -134,7 +142,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(6, 11, 21), s()),
         (s(11, 12, 13, 14, 16, 17, 18, 19), s()),
         (s(11, 12, 16, 17, 21, 22), s()),
-        (s(20, 21, 22), s())),
+        (s(20, 21, 22), s())
+      ),
 
       // Dimension: 1
       s(
@@ -162,7 +171,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(17, 22), s(5, 12)),
         (s(20, 21), s(8, 13)),
         (s(20, 22), s(1, 13)),
-        (s(21, 22), s(12, 13))),
+        (s(21, 22), s(12, 13))
+      ),
 
       // Dimension: 0
       s(
@@ -178,7 +188,9 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(19), s(8, 19, 20)),
         (s(20), s(3, 11, 22, 23)),
         (s(21), s(14, 18, 22, 24)),
-        (s(22), s(6, 21, 23, 24)))))
+        (s(22), s(6, 21, 23, 24))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
     assert(actualSurfaces === expectedSurfaces)
@@ -196,12 +208,14 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(-1, 0),
       iv(1, -1),
       iv(1, 0),
-      iv(1, 1))
+      iv(1, 1)
+    )
     val marked = s(
       s(0, 1, 2, 3, 4, 5),
       s(5, 9),
       s(8, 9),
-      s(2, 8))
+      s(2, 8)
+    )
     val lookupTable = markedTable(10, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -210,14 +224,17 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(0, 1, 2, 3, 4, 5), s()),
         (s(2, 8), s()),
         (s(5, 9), s()),
-        (s(8, 9), s())),
+        (s(8, 9), s())
+      ),
 
       // Dimension: 0
       s(
         (s(2), s(0, 1)),
         (s(5), s(0, 2)),
         (s(8), s(1, 3)),
-        (s(9), s(2, 3)))))
+        (s(9), s(2, 3))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 2)
     assert(actualSurfaces === expectedSurfaces)
@@ -237,13 +254,15 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(0, 0, -1),
       iv(-1, 0, 0),
       iv(0, 1, 0),
-      iv(1, 0, 0))
+      iv(1, 0, 0)
+    )
     val marked = s(
       s(0, 1, 3, 5),
       s(0, 1, 2, 4),
       s(0, 2, 3),
       s(2, 3, 4, 5),
-      s(1, 4, 5))
+      s(1, 4, 5)
+    )
     val lookupTable = markedTable(5, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -253,7 +272,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(0, 1, 3, 5), s()),
         (s(0, 2, 3), s()),
         (s(1, 4, 5), s()),
-        (s(2, 3, 4, 5), s())),
+        (s(2, 3, 4, 5), s())
+      ),
 
       // Dimension: 1
       s(
@@ -265,7 +285,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(2, 3), s(2, 4)),
         (s(2, 4), s(0, 4)),
         (s(3, 5), s(1, 4)),
-        (s(4, 5), s(3, 4))),
+        (s(4, 5), s(3, 4))
+      ),
 
       // Dimension: 0
       s(
@@ -274,7 +295,9 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(2), s(1, 5, 6)),
         (s(3), s(2, 5, 7)),
         (s(4), s(3, 6, 8)),
-        (s(5), s(4, 7, 8)))))
+        (s(5), s(4, 7, 8))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
     assert(actualSurfaces === expectedSurfaces)
@@ -292,12 +315,14 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(-2, -1, -1),
       iv(-1, -2, -1),
       iv(-1, -1, -2),
-      iv(1, 1, 1))
+      iv(1, 1, 1)
+    )
     val marked = s(
       s(0, 2, 3),
       s(0, 1, 3, 4),
       s(0, 1, 2),
-      s(1, 2, 3, 4))
+      s(1, 2, 3, 4)
+    )
     val lookupTable = markedTable(5, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -306,7 +331,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(0, 1, 2), s()),
         (s(0, 1, 3, 4), s()),
         (s(0, 2, 3), s()),
-        (s(1, 2, 3, 4), s())),
+        (s(1, 2, 3, 4), s())
+      ),
 
       // Dimension: 1
       s(
@@ -315,14 +341,17 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(0, 3), s(1, 2)),
         (s(1, 2), s(0, 3)),
         (s(1, 3, 4), s(1, 3)),
-        (s(2, 3), s(2, 3))),
+        (s(2, 3), s(2, 3))
+      ),
 
       // Dimension: 0
       s(
         (s(0), s(0, 1, 2)),
         (s(1), s(0, 3, 4)),
         (s(2), s(1, 3, 5)),
-        (s(3), s(2, 4, 5)))))
+        (s(3), s(2, 4, 5))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
     assert(actualSurfaces === expectedSurfaces)
@@ -362,7 +391,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(0, -1, 0, 0),
       iv(0, 0, -1, -1),
       iv(0, 0, -1, 0),
-      iv(0, 0, 0, -1))
+      iv(0, 0, 0, -1)
+    )
     val marked = s(
       s(0, 1, 2, 8, 9, 10, 11),
       s(8, 9, 10),
@@ -378,20 +408,23 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(9),
       s(2, 10, 11),
       s(10),
-      s(11))
+      s(11)
+    )
     val lookupTable = markedTable(12, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
       // Dimension: 3
       s(
-        (s(0, 1, 2, 8, 9, 10, 11), s())),
+        (s(0, 1, 2, 8, 9, 10, 11), s())
+      ),
 
       // Dimension: 2
       s(
         (s(1, 2, 9, 10, 11), s(0)),
         (s(2, 8, 10, 11), s(0)),
         (s(8, 9, 10), s(0)),
-        (s(8, 9, 11), s(0))),
+        (s(8, 9, 11), s(0))
+      ),
 
       // Dimension: 1
       s(
@@ -400,14 +433,17 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(8, 10), s(1, 2)),
         (s(8, 11), s(1, 3)),
         (s(9, 10), s(0, 2)),
-        (s(9, 11), s(0, 3))),
+        (s(9, 11), s(0, 3))
+      ),
 
       // Dimension: 0
       s(
         (s(8), s(1, 2, 3)),
         (s(9), s(1, 4, 5)),
         (s(10), s(0, 2, 4)),
-        (s(11), s(0, 3, 5)))))
+        (s(11), s(0, 3, 5))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
     assert(actualSurfaces === expectedSurfaces)
@@ -449,7 +485,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(1, 1, -1, -1),
       iv(1, 1, -1, 1),
       iv(1, 1, 1, -1),
-      iv(1, 1, 1, 1))
+      iv(1, 1, 1, 1)
+    )
     val marked = s(
       s(0, 1, 2, 8, 9, 10, 11),
       s(7, 8, 9, 10),
@@ -466,7 +503,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(2, 4, 5, 10, 11),
       s(4, 5, 7, 10),
       s(4, 5, 6, 11),
-      s(4, 5, 6, 7))
+      s(4, 5, 6, 7)
+    )
     val lookupTable = markedTable(12, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -487,7 +525,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(5, 7, 8, 10), s()),
         (s(6, 7, 8, 9), s()),
         (s(6, 8, 9, 11), s()),
-        (s(7, 8, 9, 10), s())),
+        (s(7, 8, 9, 10), s())
+      ),
 
       // Dimension: 2
       s(
@@ -522,7 +561,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(7, 8, 10), s(12, 15)),
         (s(7, 9, 10), s(9, 15)),
         (s(8, 9, 10), s(0, 15)),
-        (s(8, 9, 11), s(0, 14))),
+        (s(8, 9, 11), s(0, 14))
+      ),
 
       // Dimension: 1
       s(
@@ -549,7 +589,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(8, 10), s(3, 20, 28, 30)),
         (s(8, 11), s(3, 21, 25, 31)),
         (s(9, 10), s(0, 13, 29, 30)),
-        (s(9, 11), s(0, 14, 26, 31))),
+        (s(9, 11), s(0, 14, 26, 31))
+      ),
 
       // Dimension: 0
       s(
@@ -560,7 +601,9 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(8), s(9, 13, 16, 19, 20, 21)),
         (s(9), s(4, 14, 17, 19, 22, 23)),
         (s(10), s(0, 5, 10, 18, 20, 22)),
-        (s(11), s(0, 6, 11, 15, 21, 23)))))
+        (s(11), s(0, 6, 11, 15, 21, 23))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
     assert(actualSurfaces === expectedSurfaces)
@@ -576,7 +619,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       iv(0, 0, 0, 1),
       iv(0, 0, 1, 0),
       iv(0, 1, 0, 0),
-      iv(1, 0, 0, 0))
+      iv(1, 0, 0, 0)
+    )
     val marked = s(
       s(1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19),
       s(2, 3, 6, 7, 10, 11, 14, 15, 18, 19),
@@ -585,7 +629,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       s(4, 5, 6, 7, 12, 13, 14, 15),
       s(4, 5, 8, 9, 12, 13, 16, 17),
       s(4, 6, 8, 10, 12, 14, 16, 18),
-      s(12, 13, 14, 15, 16, 17, 18, 19))
+      s(12, 13, 14, 15, 16, 17, 18, 19)
+    )
     val lookupTable = markedTable(20, vecs, marked)
 
     val expectedSurfaces = chainSurfaces(s(
@@ -598,7 +643,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(4, 5, 6, 7, 12, 13, 14, 15), s()),
         (s(4, 5, 8, 9, 12, 13, 16, 17), s()),
         (s(4, 6, 8, 10, 12, 14, 16, 18), s()),
-        (s(12, 13, 14, 15, 16, 17, 18, 19), s())),
+        (s(12, 13, 14, 15, 16, 17, 18, 19), s())
+      ),
 
       // Dimension: 2
       s(
@@ -625,7 +671,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(12, 14, 16, 18), s(6, 7)),
         (s(14, 15, 18, 19), s(1, 7)),
         (s(16, 17, 18, 19), s(0, 7)),
-        (s(13, 15, 17, 19), s(2, 7))),
+        (s(13, 15, 17, 19), s(2, 7))
+      ),
 
       // Dimension: 1
       s(
@@ -660,7 +707,8 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(16, 17), s(16, 19, 23)),
         (s(16, 18), s(17, 20, 23)),
         (s(17, 19), s(2, 21, 23)),
-        (s(18, 19), s(0, 22, 23))),
+        (s(18, 19), s(0, 22, 23))
+      ),
 
       // Dimension: 0
       s(
@@ -679,7 +727,9 @@ class SurfaceBuilderImplTest extends FunSuite {
         (s(16), s(15, 22, 28, 29)),
         (s(17), s(17, 24, 28, 30)),
         (s(18), s(19, 26, 29, 31)),
-        (s(19), s(0, 27, 30, 31)))))
+        (s(19), s(0, 27, 30, 31))
+      )
+    ))
 
     val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
     assert(actualSurfaces === expectedSurfaces)

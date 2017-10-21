@@ -18,9 +18,11 @@ class MotzkinBurger extends ConeSolver {
   /** Fundamental Solutions */
   private type V = Seq[IntVec]
 
-  override def solve(ineqs: L,
-                     basisOption: Option[U],
-                     dimension: Int): V = {
+  override def solve(
+      ineqs:       L,
+      basisOption: Option[U],
+      dimension:   Int
+  ): V = {
     require(ineqs forall (_.size == dimension), "Inequation vector with incorrect dimension")
     // E.g. we got one vector in 3d space - we can handle 2 vectors here (simple degenerated case),
     // but with this few points the solution is undefined
@@ -34,9 +36,11 @@ class MotzkinBurger extends ConeSolver {
     solve(ineqs, basis, dimension)
   }
 
-  private def solve(ineqs: L,
-                    basis: U,
-                    dimension: Int): V = {
+  private def solve(
+      ineqs:     L,
+      basis:     U,
+      dimension: Int
+  ): V = {
     val lInitial: Seq[IntVec] = Seq(IndexedSeq.fill(dimension)(0))
     val (us, vs) = recurse(lInitial, ineqs)(basis, Seq.empty)
     if (us.isEmpty) {
@@ -63,7 +67,7 @@ class MotzkinBurger extends ConeSolver {
   }
 
   private def solveWithBasisVec(l: IntVec)(us: U, vs: V): (U, V) = {
-    // Inversing the signs of positive-conforming basis vectors 
+    // Inversing the signs of positive-conforming basis vectors
     val bs = us map (u => if (u *+ l <= 0) u else -u)
     val Some(bSel) = bs find (_ *+ l != 0)
     val lbSel = l *+ bSel
@@ -110,8 +114,6 @@ class MotzkinBurger extends ConeSolver {
     val `vs*` = vs filter (v => (v != v1) && (v != v2))
     `vs*` forall (v =>
       `ls*` exists (l =>
-        l *+ v != 0
-      )
-    )
+        l *+ v != 0))
   }
 }

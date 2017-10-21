@@ -27,6 +27,7 @@ class AlphaMatrixTest
   //
   // Stable
   //
+
   test("3d, == ==") {
     performTheTest(s(
       s(2, 4, 5),
@@ -76,6 +77,7 @@ class AlphaMatrixTest
   //
   // Inversed
   //
+
   test("3d, -- --") {
     performTheTest(s(
       s(5, 8, 3),
@@ -147,6 +149,7 @@ class AlphaMatrixTest
   //
   // Rest
   //
+
   test("3d, -- <>") {
     performTheTest(s(
       s(3, 5, 4),

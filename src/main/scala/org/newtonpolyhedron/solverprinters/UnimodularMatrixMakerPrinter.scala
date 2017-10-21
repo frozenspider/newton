@@ -8,14 +8,16 @@ import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.utils.StringUtils
 
 class UnimodularMatrixMakerPrinter[N <: MPNumber](
-    override val solver: UnimodularMatrixMaker[N],
-    val baseMatrix:      Matrix[N],
-    override val output: PrintWriter)
-  extends SolverPrinter[UnimodularMatrixMaker[N]](solver, output) {
+  override val solver: UnimodularMatrixMaker[N],
+  val baseMatrix:      Matrix[N],
+  override val output: PrintWriter
+)
+    extends SolverPrinter[UnimodularMatrixMaker[N]](solver, output) {
 
   override def solveFor(
       solver: UnimodularMatrixMaker[N],
-      output: PrintWriter) = {
+      output: PrintWriter
+  ) = {
     val alpha = solver.unimodularFrom(baseMatrix)
     val alphaInv = alpha.inv
     output.println(title("Unimodular \"Alpha\" matrix"))

@@ -6,12 +6,16 @@ import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
 import spire.math.Rational
 
-class MatrixInverseSolverPrinter(val baseMatrix: Matrix[Rational],
-                                 override val output: PrintWriter)
+class MatrixInverseSolverPrinter(
+  val baseMatrix:      Matrix[Rational],
+  override val output: PrintWriter
+)
     extends SolverPrinter[Void](null, output) {
 
-  override def solveFor(nothing: Void,
-                        output: PrintWriter) = {
+  override def solveFor(
+      nothing: Void,
+      output:  PrintWriter
+  ) = {
     val inv = baseMatrix.inv
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)

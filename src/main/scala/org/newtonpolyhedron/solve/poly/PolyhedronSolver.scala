@@ -7,9 +7,9 @@ import org.newtonpolyhedron.NewtonImports._
 
 trait PolyhedronSolver[N <: MPNumber] {
   def solve(
-    points:             Seq[NumVec[N]],
-    commonLimitsOption: Option[Seq[IntVec]],
-    wishfulBasisOption: Option[Seq[IntVec]],
-    output:             PrintWriter
+      points:             Seq[NumVec[N]],
+      commonLimitsOption: Option[Seq[IntVec]],
+      wishfulBasisOption: Option[Seq[IntVec]],
+      output:             PrintWriter
   ): KeyTable[IntVec, Int, Boolean]
 }

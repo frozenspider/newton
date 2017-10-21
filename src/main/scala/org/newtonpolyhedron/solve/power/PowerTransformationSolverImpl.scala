@@ -8,7 +8,8 @@ import spire.math.Rational
 
 class PowerTransformationSolverImpl[N <: MPNumber](
   val umm:         UnimodularMatrixMaker[N],
-  val eqSysSolver: EqSystemSolver[N])(implicit mp: MathProcessor[N])
+  val eqSysSolver: EqSystemSolver[N]
+)(implicit mp: MathProcessor[N])
     extends PowerTransformationSolver[N] {
 
   private type Powers = Seq[NumVec[N]]
@@ -25,7 +26,8 @@ class PowerTransformationSolverImpl[N <: MPNumber](
     }
     require(
       powersSeqs forall (_ forall (_.length == dimension)),
-      "Each term should have the same dimension: number of pairs + 1")
+      "Each term should have the same dimension: number of pairs + 1"
+    )
     val pairsStream: Stream[Seq[(NumVec[N], NumVec[N])]] = choosePairs(powersSeqs)
     val matrices = pairsStream map { pairs =>
       val matrixBase = (pairs map {
@@ -75,6 +77,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
+
   private def matrixByRows(m: Matrix[N]): Seq[NumVec[N]] =
     (m.elementsByRow map (_._3) grouped (m.colCount) map vecn).toIndexedSeq
 
@@ -103,6 +106,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
+
   override def solveShortSubstitutesSystem(simpleSys: Polys[N]): NumVec[N] = {
     require(simpleSys forall (_ forall (t => t.powers.last == mp.zero)))
     // Remove last (zero) component
@@ -116,6 +120,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   //
   // =========================
   //
+
   override def varChangeFromShortSubsSolution(vecs: NumVec[N]): Polys[N] = {
     val dimension = vecs.size
     val zeroVec = NumVec.zero[N](dimension)

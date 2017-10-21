@@ -7,13 +7,17 @@ import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolver
 import spire.math.Rational
 
-class MatrixMinorGCDSolverPrinter(override val solver: MatrixMinorGCDSolver,
-                                  val baseMatrix: Matrix[Rational],
-                                  override val output: PrintWriter)
+class MatrixMinorGCDSolverPrinter(
+  override val solver: MatrixMinorGCDSolver,
+  val baseMatrix:      Matrix[Rational],
+  override val output: PrintWriter
+)
     extends SolverPrinter[MatrixMinorGCDSolver](solver, output) {
 
-  override def solveFor(solver: MatrixMinorGCDSolver,
-                        output: PrintWriter) = {
+  override def solveFor(
+      solver: MatrixMinorGCDSolver,
+      output: PrintWriter
+  ) = {
     val result = solver.lastRowGcd(baseMatrix)
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)
