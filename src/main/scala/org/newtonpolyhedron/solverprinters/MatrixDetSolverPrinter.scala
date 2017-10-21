@@ -10,7 +10,7 @@ class MatrixDetSolverPrinter(
   val baseMatrix: Matrix[Rational],
   val skipRow:    Int,
   val skipCol:    Int,
-  output:         PrintWriter
+  override val output:         PrintWriter
 )
     extends SolverPrinter[Void](null, output) {
 
@@ -18,6 +18,7 @@ class MatrixDetSolverPrinter(
       nothing: Void,
       output:  PrintWriter
   ) = {
+    output.println(title("Matrix determinant"))
     val det = baseMatrix.minor(skipRow, skipCol)
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)
@@ -29,6 +30,6 @@ class MatrixDetSolverPrinter(
         case (r, c)   => output.println("(Skipping row " + skipRow + ", col " + skipCol + ")")
       }
     }
-    output.println("Matrix determinant: " + det)
+    output.println("Determinant: " + det)
   }
 }

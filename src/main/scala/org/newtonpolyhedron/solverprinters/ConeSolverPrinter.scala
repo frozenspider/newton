@@ -21,7 +21,7 @@ class ConeSolverPrinter(
       solver: ConeSolver,
       output: PrintWriter
   ) = {
-    output.println(title("Cone computing"))
+    output.println(title("Cone computation"))
     val rank = Matrix(inequations map (_ map Rational.apply)).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))

@@ -20,7 +20,7 @@ class UnimodularMatrixMakerPrinter[N <: MPNumber](
   ) = {
     val alpha = solver.unimodularFrom(baseMatrix)
     val alphaInv = alpha.inv
-    output.println(title("Unimodular \"Alpha\" matrix"))
+    output.println(title("""Unimodular "Alpha" matrix"""))
     val text1 = new StringBuilder()
     text1 ++= subheader("Base matrix:") + "\n"
     text1 ++= baseMatrix + "\n"

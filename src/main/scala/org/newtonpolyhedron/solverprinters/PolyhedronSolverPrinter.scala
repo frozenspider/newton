@@ -32,7 +32,7 @@ class PolyhedronSolverPrinter[N <: MPNumber](
       solver: PolyhedronSolver[N],
       output: PrintWriter
   ) = {
-    output.println(title("Polyhedron computing"))
+    output.println(title("Polyhedron computation"))
 
     output.println(header("Original points:"))
     val dimension = points(0).size

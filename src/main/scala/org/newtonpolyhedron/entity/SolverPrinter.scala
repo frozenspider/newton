@@ -16,7 +16,7 @@ abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
   //
 
   def title(title: String): String = {
-    val bordered = "======= " + title + " ======="
+    val bordered = "== " + title + " =="
     val line = "=" * bordered.length
     "\n\n\n" + line + "\n" + bordered + "\n" + line
   }

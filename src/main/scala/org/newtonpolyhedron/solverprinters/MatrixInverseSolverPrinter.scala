@@ -16,10 +16,11 @@ class MatrixInverseSolverPrinter(
       nothing: Void,
       output:  PrintWriter
   ) = {
+    output.println(title("Matrix inversion"))
     val inv = baseMatrix.inv
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)
-    output.println(subheader("Matrix inverse:"))
+    output.println(subheader("Inverse matrix:"))
     output.println(inv)
   }
 }

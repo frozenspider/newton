@@ -24,7 +24,7 @@ class PowerTransformationSolverPrinter[N <: MPNumber](
       solver: PowerTransformationSolver[N],
       output: PrintWriter
   ) = {
-    output.println(title("Power Transformation"))
+    output.println(title("Power transformation"))
     output.println(header("Initial polynomials"))
     polys foreach output.println
 

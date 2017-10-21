@@ -18,6 +18,7 @@ class MatrixMinorGCDSolverPrinter(
       solver: MatrixMinorGCDSolver,
       output: PrintWriter
   ) = {
+    output.println(title("Matrix GCD"))
     val result = solver.lastRowGcd(baseMatrix)
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)
