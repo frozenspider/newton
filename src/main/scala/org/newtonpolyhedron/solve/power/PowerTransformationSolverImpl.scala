@@ -8,7 +8,8 @@ import spire.math.Rational
 
 class PowerTransformationSolverImpl[N <: MPNumber](
   val umm:         UnimodularMatrixMaker[N],
-  val eqSysSolver: EqSystemSolver[N])(implicit mp: MathProcessor[N])
+  val eqSysSolver: EqSystemSolver[N]
+)(implicit mp: MathProcessor[N])
     extends PowerTransformationSolver[N] {
 
   private type Powers = Seq[NumVec[N]]
@@ -25,7 +26,8 @@ class PowerTransformationSolverImpl[N <: MPNumber](
     }
     require(
       powersSeqs forall (_ forall (_.length == dimension)),
-      "Each term should have the same dimension: number of pairs + 1")
+      "Each term should have the same dimension: number of pairs + 1"
+    )
     val pairsStream: Stream[Seq[(NumVec[N], NumVec[N])]] = choosePairs(powersSeqs)
     val matrices = pairsStream map { pairs =>
       val matrixBase = (pairs map {

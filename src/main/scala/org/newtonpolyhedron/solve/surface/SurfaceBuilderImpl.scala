@@ -7,18 +7,24 @@ import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.entity.Surface
 
 class SurfaceBuilderImpl extends SurfaceBuilder {
-  override def surfaces(lookupTable: KeyTable[IntVec, Int, Boolean],
-                        dim: Int): Map[Int, SortedSet[Surface]] = {
+  override def surfaces(
+      lookupTable: KeyTable[IntVec, Int, Boolean],
+      dim:         Int
+  ): Map[Int, SortedSet[Surface]] = {
     val lookupData = extactLookupTableData(lookupTable)
     val surfacesMap = gatherSurfacesMap(dim, lookupData)
     surfacesMap
   }
 
-  private def gatherSurfacesMap(dim: Int,
-                                lookupData: Seq[Seq[Int]]): Map[Int, SortedSet[Surface]] = {
-    def recurse(targetDim: Int,
-                result: Map[Int, SortedSet[Surface]],
-                prevSurface: Set[Surface]): Map[Int, SortedSet[Surface]] = {
+  private def gatherSurfacesMap(
+      dim:        Int,
+      lookupData: Seq[Seq[Int]]
+  ): Map[Int, SortedSet[Surface]] = {
+    def recurse(
+        targetDim:   Int,
+        result:      Map[Int, SortedSet[Surface]],
+        prevSurface: Set[Surface]
+    ): Map[Int, SortedSet[Surface]] = {
       if (targetDim < 0) result
       else {
         val surfaces = findCommonSurfaces(dim, targetDim, prevSurface, lookupData)
@@ -49,10 +55,12 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
    *            data from lookup table (i.e. table without keys)
    * @return list of surfaces of a lower dimension
    */
-  def findCommonSurfaces(polyDim: Int,
-                         targetDim: Int,
-                         upperLevelSurfaces: Set[Surface],
-                         lookupTableData: Seq[Seq[Int]]): SortedSet[Surface] = {
+  def findCommonSurfaces(
+      polyDim:            Int,
+      targetDim:          Int,
+      upperLevelSurfaces: Set[Surface],
+      lookupTableData:    Seq[Seq[Int]]
+  ): SortedSet[Surface] = {
     require(polyDim >= 2, "Polyhedron dimension >= 2")
     require(targetDim >= 0, "Target dimension must be nonnegative")
     require(targetDim < polyDim, "Target dimension must be < poly dimension")
@@ -99,10 +107,12 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
     }
   }
 
-  private def gatherHigherLevelSurfacesInfo(surfaces: Set[Surface],
-                                            upperLevelSurfaces: Set[Surface],
-                                            tagetDim: Int,
-                                            polyDim: Int): Set[Surface] = {
+  private def gatherHigherLevelSurfacesInfo(
+      surfaces:           Set[Surface],
+      upperLevelSurfaces: Set[Surface],
+      tagetDim:           Int,
+      polyDim:            Int
+  ): Set[Surface] = {
     val surfaceOpts = surfaces map { currentSurface =>
       val superior = surfacesConatiningGiven(currentSurface, upperLevelSurfaces)
       if (tagetDim == 0 && (superior.size < polyDim - 1))

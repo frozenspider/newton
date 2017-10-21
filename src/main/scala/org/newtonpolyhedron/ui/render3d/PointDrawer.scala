@@ -15,9 +15,11 @@ import javax.vecmath.Point3d
 
 class PointDrawer extends Shape3D {
 
-  def this(pts: Seq[Point3d],
-           mode: Int,
-           is2d: Boolean) = {
+  def this(
+      pts:  Seq[Point3d],
+      mode: Int,
+      is2d: Boolean
+  ) = {
     this
     setGeometry(createAxisLines(is2d))
     mode match {
@@ -58,7 +60,8 @@ class PointDrawer extends Shape3D {
           linePts((z, z, len), (dif, z, len - dif)),
           linePts((z, z, len), (-dif, z, len - dif)),
           linePts((z, z, len), (z, dif, len - dif)),
-          linePts((z, z, len), (z, -dif, len - dif)))
+          linePts((z, z, len), (z, -dif, len - dif))
+        )
       else
         Seq(
           linePts((len, z, z), (z, z, z)),
@@ -67,7 +70,8 @@ class PointDrawer extends Shape3D {
           //
           linePts((z, len, z), (z, z, z)),
           linePts((z, len, z), (dif, len - dif, z)),
-          linePts((z, len, z), (-dif, len - dif, z)))
+          linePts((z, len, z), (-dif, len - dif, z))
+        )
     }.flatten
     val axisGeom = new LineArray(30, COORDINATES | COLOR_3)
     (0 until axisX.size) foreach (i => axisGeom setCoordinate (i, axisX(i)))
@@ -79,11 +83,13 @@ class PointDrawer extends Shape3D {
         Seq(
           c3f(z, clbr, clbr),
           c3f(clbr, z, clbr),
-          c3f(clbr, clbr, z)) flatMap (Seq.fill(10)(_))
+          c3f(clbr, clbr, z)
+        ) flatMap (Seq.fill(10)(_))
       } else {
         Seq(
           c3f(z, clbr, clbr),
-          c3f(clbr, z, clbr)) flatMap (Seq.fill(6)(_))
+          c3f(clbr, z, clbr)
+        ) flatMap (Seq.fill(6)(_))
       }
     axisGeom.setColors(0, colors.toArray[Color3f])
     axisGeom

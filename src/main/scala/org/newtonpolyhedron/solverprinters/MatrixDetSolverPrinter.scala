@@ -6,14 +6,18 @@ import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.entity.matrix.Matrix
 import spire.math.Rational
 
-class MatrixDetSolverPrinter(val baseMatrix: Matrix[Rational],
-                             val skipRow: Int,
-                             val skipCol: Int,
-                             output: PrintWriter)
+class MatrixDetSolverPrinter(
+  val baseMatrix: Matrix[Rational],
+  val skipRow:    Int,
+  val skipCol:    Int,
+  output:         PrintWriter
+)
     extends SolverPrinter[Void](null, output) {
 
-  override def solveFor(nothing: Void,
-                        output: PrintWriter) = {
+  override def solveFor(
+      nothing: Void,
+      output:  PrintWriter
+  ) = {
     val det = baseMatrix.minor(skipRow, skipCol)
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)

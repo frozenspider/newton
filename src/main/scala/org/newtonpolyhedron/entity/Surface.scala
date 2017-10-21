@@ -21,10 +21,12 @@ class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Su
     if (!upperSurfaces.isEmpty) {
       result.append(" / ")
       val upperSurfacesIndices = upperSurfaces map (allUpperSurfaces indexOf _)
-      assert(upperSurfacesIndices forall (_ != -1),
+      assert(
+        upperSurfacesIndices forall (_ != -1),
         "Upper dimension surface is missing  from its upper dimension surfaces list: " +
           allUpperSurfaces(upperSurfacesIndices indexOf -1) +
-          " given " + allUpperSurfaces)
+          " given " + allUpperSurfaces
+      )
       result.append(upperSurfacesIndices.mkString(", "))
     }
     result

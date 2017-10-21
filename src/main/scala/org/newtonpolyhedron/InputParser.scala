@@ -21,6 +21,7 @@ object InputParser {
   //
   // General
   //
+
   /** Parses file by given parsers */
   def genParseFile[R](file: File)(read: Lines => R): R = {
     val lines = {
@@ -76,6 +77,7 @@ object InputParser {
   //
   // Poly and Cone
   //
+
   /** @return pointList, commonLimits, basis */
   def parsePolyFromFile[C](file: File)(parseElement: Parse[C]): (ISeqSeq[C], OptISeqSeq[BigInt], OptISeqSeq[BigInt]) =
     genParseFile(file)(lines => parsePolyFromLines(lines)(parseElement))
@@ -111,6 +113,7 @@ object InputParser {
   //
   // Intersection
   //
+
   /** @return (poly1, poly2, ...; dim) */
   def parsePolysFromFile[C](file: File)(parseElement: Parse[C]): (ISeqSeqSeq[C], Int) =
     genParseFile(file)(lines => parsePolysFromLines(lines)(parseElement))
@@ -121,7 +124,8 @@ object InputParser {
     def readRec(
         dim:       Int,
         travLines: Lines,
-        acc:       ISeqSeqSeq[C]): ISeqSeqSeq[C] =
+        acc:       ISeqSeqSeq[C]
+    ): ISeqSeqSeq[C] =
       if (travLines.isEmpty)
         acc
       else {
