@@ -4,7 +4,6 @@ import scala.swing.BorderPanel
 import scala.swing.Button
 import scala.swing.Dialog
 import scala.swing.FlowPanel
-import scala.swing.Label
 import scala.swing.Panel
 import scala.swing.TextField
 import scala.swing.event.ButtonClicked
@@ -16,8 +15,8 @@ import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
 
 class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N]) extends EqSystemSolutionInput[N] {
-  import BorderPanel.Position._
   import org.newtonpolyhedron.utils.LatexConversion._
+  import scala.swing.BorderPanel.Position._
 
   override val varName = "x"
 
@@ -118,40 +117,4 @@ class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N]) 
     }
   }
 
-}
-
-object EqSystemSolutionDialogInput extends App {
-  import org.newtonpolyhedron.entity.vector._
-  import org.newtonpolyhedron.entity.equation._
-  import org.newtonpolyhedron.math.internal.InternalMathProcessor
-  import org.newtonpolyhedron.math.internal.Product
-  import spire.implicits._
-  import spire.math.Rational
-
-  private type N = Product
-  private implicit val mp: MathProcessor[N] = new InternalMathProcessor
-
-  val s = new EqSystemSolutionDialogInput[N]
-
-  val tricky = EqSystemRenderingPanel.tricky
-
-  val eqs: Polys[N] = IndexedSeq[Polynomial[N]](
-    IndexedSeq(
-      new Term(Product(1), NumVec[N](1, 2, 3)),
-      new Term(tricky, NumVec[N](1, 2, 3)),
-      new Term(Product(4), NumVec[N](0, 0, 0))
-    ),
-    IndexedSeq(
-      new Term(
-        mp.fromRational(Rational(-1, 2)),
-        NumVec[N](mp.fromRational(Rational(-1, 2)), mp.zero, mp.fromRational(Rational(-333, 667)))
-      ),
-      new Term(
-        mp.fromInt(-2),
-        NumVec[N](0, 0, 3)
-      )
-    )
-  )
-
-  println(s.getInputFor(eqs, None, None))
 }
