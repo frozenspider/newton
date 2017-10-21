@@ -87,9 +87,9 @@ class PowerTransformationSolverPrinter[N <: MPNumber](override val solver: Power
   //
   // TODO: Extract logic
   //
-  private def getVarIdx(t: Term[N]) = t.powers indexWhere (_ != 0)
+  private def getVarIdx(t: Term[N]) = t.powers indexWhere (_ != mp.zero)
 
-  private def countNonZeroPowers(t: Term[N]) = t.powers count (_ != 0)
+  private def countNonZeroPowers(t: Term[N]) = t.powers count (_ != mp.zero)
 
   private def banishIntoBigO(p: Polynomial[N]): Polynomial[N] = {
     // Removing multiplications

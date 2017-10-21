@@ -21,7 +21,7 @@ class NewtonPolyhedronFrame[N <: MPNumber](logic: NewtonLogic[N]) extends Simple
   var workingThread: Option[Thread] = None
 
   override def top = new MainFrame {
-    title = s"Newton ${BuildInfo.version}"
+    title = s"Newton ${BuildInfo.version}b${BuildInfo.buildInfoBuildNumber}"
     contents = ui
   }
 

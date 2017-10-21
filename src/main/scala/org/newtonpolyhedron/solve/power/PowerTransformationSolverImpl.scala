@@ -44,7 +44,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
       nonZeroMatrices map { matrix =>
         val alpha = umm unimodularFrom matrix
         assert(alpha.elementsByRow map (_._3) forall (_.isIntegral))
-        assert(alpha.det == 1)
+        assert(alpha.det == mp.one)
         alpha
       }
     alphasStream.head
@@ -104,7 +104,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
   // =========================
   //
   override def solveShortSubstitutesSystem(simpleSys: Polys[N]): NumVec[N] = {
-    require(simpleSys forall (_ forall (t => t.powers.last == 0)))
+    require(simpleSys forall (_ forall (t => t.powers.last == mp.zero)))
     // Remove last (zero) component
     val truncatedSimpleSys: Polys[N] = simpleSys map (_ map (_.mapPowers(_ dropRight 1)))
     val sol: Powers = eqSysSolver.solve(truncatedSimpleSys)
