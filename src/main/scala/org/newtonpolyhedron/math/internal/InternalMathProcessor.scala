@@ -1,6 +1,5 @@
 package org.newtonpolyhedron.math.internal
 
-import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.math.MathProcessor
 import org.newtonpolyhedron.math.MathImports._
 import spire.math.Rational
@@ -169,7 +168,8 @@ class InternalMathProcessor extends MathProcessor[Product] {
   }
 
   override def diagonalize(m: Matrix[Product]): MatrixTriple[Product] = {
-    ??? // FIXME: Use MatrixToDiagonalImplicits
+    val (a, b, c) = MatrixToDiagonalForm.toDiagonal(m map (_.toRational))
+    ((a map Product.apply), (b map Product.apply), (c map Product.apply))
   }
 }
 

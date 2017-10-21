@@ -17,7 +17,7 @@ import spire.math.Rational
  *
  * @author FS
  */
-private[matrix] object FieldElementSupport {
+object FieldElementSupport {
 
   type FieldWrapped[T] = Field[FieldElementWrapping[T]]
 

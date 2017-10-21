@@ -18,5 +18,5 @@ class UnimodularMatrixMakerImpl[N <: MPNumber](implicit mp: MathProcessor[N]) ex
     assert(matrix == rowOnesInv * matrixDiag * colOnesInv)
 
     rowOnesInv * colOnesInv
-  } ensuring (_.det == 1)
+  } ensuring (_.det == mp.one)
 }

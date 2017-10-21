@@ -5,20 +5,17 @@ import scala.collection.mutable.StringBuilder
 import org.apache.commons.math3.linear.FieldLUDecomposition
 import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
-import org.newtonpolyhedron.entity.vector.VectorImports._
 
+import org.newtonpolyhedron.entity.matrix.internal.FieldElementSupport._
 import spire.implicits._
 import spire.math.Numeric
-import spire.math.Rational
-
-import internal.FieldElementSupport._
 
 class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implicit wrapper: FieldElementWrapper[T])
-  extends Function2[Int, Int, T]
-  with Serializable {
+    extends Function2[Int, Int, T]
+    with Serializable {
 
-  implicit protected[entity] def field: FieldWrapped[T] = wrapper.field
   implicit protected[entity] def numeric: Numeric[T] = wrapper.numeric
+  implicit def field: FieldWrapped[T] = wrapper.field
 
   val rowCount: Int = this.matrix.getRowDimension
   val colCount: Int = this.matrix.getColumnDimension

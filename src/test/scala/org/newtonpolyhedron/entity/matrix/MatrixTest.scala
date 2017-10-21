@@ -36,11 +36,13 @@ class MatrixTest extends FunSuite {
     assert(mat1 + mat2
       === matrInt(s(
         s(4, 5, 6),
-        s(7, 9, 11))))
+        s(7, 9, 11)
+      )))
     assert(mat1 - mat2
       === matrInt(s(
         s(-2, -1, 0),
-        s(-3, -1, 1))))
+        s(-3, -1, 1)
+      )))
     assert(-mat1
       === matrInt(s(
         s(-1, -2, -3),
@@ -143,22 +145,22 @@ class MatrixTest extends FunSuite {
       s(3, 7, 11, 13)
     ))
     // Step 1
-    // 	{1, 2, 3, 3}
-    // 	{0, 0, 2, 4}
-    // 	{0, 1, 3, 4}
-    // 	{0, 1, 2, 4}
+    //   {1, 2, 3, 3}
+    //   {0, 0, 2, 4}
+    //   {0, 1, 3, 4}
+    //   {0, 1, 2, 4}
 
     // Step 2
-    // 	{1, 2, 3, 3}
-    // 	{0, 1, 3, 4}
-    // 	{0, 0, 2, 4}
-    // 	{0, 1, 2, 4}
+    //   {1, 2, 3, 3}
+    //   {0, 1, 3, 4}
+    //   {0, 0, 2, 4}
+    //   {0, 1, 2, 4}
 
     // Step 3
-    // 	{1, 2, 3, 3}
-    // 	{0, 1, 3, 4}
-    // 	{0, 0, 2, 4}
-    // 	{0, 0, -1, 0}
+    //   {1, 2, 3, 3}
+    //   {0, 1, 3, 4}
+    //   {0, 0, 2, 4}
+    //   {0, 0, -1, 0}
     assert(mat.triangleForm
       === (matrFrac(s(
         s(1, 2, 3, 3),
@@ -219,62 +221,6 @@ class MatrixTest extends FunSuite {
       s(-1, 1, 0),
       s(-1, 0, 1)
     )).rank === 3)
-  }
-
-  import MatrixToDiagonalImplicits._
-
-  test("diagonal form 1") {
-    val source = matrFrac(s(
-      s(0, 1, -1),
-      s(2, -3, 0),
-      s(0, 0, 0)
-    ))
-    val (actual, rowOnes, colOnes) = source.toDiagonal
-    assert(actual
-      === matrFrac(s(
-        s(1, 0, 0),
-        s(0, -1, 0),
-        s(0, 0, 0)
-      )))
-    assert(rowOnes
-      === matrFrac(s(
-        s(1, 0, 0),
-        s(3, 1, 0),
-        s(0, 0, 1)
-      )))
-    assert(colOnes
-      === matrFrac(s(
-        s(0, 1, 3),
-        s(1, 1, 2),
-        s(0, 1, 2)
-      )))
-  }
-
-  test("diagonal form 2") {
-    val source = matrFrac(s(
-      s(36, 18, 72),
-      s(5, 6, 12),
-      s(2, 8, 16)
-    ))
-    val (actual, rowOnes, colOnes) = source.toDiagonal
-    assert(actual
-      === matrFrac(s(
-        s(1, 0, 0),
-        s(0, 2, 0),
-        s(0, 0, 504)
-      )))
-    assert(rowOnes
-      === matrFrac(s(
-        s(0, -1, 1),
-        s(-3, 142, -140),
-        s(-14, 666, -657)
-      )))
-    assert(colOnes
-      === matrFrac(s(
-        s(-1, 2, -108),
-        s(-1, 9, -484),
-        s(0, -3, 161)
-      )))
   }
 
   test("adding rows and cols") {
