@@ -9,14 +9,17 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class MatrixTest extends FunSuite {
   test("core") {
-    val mat = matrInt(s(
+    val matData = s(
       s(1, 2, 3),
       s(2, 4, 6)
-    ))
+    )
+    val mat = matrInt(matData)
     assert(mat.rowCount === 2)
     assert(mat.colCount === 3)
     assert(mat(0, 0) === BigInt(1))
     assert(mat(1, 2) === BigInt(6))
+    assert(mat.rows === matData)
+    assert(mat.cols === matData.transpose)
     intercept[IllegalArgumentException] { mat(-1, 0) }
     intercept[IllegalArgumentException] { mat(0, -1) }
     intercept[IllegalArgumentException] { mat(0, 3) }

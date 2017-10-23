@@ -32,9 +32,12 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
     require(isSquare, "Non-square matrix")
     new Matrix(new FieldLUDecomposition(matrix).getSolver.getInverse)
   }
+
   def transpose = new Matrix(this.matrix.transpose)
+
   def minor(skipRow: Int, skipCol: Int) =
     minorMatrix(skipRow, skipCol).det
+
   def minorMatrix(skipRow: Int, skipCol: Int) = {
     val rows = ((0 until rowCount) filter (_ != skipRow)).toArray[Int]
     val cols = ((0 until colCount) filter (_ != skipCol)).toArray[Int]
@@ -103,6 +106,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
    * @return matrix and {@code 1} or {@code -1} depending on whether or not determinant sign was reversed
    */
   def triangleForm: (Matrix[T], Int) = {
+    // TODO: Delegate to library
     val minDim = math.min(rowCount, colCount)
     val zero = field.getZero
     var mutableCopy = contentCopy
@@ -164,6 +168,14 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
       else elementsStrartingFrom(row + 1, 0)
     }
     elementsStrartingFrom(0, 0)
+  }
+
+  def rows: IndexedSeq[IndexedSeq[T]] = {
+    (0 until rowCount) map (i => matrix.getRow(i).toIndexedSeq map (_.pure))
+  }
+
+  def cols: IndexedSeq[IndexedSeq[T]] = {
+    (0 until colCount) map (i => matrix.getColumn(i).toIndexedSeq map (_.pure))
   }
 
   def addRow(row: Traversable[T]) = {
