@@ -32,7 +32,8 @@ libraryDependencies ++= Seq(
   "java3d"                  %  "vecmath"              % "1.5.1",
   // Other
   "org.apache.commons"      %  "commons-lang3"        % "3.5",
-  "com.github.frozenspider" %% "fs-common-utils"      % "0.1.2",
+  "com.github.frozenspider" %% "fs-common-utils"      % "0.1.3",
+  "com.github.frozenspider" %% "fs-collections"       % "0.1.1",
   // Test
   "junit"                   %  "junit"                % "4.12"  % "test",
   "org.scalactic"           %% "scalactic"            % "3.0.4" % "test",
