@@ -6,8 +6,8 @@ import java.text.MessageFormat
 import org.newtonpolyhedron.NewtonImports._
 
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.cone.ConeSolver
+import org.newtonpolyhedron.math.internal.InternalMatrix
 
 class ConeSolverPrinter(
   override val solver: ConeSolver,
@@ -22,7 +22,7 @@ class ConeSolverPrinter(
       output: PrintWriter
   ) = {
     output.println(title("Cone computation"))
-    val rank = Matrix(inequations map (_ map Rational.apply)).rank
+    val rank = InternalMatrix(inequations map (_ map Rational.apply)).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations foreachWithIndex { (currIneq, i) =>

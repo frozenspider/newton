@@ -8,7 +8,7 @@ import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
 import org.newtonpolyhedron.utils.PointUtils
 
-class PolyMotzkinBurgerSolver[N <: MPNumber](val coneSolver: ConeSolver)(implicit mp: MathProcessor[N])
+class PolyMotzkinBurgerSolver[N <: MPNumber](val coneSolver: ConeSolver)(implicit mp: MathProcessor[N, _])
     extends PolyhedronSolver[N] {
 
   override def solve(

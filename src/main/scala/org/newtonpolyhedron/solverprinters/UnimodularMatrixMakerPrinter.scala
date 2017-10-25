@@ -7,19 +7,19 @@ import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.utils.StringUtils
 
-class UnimodularMatrixMakerPrinter[N <: MPNumber](
-  override val solver: UnimodularMatrixMaker[N],
-  val baseMatrix:      Matrix[N],
+class UnimodularMatrixMakerPrinter[N <: MPNumber, M <: MPMatrix](
+  override val solver: UnimodularMatrixMaker[N, M],
+  val baseMatrix:      M,
   override val output: PrintWriter
-)
-    extends SolverPrinter[UnimodularMatrixMaker[N]](solver, output) {
+)(implicit mp: MathProcessor[N, M])
+    extends SolverPrinter[UnimodularMatrixMaker[N, M]](solver, output) {
 
   override def solveFor(
-      solver: UnimodularMatrixMaker[N],
+      solver: UnimodularMatrixMaker[N, M],
       output: PrintWriter
   ) = {
     val alpha = solver.unimodularFrom(baseMatrix)
-    val alphaInv = alpha.inv
+    val alphaInv = alpha.inverse
     output.println(title("""Unimodular "Alpha" matrix"""))
     val text1 = new StringBuilder()
     text1 ++= subheader("Base matrix:") + "\n"

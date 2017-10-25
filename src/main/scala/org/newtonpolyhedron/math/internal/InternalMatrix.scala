@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.entity.matrix
+package org.newtonpolyhedron.math.internal
 
 import scala.collection.mutable.StringBuilder
 
@@ -6,34 +6,32 @@ import org.apache.commons.math3.linear.FieldLUDecomposition
 import org.apache.commons.math3.linear.FieldMatrix
 import org.apache.commons.math3.linear.MatrixUtils
 
-import org.newtonpolyhedron.entity.matrix.internal.FieldElementSupport._
+import org.newtonpolyhedron.math.MathImports._
+import org.newtonpolyhedron.math.internal.FieldElementSupport._
 import spire.implicits._
 import spire.math.Numeric
 
-class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implicit wrapper: FieldElementWrapper[T])
-    extends Function2[Int, Int, T]
+class InternalMatrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implicit wrapper: FieldElementWrapper[T])
+    extends MPMatrix(matrix.getRowDimension, matrix.getColumnDimension)
+    with Function2[Int, Int, T]
     with Serializable {
 
-  implicit protected[entity] def numeric: Numeric[T] = wrapper.numeric
+  implicit protected[internal] def numeric: Numeric[T] = wrapper.numeric
   implicit def field: FieldWrapped[T] = wrapper.field
 
-  val rowCount: Int = this.matrix.getRowDimension
-  val colCount: Int = this.matrix.getColumnDimension
-  val isSquare: Boolean = this.matrix.isSquare
-
   def apply(row: Int, col: Int): T = this.matrix.getEntry(row, col).pure
-  def +(that: Matrix[T]) = new Matrix(this.matrix add that.matrix)
-  def -(that: Matrix[T]) = new Matrix(this.matrix subtract that.matrix)
-  def *(that: Matrix[T]) = new Matrix(this.matrix multiply that.matrix)
-  def unary_- = Matrix.zero(rowCount, colCount)(wrapper.numeric) - this
+  def +(that: InternalMatrix[T]) = new InternalMatrix(this.matrix add that.matrix)
+  def -(that: InternalMatrix[T]) = new InternalMatrix(this.matrix subtract that.matrix)
+  def *(that: InternalMatrix[T]) = new InternalMatrix(this.matrix multiply that.matrix)
+  def unary_- = InternalMatrix.zero(rowCount, colCount)(wrapper.numeric) - this
 
   /** Inverse */
   def inv = {
     require(isSquare, "Non-square matrix")
-    new Matrix(new FieldLUDecomposition(matrix).getSolver.getInverse)
+    new InternalMatrix(new FieldLUDecomposition(matrix).getSolver.getInverse)
   }
 
-  def transpose = new Matrix(this.matrix.transpose)
+  def transpose = new InternalMatrix(this.matrix.transpose)
 
   def minor(skipRow: Int, skipCol: Int) =
     minorMatrix(skipRow, skipCol).det
@@ -41,7 +39,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
   def minorMatrix(skipRow: Int, skipCol: Int) = {
     val rows = ((0 until rowCount) filter (_ != skipRow)).toArray[Int]
     val cols = ((0 until colCount) filter (_ != skipCol)).toArray[Int]
-    new Matrix(matrix.getSubMatrix(rows, cols))
+    new InternalMatrix(matrix.getSubMatrix(rows, cols))
   }
 
   lazy val det: T = {
@@ -76,7 +74,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
   def map[B: Numeric](f: T => B) = {
     implicit val wrapper2 = wrap[B]
-    val mapped = Matrix.zero[B](rowCount, colCount)(wrapper2.numeric)
+    val mapped = InternalMatrix.zero[B](rowCount, colCount)(wrapper2.numeric)
     for {
       r <- 0 until rowCount
       c <- 0 until colCount
@@ -105,7 +103,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
    *
    * @return matrix and {@code 1} or {@code -1} depending on whether or not determinant sign was reversed
    */
-  def triangleForm: (Matrix[T], Int) = {
+  def triangleForm: (InternalMatrix[T], Int) = {
     // TODO: Delegate to library
     val minDim = math.min(rowCount, colCount)
     val zero = field.getZero
@@ -149,7 +147,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
         // Note, that this means, that determinant is zero
       }
     }
-    (new Matrix(mutableCopy), sign)
+    (new InternalMatrix(mutableCopy), sign)
   }
 
   def contentCopy = matrix.copy
@@ -180,7 +178,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
   def addRow(row: Traversable[T]) = {
     require(row.size == colCount, "Wrong row size")
-    val res = Matrix.zero[T](rowCount + 1, colCount)(wrapper.numeric)
+    val res = InternalMatrix.zero[T](rowCount + 1, colCount)(wrapper.numeric)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
     val rowSeq = row.toIndexedSeq map wrapper.apply
     for (i <- 0 until colCount) res.matrix setEntry (rowCount, i, rowSeq(i))
@@ -189,7 +187,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
 
   def addCol(col: Traversable[T]) = {
     require(col.size == rowCount, "Wrong col size")
-    val res = Matrix.zero[T](rowCount, colCount + 1)(wrapper.numeric)
+    val res = InternalMatrix.zero[T](rowCount, colCount + 1)(wrapper.numeric)
     res.matrix.setSubMatrix(this.matrix.getData, 0, 0)
     val colSeq = col.toIndexedSeq map wrapper.apply
     for (i <- 0 until rowCount) res.matrix setEntry (i, colCount, colSeq(i))
@@ -197,7 +195,7 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
   }
 
   override def equals(obj: Any): Boolean = obj match {
-    case that: Matrix[T] => this.matrix equals that.matrix
+    case that: InternalMatrix[T] => this.matrix equals that.matrix
     case _               => false
   }
   override def hashCode = this.matrix.hashCode
@@ -220,9 +218,9 @@ class Matrix[T](private val matrix: FieldMatrix[FieldElementWrapping[T]])(implic
   }
 }
 
-object Matrix {
+object InternalMatrix {
 
-  def apply[T: Numeric](elements: Iterable[Iterable[T]]): Matrix[T] = {
+  def apply[T: Numeric](elements: Iterable[Iterable[T]]): InternalMatrix[T] = {
     require(!elements.isEmpty, "Elements was empty")
     implicit val wrapper = wrap[T]
     val dim = elements.head.size
@@ -234,26 +232,26 @@ object Matrix {
       val vec = elsSeq(r).toIndexedSeq
       val value = vec(c)
     } apacheMath3Matrix.setEntry(r, c, wrapper(value))
-    new Matrix(apacheMath3Matrix)
+    new InternalMatrix(apacheMath3Matrix)
   }
 
-  def idenitiy[T: Numeric](dim: Int): Matrix[T] = {
+  def idenitiy[T: Numeric](dim: Int): InternalMatrix[T] = {
     implicit val wrapper = wrap[T]
-    new Matrix(MatrixUtils.createFieldIdentityMatrix(wrapper.field, dim))
+    new InternalMatrix(MatrixUtils.createFieldIdentityMatrix(wrapper.field, dim))
   }
 
-  def zero[T: Numeric](dim: Int): Matrix[T] = {
+  def zero[T: Numeric](dim: Int): InternalMatrix[T] = {
     implicit val wrapper = wrap[T]
-    new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, dim, dim))
+    new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper.field, dim, dim))
   }
 
-  def zero[T: Numeric](rowCount: Int, colCount: Int): Matrix[T] = {
+  def zero[T: Numeric](rowCount: Int, colCount: Int): InternalMatrix[T] = {
     implicit val wrapper = wrap[T]
-    new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, rowCount, colCount))
+    new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper.field, rowCount, colCount))
   }
 
-  def empty[T: Numeric]: Matrix[T] = {
+  def empty[T: Numeric]: InternalMatrix[T] = {
     implicit val wrapper = wrap[T]
-    new Matrix(MatrixUtils.createFieldMatrix(wrapper.field, 0, 0))
+    new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper.field, 0, 0))
   }
 }

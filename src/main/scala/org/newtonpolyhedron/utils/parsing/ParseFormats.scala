@@ -9,7 +9,7 @@ object ParseFormats {
     (s => BigInt(trimLeadingPlus(s)))
   val parseFrac: Parse[Rational] =
     (s => RationalFormat.parse(trimLeadingPlus(s)).asInstanceOf[Rational])
-  def parseNum[N <: MPNumber](implicit mp: MathProcessor[N]): Parse[N] =
+  def parseNum[N <: MPNumber](implicit mp: MathProcessor[N, _]): Parse[N] =
     parseFrac andThen mp.fromRational
 
   private def trimLeadingPlus(s: String): String = {

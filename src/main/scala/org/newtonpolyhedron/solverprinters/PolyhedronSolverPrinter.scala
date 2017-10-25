@@ -25,7 +25,7 @@ class PolyhedronSolverPrinter[N <: MPNumber](
   val basisOption:        Option[IndexedSeq[IntVec]],
   val illustrate:         Boolean,
   output:                 PrintWriter
-)(implicit mp: MathProcessor[N])
+)(implicit mp: MathProcessor[N, _])
     extends SolverPrinter[PolyhedronSolver[N]](solver, output) {
 
   override def solveFor(

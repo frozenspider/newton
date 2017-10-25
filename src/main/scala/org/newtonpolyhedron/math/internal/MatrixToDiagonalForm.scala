@@ -2,7 +2,7 @@ package org.newtonpolyhedron.math.internal
 
 import scala.annotation.tailrec
 import org.apache.commons.math3.linear.MatrixUtils
-import org.newtonpolyhedron.entity.matrix.internal.FieldElementSupport._
+import org.newtonpolyhedron.math.internal.FieldElementSupport._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import spire.math.Rational
 import org.newtonpolyhedron.math.MathImports._
@@ -16,6 +16,9 @@ object MatrixToDiagonalForm {
   private case object ROWS extends Orientation
   private case object COLS extends Orientation
 
+  type Matrix[N] = InternalMatrix[N]
+  type MatrixTriple[N] = (Matrix[N], Matrix[N], Matrix[N])
+
   /**
    * Converts the matrix to diagonal form.
    * <p>
@@ -23,7 +26,7 @@ object MatrixToDiagonalForm {
    */
   def toDiagonal(mt: Matrix[Rational]): MatrixTriple[Rational] = {
     require(mt.isSquare, "Non-square matrix")
-    val iden = Matrix.idenitiy[Rational](mt.rowCount)
+    val iden = InternalMatrix.idenitiy[Rational](mt.rowCount)
     val rowOnes = new Matrix(iden.contentCopy)(RationalFieldWrapper)
     val colOnes = new Matrix(iden.contentCopy)(RationalFieldWrapper)
     FunctionalMatrixCompanion.toDiagonalTriple((mt, rowOnes, colOnes))

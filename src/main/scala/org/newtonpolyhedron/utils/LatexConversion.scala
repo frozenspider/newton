@@ -57,7 +57,7 @@ object LatexConversion {
     case EquationSign.LessEq    => "\\geq"
   }
 
-  private def powersToLatex[N <: MPNumber](varName: String)(pows: Seq[N])(implicit mp: MathProcessor[N]): LatexString = {
+  private def powersToLatex[N <: MPNumber](varName: String)(pows: Seq[N])(implicit mp: MathProcessor[N, _]): LatexString = {
     val opts = pows mapWithIndex { (power, i) =>
       if (power.isZero)
         None
@@ -75,7 +75,7 @@ object LatexConversion {
       case Some(i) => varName + "_{" + i + "}"
     }
 
-  def polynomialToLatex[N <: MPNumber](varName: String)(poly: Polynomial[N])(implicit mp: MathProcessor[N]): LatexString = {
+  def polynomialToLatex[N <: MPNumber](varName: String)(poly: Polynomial[N])(implicit mp: MathProcessor[N, _]): LatexString = {
     if (poly.isEmpty) {
       ""
     } else {
@@ -103,13 +103,13 @@ object LatexConversion {
     termsString
   }
 
-  def equationToLatex[N <: MPNumber](varName1: String, varName2: String)(eq: Equation[N])(implicit mp: MathProcessor[N]): LatexString = {
+  def equationToLatex[N <: MPNumber](varName1: String, varName2: String)(eq: Equation[N])(implicit mp: MathProcessor[N, _]): LatexString = {
     val lhs = polynomialToLatex(varName1)(eq.lhs)
     val rhs = polynomialToLatex(varName2)(eq.rhs)
     val sign = signToLatex(eq.sign)
     lhs + sign + rhs
   }
 
-  def equationsToLatex[N <: MPNumber](eqs: Equations[N], varName1: String, varName2: String)(implicit mp: MathProcessor[N]): LatexString =
+  def equationsToLatex[N <: MPNumber](eqs: Equations[N], varName1: String, varName2: String)(implicit mp: MathProcessor[N, _]): LatexString =
     (eqs map equationToLatex(varName1, varName2)) mkString ("\\begin{cases}", """\\""" + "\n", "\\end{cases}")
 }

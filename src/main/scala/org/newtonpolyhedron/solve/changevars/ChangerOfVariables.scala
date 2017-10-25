@@ -4,7 +4,7 @@ import org.newtonpolyhedron.NewtonImports._
 
 import spire.compat._
 
-abstract class ChangerOfVariables[N <: MPNumber](implicit mp: MathProcessor[N]) {
+abstract class ChangerOfVariables[N <: MPNumber](implicit mp: MathProcessor[N, _]) {
 
   /**
    * Ordered by

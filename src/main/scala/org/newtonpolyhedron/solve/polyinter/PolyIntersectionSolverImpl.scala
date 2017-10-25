@@ -7,7 +7,7 @@ import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
 import org.newtonpolyhedron.utils.PointUtils
 
-class PolyIntersectionSolverImpl[N <: MPNumber](val coneSolver: ConeSolver)(implicit mp: MathProcessor[N])
+class PolyIntersectionSolverImpl[N <: MPNumber](val coneSolver: ConeSolver)(implicit mp: MathProcessor[N, _])
     extends PolyIntersectionSolver[N] {
 
   override def solve(

@@ -30,7 +30,7 @@ class MotzkinBurger extends ConeSolver {
       + " This case is too degenerated to have any solutions.")
     val basis: U = basisOption getOrElse (
       // Default basis
-      Matrix.idenitiy[BigInt](dimension).rows
+      (0 until dimension) map (IntVec.zero(dimension).upd(_, 1))
     )
     require(basis forall (_.size == dimension), "Basis vector with incorrect dimension")
     solve(ineqs, basis, dimension)

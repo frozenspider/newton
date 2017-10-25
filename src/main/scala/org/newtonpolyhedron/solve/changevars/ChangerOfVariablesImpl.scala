@@ -6,7 +6,7 @@ import org.newtonpolyhedron.NewtonImports._
 
 import spire.compat._
 
-class ChangerOfVariablesImpl[N <: MPNumber](implicit mp: MathProcessor[N]) extends ChangerOfVariables[N] {
+class ChangerOfVariablesImpl[N <: MPNumber](implicit mp: MathProcessor[N, _]) extends ChangerOfVariables[N] {
   private val s = IndexedSeq
 
   //  val lowerstPowersToTake = 4

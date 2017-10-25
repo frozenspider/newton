@@ -16,7 +16,7 @@ object InputParser {
   private type ISeqSeqSeq[E] = ISeq[ISeqSeq[E]]
   private type IV = ISeq[BigInt]
   private type FV = ISeq[Rational]
-  private type MatrixFactory[A] = (ISeqSeq[A] => Matrix[A])
+  private type MatrixFactory[N <: MPNumber, M] = (Iterable[Iterable[N]] => M)
 
   //
   // General
@@ -144,15 +144,15 @@ object InputParser {
   //
 
   /** @return matrix */
-  def parseMatrixFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): Matrix[R] = {
+  def parseMatrixFromFile[N <: MPNumber, M](file: File, mFactory: MatrixFactory[N, M], parseElement: Parse[N]): M = {
     val res = genParseFile(file)(lines => parseMatrixFromLines(lines)(mFactory, parseElement))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
 
   /** @return matrix */
-  def parseMatrixFromLines[R](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[Matrix[R]] = {
-    val empty: Option[Matrix[R]] = None
+  def parseMatrixFromLines[N <: MPNumber, M](lines: Lines)(mFactory: MatrixFactory[N, M], parseElement: Parse[N]): Option[M] = {
+    val empty: Option[M] = None
     genParseLines(lines, empty) { (dim, travLines) =>
       val vecs = parseVectors(dim)(travLines)(parseElement)
       Some(mFactory(vecs))
@@ -160,15 +160,15 @@ object InputParser {
   }
 
   /** @return (matrix, skipRow, skipCol) */
-  def parseMatrixWithSkipFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): (Matrix[R], Int, Int) = {
+  def parseMatrixWithSkipFromFile[N <: MPNumber, M](file: File, mFactory: MatrixFactory[N, M], parseElement: Parse[N]): (M, Int, Int) = {
     val res = genParseFile(file)(lines => parseMatrixWithSkipFromLines(lines)(mFactory, parseElement))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
 
   /** @return (matrix, skipRow, skipCol) */
-  def parseMatrixWithSkipFromLines[R](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[(Matrix[R], Int, Int)] = {
-    val empty: Option[(Matrix[R], Int, Int)] = None
+  def parseMatrixWithSkipFromLines[N <: MPNumber, M](lines: Lines)(mFactory: MatrixFactory[N, M], parseElement: Parse[N]): Option[(M, Int, Int)] = {
+    val empty: Option[(M, Int, Int)] = None
     genParseLines(lines, empty) { (dim, travLines) =>
       val firstLine = travLines.head split " " map (_.toInt)
       if (firstLine.size != 2) throw new WrongFormatException("Second line must be two numbers - row and column to skip (or -1)")
@@ -178,16 +178,16 @@ object InputParser {
     }
   }
 
-  def parsePowerTransfBaseFromFile[N <: MPNumber](file: File)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
+  def parsePowerTransfBaseFromFile[N <: MPNumber](file: File)(implicit mp: MathProcessor[N, _]): (Polys[N], ISeqSeq[Int]) = {
     genParseFile(file)(lines => parsePowerTransfBaseFromLines(lines))
   }
 
-  def parsePowerTransfBaseFromLines[N <: MPNumber](lines: Lines)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
+  def parsePowerTransfBaseFromLines[N <: MPNumber](lines: Lines)(implicit mp: MathProcessor[N, _]): (Polys[N], ISeqSeq[Int]) = {
     def empty = throw new WrongFormatException("File was empty")
     genParseLines(lines, empty)((dim, lines) => parsePowerTransfBaseFromRefLines(dim, lines))
   }
 
-  def parsePowerTransfBaseFromRefLines[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
+  def parsePowerTransfBaseFromRefLines[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N, _]): (Polys[N], ISeqSeq[Int]) = {
     if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
     val (polyLines, chosenLines) = {
       val delimIdx = lines.indexOf("#")
@@ -204,8 +204,7 @@ object InputParser {
     (polys, indices)
   }
 
-  def parsePowerTransfBasePoly[N <: MPNumber: MathProcessor](dim: Int, lines: Lines): Polynomial[N] = {
-    val mp = implicitly[MathProcessor[N]]
+  def parsePowerTransfBasePoly[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N, _]): Polynomial[N] = {
     val res = lines map { line =>
       val split = (line split ' ').toVector
       val coeffStr = split.head.trim

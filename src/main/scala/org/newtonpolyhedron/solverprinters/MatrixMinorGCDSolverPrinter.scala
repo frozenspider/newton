@@ -2,20 +2,19 @@ package org.newtonpolyhedron.solverprinters
 
 import java.io.PrintWriter
 
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolver
-import spire.math.Rational
 
-class MatrixMinorGCDSolverPrinter(
-  override val solver: MatrixMinorGCDSolver,
-  val baseMatrix:      Matrix[Rational],
+class MatrixMinorGCDSolverPrinter[N <: MPNumber, M <: MPMatrix](
+  override val solver: MatrixMinorGCDSolver[N, M],
+  val baseMatrix:      M,
   override val output: PrintWriter
 )
-    extends SolverPrinter[MatrixMinorGCDSolver](solver, output) {
+    extends SolverPrinter[MatrixMinorGCDSolver[N, M]](solver, output) {
 
   override def solveFor(
-      solver: MatrixMinorGCDSolver,
+      solver: MatrixMinorGCDSolver[N, M],
       output: PrintWriter
   ) = {
     output.println(title("Matrix GCD"))

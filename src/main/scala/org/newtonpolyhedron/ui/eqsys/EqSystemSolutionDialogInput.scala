@@ -14,7 +14,7 @@ import org.newtonpolyhedron.entity.equation.EquationSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
 
-class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N]) extends EqSystemSolutionInput[N] {
+class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N, _]) extends EqSystemSolutionInput[N] {
   import org.newtonpolyhedron.utils.LatexConversion._
   import scala.swing.BorderPanel.Position._
 

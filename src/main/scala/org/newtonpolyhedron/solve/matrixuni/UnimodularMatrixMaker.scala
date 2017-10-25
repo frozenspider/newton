@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.matrixuni
 
 import org.newtonpolyhedron.NewtonImports._
 
-trait UnimodularMatrixMaker[N <: MPNumber] {
+trait UnimodularMatrixMaker[N <: MPNumber, M <: MPMatrix] {
 
   /**
    * Makes an uniumodular matrix "alpha", that can be used in further Power Transformation
@@ -14,5 +14,5 @@ trait UnimodularMatrixMaker[N <: MPNumber] {
    *            source matrix with arbitary determinant
    * @return unimodular "alpha"-matrix (i.e. {@code det(alpha) == 1})
    */
-  def unimodularFrom(matrix: Matrix[N]): Matrix[N]
+  def unimodularFrom(matrix: M): M
 }

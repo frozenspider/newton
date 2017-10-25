@@ -7,7 +7,7 @@ import org.newtonpolyhedron.utils.LatexConversion
 /**
  * @author FS
  */
-class InternalMathProcessor extends MathProcessor[Product] {
+class InternalMathProcessor extends MathProcessor[Product, InternalMatrix[Product]] {
   private implicit val mp = this
 
   override def zero: Product =
@@ -166,7 +166,7 @@ class InternalMathProcessor extends MathProcessor[Product] {
     }
   }
 
-  override def diagonalize(m: Matrix[Product]): MatrixTriple[Product] = {
+  override def diagonalize(m: InternalMatrix[Product]): (InternalMatrix[Product], InternalMatrix[Product], InternalMatrix[Product]) = {
     val (a, b, c) = MatrixToDiagonalForm.toDiagonal(m map (_.toRational))
     ((a map Product.apply), (b map Product.apply), (c map Product.apply))
   }

@@ -25,7 +25,7 @@ import org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 import spire.math.Rational
 
-class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
+class NewtonLogic[N <: MPNumber, M <: MPMatrix](implicit mp: MathProcessor[N, M]) {
 
   lazy val systemOfEqSolverChain =
     new EqSystemChainSolver(Seq(
@@ -106,7 +106,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
-    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.apply[Rational])(parseFrac)
+    val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, mp.matrix.apply, parseNum[N])
     new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
@@ -114,7 +114,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[Rational])(parseFrac)
+    val matrix = InputParser.parseMatrixFromFile(file, mp.matrix.apply, parseNum[N])
     new MatrixInverseSolverPrinter(matrix, writer)
   }
 
@@ -123,22 +123,21 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
       writer: PrintWriter
   ): SolverPrinter[_] = {
     val matrix = {
-      val m = InputParser.parseMatrixFromFile(file, Matrix.apply[Rational])(parseFrac)
+      val m = InputParser.parseMatrixFromFile(file, mp.matrix.apply, parseNum[N])
       // Add all-zero row if necessary
       if (m.isSquare) m
       else if (m.rowCount != m.colCount - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
-      else m addRow (Seq.fill(m.colCount)(Rational.zero))
+      else m addRow (Seq.fill(m.colCount)(mp.zero))
     }
-    val convertedMatrix = matrix map mp.fromRational
-    val uniMatrixMaker = new UnimodularMatrixMakerImpl[N]
-    new UnimodularMatrixMakerPrinter[N](uniMatrixMaker, convertedMatrix, writer)
+    val uniMatrixMaker = new UnimodularMatrixMakerImpl[N, M]
+    new UnimodularMatrixMakerPrinter[N, M](uniMatrixMaker, matrix, writer)
   }
 
   def launchMatrixMinorGCD(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
-    val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[Rational])(parseFrac)
+    val matrix = InputParser.parseMatrixFromFile(file, mp.matrix.apply, parseNum[N])
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
     new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
   }

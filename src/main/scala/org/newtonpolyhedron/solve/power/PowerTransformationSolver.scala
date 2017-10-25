@@ -1,19 +1,18 @@
 package org.newtonpolyhedron.solve.power
 
 import org.newtonpolyhedron.NewtonImports._
-import org.newtonpolyhedron.entity.matrix.Matrix
 import spire.math.Rational
 
-trait PowerTransformationSolver[N <: MPNumber] {
+trait PowerTransformationSolver[N <: MPNumber, M <: MPMatrix] {
 
   /**
    * Generate alpha-matrix given polyhedron intersection
    *
    * @param powersSeq one border per polyhedron
    */
-  def generateAlphaFromTerms(powersSeqs: Seq[Seq[NumVec[N]]]): Matrix[N]
+  def generateAlphaFromTerms(powersSeqs: Seq[Seq[NumVec[N]]]): M
 
-  def substitute(poly: Polynomial[N], alpha: Matrix[N]): Polynomial[N]
+  def substitute(poly: Polynomial[N], alpha: M): Polynomial[N]
 
   def solveShortSubstitutesSystem(substitutesSys: Polys[N]): NumVec[N]
 
