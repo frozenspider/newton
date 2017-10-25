@@ -1,6 +1,5 @@
 package org.newtonpolyhedron.math.internal
 
-import org.newtonpolyhedron.math.MathProcessor
 import org.newtonpolyhedron.math.MathImports._
 import spire.math.Rational
 import org.newtonpolyhedron.utils.LatexConversion

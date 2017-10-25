@@ -4,8 +4,6 @@ import org.fs.utility.Imports._
 import org.newtonpolyhedron.entity.Term
 import org.newtonpolyhedron.entity.equation.Equation
 import org.newtonpolyhedron.math.MathImports._
-import org.newtonpolyhedron.math.MPNumber
-import org.newtonpolyhedron.math.MathProcessor
 
 import spire.compat._
 

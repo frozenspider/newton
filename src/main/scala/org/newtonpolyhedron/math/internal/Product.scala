@@ -3,7 +3,7 @@ package org.newtonpolyhedron.math.internal
 import scala.collection.immutable.ListMap
 
 import org.fs.utility.Imports._
-import org.newtonpolyhedron.math.MPNumber
+import org.newtonpolyhedron.math.MathImports._
 import org.newtonpolyhedron.utils.MathUtils
 
 import spire.math.Rational

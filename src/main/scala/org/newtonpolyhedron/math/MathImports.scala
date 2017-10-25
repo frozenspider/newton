@@ -6,8 +6,8 @@ package org.newtonpolyhedron.math
  * @author FS
  */
 trait MathImports {
-  type MPNumber = org.newtonpolyhedron.math.MPNumber
-  type MathProcessor[N <: MPNumber] = org.newtonpolyhedron.math.MathProcessor[N]
+  type MPNumber = org.newtonpolyhedron.entity.math.MPNumber
+  type MathProcessor[N <: MPNumber] = org.newtonpolyhedron.entity.math.MathProcessor[N]
 
   type Matrix[N] = org.newtonpolyhedron.entity.matrix.Matrix[N]
   val Matrix = org.newtonpolyhedron.entity.matrix.Matrix

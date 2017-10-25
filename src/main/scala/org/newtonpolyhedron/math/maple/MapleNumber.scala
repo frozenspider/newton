@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.math.maple
 
-import org.newtonpolyhedron.math.MPNumber
+import org.newtonpolyhedron.math.MathImports._
 
 /**
  * @author FS

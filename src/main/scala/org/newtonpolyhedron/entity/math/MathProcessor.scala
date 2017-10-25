@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.math
+package org.newtonpolyhedron.entity.math
 
 import spire.math.Rational
 import org.newtonpolyhedron.math.MathImports.Matrix
