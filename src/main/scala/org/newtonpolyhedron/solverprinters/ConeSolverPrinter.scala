@@ -7,14 +7,13 @@ import org.newtonpolyhedron.NewtonImports._
 
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.solve.cone.ConeSolver
-import org.newtonpolyhedron.math.internal.InternalMatrix
 
-class ConeSolverPrinter(
+class ConeSolverPrinter[N <: MPNumber, M <: MPMatrix](
   override val solver: ConeSolver,
   val inequations:     IndexedSeq[IntVec],
   val basisOption:     Option[IndexedSeq[IntVec]],
   override val output: PrintWriter
-)
+)(implicit mp: MathProcessor[N, M])
     extends SolverPrinter[ConeSolver](solver, output) {
 
   override def solveFor(
@@ -22,7 +21,7 @@ class ConeSolverPrinter(
       output: PrintWriter
   ) = {
     output.println(title("Cone computation"))
-    val rank = InternalMatrix(inequations map (_ map Rational.apply)).rank
+    val rank = mp.matrix(inequations map (_ map mp.fromBigInt)).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations foreachWithIndex { (currIneq, i) =>

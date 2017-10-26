@@ -9,6 +9,7 @@ trait MathImports {
   type MPNumber = org.newtonpolyhedron.entity.math.MPNumber
   type MPMatrix = org.newtonpolyhedron.entity.math.MPMatrix
   type MathProcessor[N <: MPNumber, M <: MPMatrix] = org.newtonpolyhedron.entity.math.MathProcessor[N, M]
+  type MatrixMathProcessor[N <: MPNumber, M <: MPMatrix] = org.newtonpolyhedron.entity.math.MatrixMathProcessor[N, M]
 
   type Rational = spire.math.Rational
   val Rational = spire.math.Rational
@@ -66,7 +67,7 @@ trait MathImports {
     def det: N = mp.matrix.det(m)
     def rank: Int = mp.matrix.rank(m)
 
-    def map[B: Numeric](f: N => B) = mp.matrix.map(m, f)
+    def map(f: N => N) = mp.matrix.map(m, f)
 
     def exists(cond: N => Boolean): Boolean = mp.matrix.exists(m, cond)
     def forall(cond: N => Boolean): Boolean = mp.matrix.forall(m, cond)
