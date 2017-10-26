@@ -14,7 +14,7 @@ trait MathImports {
   type Rational = spire.math.Rational
   val Rational = spire.math.Rational
 
-  implicit class RichMPNumber[A, N <: MPNumber](x: A)(implicit mp: MathProcessor[N, _], conv: A => N) extends Ordered[N] {
+  implicit class RichMPNumber[N <: MPNumber](x: N)(implicit mp: MathProcessor[N, _]) extends Ordered[N] {
     def isZero: Boolean = mp.isZero(x)
     def isIntegral: Boolean = mp.isIntegral(x)
     def isRational: Boolean = mp.isRational(x)

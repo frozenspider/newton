@@ -16,40 +16,11 @@ class InternalMatrixMathProcessor(implicit mp: MathProcessor[Product, InternalMa
   // Construction
   //
 
-  override def apply(elements: Iterable[Iterable[N]]): M = {
-    require(!elements.isEmpty, "Elements was empty")
-    implicit val wrapper = wrap[N]
-    val dim = elements.head.size
-    val apacheMath3Matrix = MatrixUtils.createFieldMatrix(wrapper.field, elements.size, dim)
-    val elsSeq = elements.toIndexedSeq
-    for {
-      r <- 0 until elsSeq.size
-      c <- 0 until dim
-      val vec = elsSeq(r).toIndexedSeq
-      val value = vec(c)
-    } apacheMath3Matrix.setEntry(r, c, wrapper(value))
-    new InternalMatrix(apacheMath3Matrix)
-  }
-
-  override def idenitiy(dim: Int): M = {
-    implicit val wrapper = wrap[N]
-    new InternalMatrix(MatrixUtils.createFieldIdentityMatrix(wrapper.field, dim))
-  }
-
-  override def zero(dim: Int): M = {
-    implicit val wrapper = wrap[N]
-    new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper.field, dim, dim))
-  }
-
-  override def zero(rowCount: Int, colCount: Int): M = {
-    implicit val wrapper = wrap[N]
-    new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper.field, rowCount, colCount))
-  }
-
-  override def empty: M = {
-    implicit val wrapper = wrap[N]
-    new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper.field, 0, 0))
-  }
+  override def apply(elements: Iterable[Iterable[N]]): M = InternalMatrix.apply(elements)
+  override def idenitiy(dim: Int): M = InternalMatrix.idenitiy(dim)
+  override def zero(dim: Int): M = InternalMatrix.zero(dim)
+  override def zero(rowCount: Int, colCount: Int): M = InternalMatrix.zero(rowCount, colCount)
+  override def empty: M = InternalMatrix.empty
 
   //
   // Processing

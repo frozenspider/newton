@@ -15,7 +15,7 @@ class InternalMatrix[T](
   implicit
   protected[internal] val wrapper: FieldElementWrapper[T]
 )
-    extends MPMatrix(matrix.getRowDimension, matrix.getColumnDimension)
+    extends MPMatrix
     with Function2[Int, Int, T]
     with Serializable {
 
@@ -23,6 +23,9 @@ class InternalMatrix[T](
   implicit def field: FieldWrapped[T] = wrapper.field
 
   protected[internal] def underlying = matrix
+
+  def rowCount: Int = matrix.getRowDimension
+  def colCount: Int = matrix.getColumnDimension
 
   def apply(row: Int, col: Int): T = this.matrix.getEntry(row, col).pure
   def +(that: InternalMatrix[T]) = new InternalMatrix(this.matrix add that.matrix)
@@ -34,6 +37,7 @@ class InternalMatrix[T](
 
   def contentCopy = matrix.copy
 
+  // Generic `map` won't be available through MathProcessor
   def map[B: Numeric](f: T => B): InternalMatrix[B] = {
     implicit val wrapper2 = wrap[B]
     val mapped = new InternalMatrix(MatrixUtils.createFieldMatrix(wrapper2.field, rowCount, colCount))
@@ -81,8 +85,8 @@ object InternalMatrix {
     for {
       r <- 0 until elsSeq.size
       c <- 0 until dim
-      val vec = elsSeq(r).toIndexedSeq
-      val value = vec(c)
+      vec = elsSeq(r).toIndexedSeq
+      value = vec(c)
     } apacheMath3Matrix.setEntry(r, c, wrapper(value))
     new InternalMatrix(apacheMath3Matrix)
   }

@@ -1,11 +1,12 @@
 package org.newtonpolyhedron.entity.math
 
 /**
+ * Trait for internal matrix representation user by associated `MathProcessor`
+ *
  * @author FS
  */
-class MPMatrix(
-  val rowCount: Int,
-  val colCount: Int
-) {
+trait MPMatrix {
+  def rowCount: Int
+  def colCount: Int
   def isSquare: Boolean = rowCount == colCount
 }
