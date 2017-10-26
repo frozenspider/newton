@@ -4,7 +4,6 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.NewtonImports._
 
 @RunWith(classOf[JUnitRunner])
@@ -16,7 +15,7 @@ class UnimodularMatrixMakerImplTest
 
   test("non-square") {
     intercept[IllegalArgumentException] {
-      maker.unimodularFrom(Matrix.zero[N](1, 2))
+      maker.unimodularFrom(mp.matrix.zero(1, 2))
     }
   }
 

@@ -7,7 +7,7 @@ import scala.collection.immutable.SortedSet
 import org.fs.utility.collection.table._
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.math.internal.InternalMatrix
 
 /**
  * Contains test shortcuts
@@ -15,30 +15,30 @@ import org.newtonpolyhedron.entity.matrix.Matrix
 package object test {
   type DoubleConvertible = Any { def toDouble: Double }
 
-  def matrInt(content: Seq[Seq[Int]]): Matrix[BigInt] = {
-    Matrix(content map (_.toIndexedSeq map BigInt.apply))
+  def matrInt(content: Seq[Seq[Int]]): InternalMatrix[BigInt] = {
+    InternalMatrix(content map (_.toIndexedSeq map BigInt.apply))
   }
 
-  def matrFrac(content: Seq[Seq[Int]]): Matrix[Rational] = {
-    Matrix(content map (_.toIndexedSeq map Rational.apply))
+  def matrFrac(content: Seq[Seq[Int]]): InternalMatrix[Rational] = {
+    InternalMatrix(content map (_.toIndexedSeq map Rational.apply))
   }
 
-  def matrNum[N <: MPNumber](content: Seq[Seq[Int]])(implicit mp: MathProcessor[N]): Matrix[N] = {
-    Matrix(content map (_.toIndexedSeq map mp.fromInt))
+  def matrNum[N <: MPNumber, M <: MPMatrix](content: Seq[Seq[Int]])(implicit mp: MathProcessor[N, M]): M = {
+    mp.matrix(content map (_.toIndexedSeq map mp.fromInt))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
 
   def iv(ints: Int*): IntVec = IntVec((ints map BigInt.apply): _*)
-  def nv[N <: MPNumber](ints: Int*)(implicit mp: MathProcessor[N]): NumVec[N] =
+  def nv[N <: MPNumber](ints: Int*)(implicit mp: MathProcessor[N, _]): NumVec[N] =
     NumVec[N]((ints map mp.fromInt): _*)
-  def nv2[N <: MPNumber](fracs: Rational*)(implicit mp: MathProcessor[N]): NumVec[N] =
+  def nv2[N <: MPNumber](fracs: Rational*)(implicit mp: MathProcessor[N, _]): NumVec[N] =
     NumVec[N]((fracs map mp.fromRational): _*)
 
   def frac(n: Int) = Rational(n, 1)
   def frac(n: Int, d: Int) = Rational(n, d)
 
-  def makePoly[N <: MPNumber](components: (Int, Seq[Int])*)(implicit mp: MathProcessor[N]): Polynomial[N] =
+  def makePoly[N <: MPNumber](components: (Int, Seq[Int])*)(implicit mp: MathProcessor[N, _]): Polynomial[N] =
     components map { case (coeff, pows) => Term(mp.fromInt(coeff), nv(pows: _*)) } toIndexedSeq
 
   val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }

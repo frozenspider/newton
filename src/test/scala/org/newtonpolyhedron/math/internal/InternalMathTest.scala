@@ -1,11 +1,11 @@
 package org.newtonpolyhedron.math.internal
 
 import org.newtonpolyhedron.test._
+import org.newtonpolyhedron.NewtonImports._
 import org.scalatest.FunSuite
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import spire.math.Rational
-import org.newtonpolyhedron.NewtonImports._
 
 @RunWith(classOf[JUnitRunner])
 class InternalMathTest

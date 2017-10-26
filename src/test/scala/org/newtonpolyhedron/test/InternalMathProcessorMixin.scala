@@ -5,7 +5,8 @@ import org.newtonpolyhedron.math.internal.InternalMathProcessor
 
 trait InternalMathProcessorMixin {
   type N = org.newtonpolyhedron.math.internal.Product
-  implicit val mp: MathProcessor[N] = InternalMathProcessorMixin.mp
+  type M = org.newtonpolyhedron.math.internal.InternalMatrix[N]
+  implicit val mp: MathProcessor[N, M] = InternalMathProcessorMixin.mp
 }
 
 object InternalMathProcessorMixin {

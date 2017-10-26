@@ -5,7 +5,6 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.utils.StringUtils
-import org.newtonpolyhedron.entity.matrix.Matrix
 import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
@@ -15,11 +14,11 @@ class AlphaMatrixTest
 
   val maker = new UnimodularMatrixMakerImpl
 
-  private def matrixFromDraft(draft: Seq[Seq[Int]]): Matrix[N] = {
+  private def matrixFromDraft(draft: Seq[Seq[Int]]): M = {
     matrNum(draft :+ Seq.fill(draft.size + 1)(0))
   }
 
-  private def performTheTest(source: Seq[Seq[Int]], expected: Matrix[N]): Unit = {
+  private def performTheTest(source: Seq[Seq[Int]], expected: M): Unit = {
     val alpha = maker.unimodularFrom(matrixFromDraft(source))
     assert(alpha === expected)
   }
