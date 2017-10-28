@@ -9,7 +9,7 @@ import algebra.ring.AdditiveMonoid
  * @author FS
  */
 class Matrix[A] private (val rows: IndexedSeq[IndexedSeq[A]])
-    extends Function2[Int, Int, A] {
+    extends ((Int, Int) => A) {
 
   lazy val rowCount: Int = rows.size
   lazy val colCount: Int = if (rows.size > 0) rows.head.size else 0

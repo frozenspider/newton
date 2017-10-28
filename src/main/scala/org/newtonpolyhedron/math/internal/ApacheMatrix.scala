@@ -18,7 +18,7 @@ class ApacheMatrix[T](
   implicit
   protected[internal] val wrapper: FieldElementWrapper[T]
 )
-    extends Function2[Int, Int, T]
+    extends ((Int, Int) => T)
     with Serializable {
 
   implicit protected[internal] def numeric: Numeric[T] = wrapper.numeric
