@@ -1,52 +1,55 @@
 package org.newtonpolyhedron.math.internal
 
-import org.newtonpolyhedron.math.MathProcessor
 import org.newtonpolyhedron.math.MathImports._
-import spire.math.Rational
 import org.newtonpolyhedron.utils.LatexConversion
+
+import spire.math.Rational
 
 /**
  * @author FS
  */
 class InternalMathProcessor extends MathProcessor[Product] {
+  private type N = Product
+  private type M = ApacheMatrix[Product]
+
   private implicit val mp = this
 
-  override def zero: Product =
+  override def zero: N =
     Product.zero
 
-  override def one: Product =
+  override def one: N =
     Product.one
 
-  override def isZero(x: Product): Boolean = x match {
-    case x: Product => x.signum == 0
+  override def isZero(x: N): Boolean = x match {
+    case x: N => x.signum == 0
   }
 
-  override def isIntegral(x: Product): Boolean = x match {
-    case x: Product => x.isWhole
+  override def isIntegral(x: N): Boolean = x match {
+    case x: N => x.isWhole
   }
 
-  override def isRational(x: Product): Boolean = x match {
-    case x: Product => x.isRational
+  override def isRational(x: N): Boolean = x match {
+    case x: N => x.isRational
   }
 
-  override def compare(x: Product, y: Product): Int = (x, y) match {
-    case (x: Product, y: Product) => x.toRational compare y.toRational
+  override def compare(x: N, y: N): Int = (x, y) match {
+    case (x: N, y: N) => x.toRational compare y.toRational
   }
 
-  override def signum(x: Product): Int = x.signum
+  override def signum(x: N): Int = x.signum
 
-  override def abs(x: Product): Product = x.abs
+  override def abs(x: N): N = x.abs
 
-  override def negate(x: Product): Product = x match {
-    case x: Product => new Product(-x.signum, x.underlying)
+  override def negate(x: N): N = x match {
+    case x: N => new Product(-x.signum, x.underlying)
   }
 
-  override def inverse(x: Product): Product =
+  override def inverse(x: N): N =
     one / x
 
-  override def add(x: Product, y: Product): Product = x match {
-    case x: Product => y match {
-      case y: Product =>
+  override def add(x: N, y: N): N = x match {
+    case x: N => y match {
+      case y: N =>
         val (commonFactors, thisFactors, thatFactors) = extractCommonFactors(x.underlying, y.underlying)
         val common = new Product(1, commonFactors)
 
@@ -58,28 +61,28 @@ class InternalMathProcessor extends MathProcessor[Product] {
     }
   }
 
-  override def subtract(x: Product, y: Product): Product = add(x, negate(y))
+  override def subtract(x: N, y: N): N = add(x, negate(y))
 
-  override def multiply(x: Product, y: Product): Product = x match {
-    case x: Product => y match {
-      case y: Product =>
+  override def multiply(x: N, y: N): N = x match {
+    case x: N => y match {
+      case y: N =>
         if (x.signum == 0 || y.signum == 0) Product.zero
         else new Product(x.signum * y.signum, mergePowers(x.underlying, y.underlying))
     }
   }
 
-  override def divide(x: Product, y: Product): Product = x match {
-    case x: Product => y match {
-      case y: Product =>
+  override def divide(x: N, y: N): N = x match {
+    case x: N => y match {
+      case y: N =>
         require(y.signum != 0, "Divide by zero")
         if (x.signum == 0) Product.zero
         else new Product(x.signum * y.signum, mergePowers(x.underlying, y.underlying map (p => (p._1, -p._2))))
     }
   }
 
-  override def raise(x: Product, y: Product): Product = x match {
-    case x: Product => y match {
-      case y: Product if y.isRational =>
+  override def raise(x: N, y: N): N = x match {
+    case x: N => y match {
+      case y: N if y.isRational =>
         val yr = y.toRational
         if (x.signum == 0) yr match {
           case y if y == 0 => Product.one
@@ -95,32 +98,32 @@ class InternalMathProcessor extends MathProcessor[Product] {
     }
   }
 
-  override def proot(x: Product, y: Product): Product = x match {
-    case x: Product => y match {
-      case y: Product if y.isRational =>
+  override def proot(x: N, y: N): N = x match {
+    case x: N => y match {
+      case y: N if y.isRational =>
         x ** inverse(y)
       case _ => throw new IllegalArgumentException("Product can only be raised to rational power")
     }
   }
 
-  override def fromInt(x: Int): Product = InternalMathProcessor.int2product(x)
+  override def fromInt(x: Int): N = InternalMathProcessor.int2product(x)
 
-  override def fromBigInt(x: BigInt): Product = InternalMathProcessor.bint2product(x)
+  override def fromBigInt(x: BigInt): N = InternalMathProcessor.bint2product(x)
 
-  override def fromRational(x: Rational): Product = InternalMathProcessor.rat2product(x)
+  override def fromRational(x: Rational): N = InternalMathProcessor.rat2product(x)
 
-  override def fromDouble(x: Double): Product = InternalMathProcessor.rat2product(Rational(x))
+  override def fromDouble(x: Double): N = InternalMathProcessor.rat2product(Rational(x))
 
-  override def toInt(x: Product): Int = x match {
-    case x: Product => x.toRational.toInt
+  override def toInt(x: N): Int = x match {
+    case x: N => x.toRational.toInt
   }
 
-  override def toLong(x: Product): Long = x match {
-    case x: Product => x.toRational.toLong
+  override def toLong(x: N): Long = x match {
+    case x: N => x.toRational.toLong
   }
 
-  override def toDouble(x: Product): Double = x match {
-    case x: Product =>
+  override def toDouble(x: N): Double = x match {
+    case x: N =>
       if (x.signum == 0) 0.0d else {
         val folded = (x.underlying foldLeft 1.0d) {
           case (acc, (v, p)) => acc * math.pow(v, p.doubleValue)
@@ -129,9 +132,9 @@ class InternalMathProcessor extends MathProcessor[Product] {
       }
   }
 
-  def toRational(x: Product): Rational = x.toRational
+  def toRational(x: N): Rational = x.toRational
 
-  def toLatexString(x: Product): String = {
+  def toLatexString(x: N): String = {
     LatexConversion.productToLatex(x)
   }
 
@@ -167,10 +170,7 @@ class InternalMathProcessor extends MathProcessor[Product] {
     }
   }
 
-  override def diagonalize(m: Matrix[Product]): MatrixTriple[Product] = {
-    val (a, b, c) = MatrixToDiagonalForm.toDiagonal(m map (_.toRational))
-    ((a map Product.apply), (b map Product.apply), (c map Product.apply))
-  }
+  override val matrix: MatrixMathProcessor[N] = new InternalMatrixMathProcessor()(this)
 }
 
 object InternalMathProcessor {

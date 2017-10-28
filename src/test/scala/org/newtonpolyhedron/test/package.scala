@@ -7,17 +7,12 @@ import scala.collection.immutable.SortedSet
 import org.fs.utility.collection.table._
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.entity.matrix.Matrix
 
 /**
  * Contains test shortcuts
  */
 package object test {
   type DoubleConvertible = Any { def toDouble: Double }
-
-  def matrInt(content: Seq[Seq[Int]]): Matrix[BigInt] = {
-    Matrix(content map (_.toIndexedSeq map BigInt.apply))
-  }
 
   def matrFrac(content: Seq[Seq[Int]]): Matrix[Rational] = {
     Matrix(content map (_.toIndexedSeq map Rational.apply))
@@ -35,13 +30,14 @@ package object test {
   def nv2[N <: MPNumber](fracs: Rational*)(implicit mp: MathProcessor[N]): NumVec[N] =
     NumVec[N]((fracs map mp.fromRational): _*)
 
+  def n[N <: MPNumber](i: Int)(implicit mp: MathProcessor[N]): N = mp.fromInt(i)
+  def n[N <: MPNumber](n: Int, d: Int)(implicit mp: MathProcessor[N]): N = mp.fromRational(frac(n, d))
+
   def frac(n: Int) = Rational(n, 1)
   def frac(n: Int, d: Int) = Rational(n, d)
 
   def makePoly[N <: MPNumber](components: (Int, Seq[Int])*)(implicit mp: MathProcessor[N]): Polynomial[N] =
     components map { case (coeff, pows) => Term(mp.fromInt(coeff), nv(pows: _*)) } toIndexedSeq
-
-  val intCmp = new Comparator[Int] { override def compare(i1: Int, i2: Int) = i1 compare i2 }
 
   def markedTable(colsCount: Int, expectedVecs: Seq[IntVec], marked: IndexedSeq[IndexedSeq[Int]]): KeyTable[IntVec, Int, Boolean] = {
     val table1 = (0 until colsCount).foldLeft(KeyTable.empty[IntVec, Int, Boolean]) {

@@ -6,15 +6,14 @@ import java.text.MessageFormat
 import org.newtonpolyhedron.NewtonImports._
 
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.cone.ConeSolver
 
-class ConeSolverPrinter(
+class ConeSolverPrinter[N <: MPNumber](
   override val solver: ConeSolver,
   val inequations:     IndexedSeq[IntVec],
   val basisOption:     Option[IndexedSeq[IntVec]],
   override val output: PrintWriter
-)
+)(implicit mp: MathProcessor[N])
     extends SolverPrinter[ConeSolver](solver, output) {
 
   override def solveFor(
@@ -22,7 +21,7 @@ class ConeSolverPrinter(
       output: PrintWriter
   ) = {
     output.println(title("Cone computation"))
-    val rank = Matrix(inequations map (_ map Rational.apply)).rank
+    val rank = Matrix(inequations map (_ map mp.fromBigInt)).rank
     output.println("Matrix rank = " + rank)
     output.println(header("Original inequalities:"))
     inequations foreachWithIndex { (currIneq, i) =>

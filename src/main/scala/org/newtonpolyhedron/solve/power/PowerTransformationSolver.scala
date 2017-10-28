@@ -1,7 +1,6 @@
 package org.newtonpolyhedron.solve.power
 
 import org.newtonpolyhedron.NewtonImports._
-import org.newtonpolyhedron.entity.matrix.Matrix
 import spire.math.Rational
 
 trait PowerTransformationSolver[N <: MPNumber] {

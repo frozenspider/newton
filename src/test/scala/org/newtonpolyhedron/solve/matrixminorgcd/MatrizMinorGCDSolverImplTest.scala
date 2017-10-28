@@ -6,12 +6,14 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class MatrizMinorGCDSolverImplTest extends FunSuite {
+class MatrizMinorGCDSolverImplTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   val solver = new MatrixMinorGCDSolverImpl
 
   test("3x3 case 1") {
-    val matrix = matrFrac(s(
+    val matrix = matrNum(s(
       s(1, 3, 4),
       s(3, 4, 2),
       s(0, 0, 0)
@@ -25,7 +27,7 @@ class MatrizMinorGCDSolverImplTest extends FunSuite {
   }
 
   test("3x3 case 2") {
-    val matrix = matrFrac(s(
+    val matrix = matrNum(s(
       s(-3, -2, 1),
       s(5, -2, 1),
       s(0, 0, 0)
@@ -39,7 +41,7 @@ class MatrizMinorGCDSolverImplTest extends FunSuite {
   }
 
   test("4x4") {
-    val matrix = matrFrac(s(
+    val matrix = matrNum(s(
       s(1, 3, 5, 1),
       s(1, 2, -6, 9),
       s(2, 4, 3, 2),

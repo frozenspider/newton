@@ -16,7 +16,7 @@ object InputParser {
   private type ISeqSeqSeq[E] = ISeq[ISeqSeq[E]]
   private type IV = ISeq[BigInt]
   private type FV = ISeq[Rational]
-  private type MatrixFactory[A] = (ISeqSeq[A] => Matrix[A])
+  private type MatrixFactory[N <: MPNumber] = (Iterable[Iterable[N]] => Matrix[N])
 
   //
   // General
@@ -144,15 +144,15 @@ object InputParser {
   //
 
   /** @return matrix */
-  def parseMatrixFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): Matrix[R] = {
+  def parseMatrixFromFile[N <: MPNumber](file: File, mFactory: MatrixFactory[N], parseElement: Parse[N]): Matrix[N] = {
     val res = genParseFile(file)(lines => parseMatrixFromLines(lines)(mFactory, parseElement))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
 
   /** @return matrix */
-  def parseMatrixFromLines[R](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[Matrix[R]] = {
-    val empty: Option[Matrix[R]] = None
+  def parseMatrixFromLines[N <: MPNumber](lines: Lines)(mFactory: MatrixFactory[N], parseElement: Parse[N]): Option[Matrix[N]] = {
+    val empty: Option[Matrix[N]] = None
     genParseLines(lines, empty) { (dim, travLines) =>
       val vecs = parseVectors(dim)(travLines)(parseElement)
       Some(mFactory(vecs))
@@ -160,15 +160,15 @@ object InputParser {
   }
 
   /** @return (matrix, skipRow, skipCol) */
-  def parseMatrixWithSkipFromFile[R](file: File, mFactory: MatrixFactory[R])(parseElement: Parse[R]): (Matrix[R], Int, Int) = {
+  def parseMatrixWithSkipFromFile[N <: MPNumber](file: File, mFactory: MatrixFactory[N], parseElement: Parse[N]): (Matrix[N], Int, Int) = {
     val res = genParseFile(file)(lines => parseMatrixWithSkipFromLines(lines)(mFactory, parseElement))
     if (res.isDefined) res.get
     else throw new WrongFormatException("Matrix was empty")
   }
 
   /** @return (matrix, skipRow, skipCol) */
-  def parseMatrixWithSkipFromLines[R](lines: Lines)(mFactory: MatrixFactory[R], parseElement: Parse[R]): Option[(Matrix[R], Int, Int)] = {
-    val empty: Option[(Matrix[R], Int, Int)] = None
+  def parseMatrixWithSkipFromLines[N <: MPNumber](lines: Lines)(mFactory: MatrixFactory[N], parseElement: Parse[N]): Option[(Matrix[N], Int, Int)] = {
+    val empty: Option[(Matrix[N], Int, Int)] = None
     genParseLines(lines, empty) { (dim, travLines) =>
       val firstLine = travLines.head split " " map (_.toInt)
       if (firstLine.size != 2) throw new WrongFormatException("Second line must be two numbers - row and column to skip (or -1)")
@@ -204,8 +204,7 @@ object InputParser {
     (polys, indices)
   }
 
-  def parsePowerTransfBasePoly[N <: MPNumber: MathProcessor](dim: Int, lines: Lines): Polynomial[N] = {
-    val mp = implicitly[MathProcessor[N]]
+  def parsePowerTransfBasePoly[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): Polynomial[N] = {
     val res = lines map { line =>
       val split = (line split ' ').toVector
       val coeffStr = split.head.trim

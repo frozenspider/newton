@@ -1,10 +1,8 @@
-package org.newtonpolyhedron.entity.matrix.internal
+package org.newtonpolyhedron.math.internal
 
 import org.apache.commons.math3.Field
 import org.apache.commons.math3.FieldElement
 import org.newtonpolyhedron.math.MathImports._
-
-import spire.implicits._
 import spire.math.Fractional
 import spire.math.Integral
 import spire.math.Numeric
@@ -24,7 +22,7 @@ object FieldElementSupport {
   // Main wrappers
   val BigIntFieldWrapper: FieldElementWrapper[BigInt] = new FieldElementWrapper
   val RationalFieldWrapper: FieldElementWrapper[Rational] = new FieldElementWrapper
-  def mpNumberFieldWrapper[N <: MPNumber: MathProcessor]: FieldElementWrapper[N] = new FieldElementWrapper
+  def mpNumberFieldWrapper[N <: MPNumber](implicit mp: MathProcessor[N]): FieldElementWrapper[N] = new FieldElementWrapper[N]
 
   // Wrapping
   def wrap[T: Numeric] = new FieldElementWrapper[T]
@@ -41,6 +39,7 @@ object FieldElementSupport {
   }
 
   case class FieldElementWrapping[T](val pure: T)(implicit numeric: Numeric[T], field: FieldWrapped[T]) extends FieldElement[FieldElementWrapping[T]] {
+    import spire.implicits._
 
     override def add(b: FieldElementWrapping[T]) =
       FieldElementWrapping(pure + b.pure)

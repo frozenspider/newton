@@ -1,12 +1,10 @@
 package org.newtonpolyhedron.solve.matrixuni
 
-import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
+import org.newtonpolyhedron.NewtonImports._
+import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.utils.StringUtils
-import org.newtonpolyhedron.entity.matrix.Matrix
-import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
 class AlphaMatrixTest

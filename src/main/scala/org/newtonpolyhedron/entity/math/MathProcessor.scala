@@ -1,8 +1,6 @@
-package org.newtonpolyhedron.math
+package org.newtonpolyhedron.entity.math
 
 import spire.math.Rational
-import org.newtonpolyhedron.math.MathImports.Matrix
-import org.newtonpolyhedron.math.MathImports.MatrixTriple
 
 /**
  * Mathematical processor capable of performing math operations
@@ -67,14 +65,8 @@ trait MathProcessor[N <: MPNumber] {
   def toLatexString(x: N): String
 
   //
-  // Advanced operations
+  // Matrix operations
   //
 
-  /**
-   * Converts the matrix to diagonal form.
-   * <p>
-   * Returns diagonal matrix alongside with row and column transformation matrices
-   * @return (`DiagonalMatrix`, `RowTransformationsMatrix`, `ColumnTransformationsMatrix`)
-   */
-  def diagonalize(m: Matrix[N]): MatrixTriple[N]
+  def matrix: MatrixMathProcessor[N]
 }

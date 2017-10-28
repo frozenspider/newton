@@ -1,7 +1,5 @@
 package org.newtonpolyhedron.entity.vector
 
-import org.newtonpolyhedron.math.MPNumber
-import org.newtonpolyhedron.math.MathProcessor
 import org.newtonpolyhedron.math.MathImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 

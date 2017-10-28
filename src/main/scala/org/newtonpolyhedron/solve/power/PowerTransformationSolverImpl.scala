@@ -1,7 +1,6 @@
 package org.newtonpolyhedron.solve.power
 
 import org.newtonpolyhedron.NewtonImports._
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import spire.math.Rational
@@ -82,7 +81,7 @@ class PowerTransformationSolverImpl[N <: MPNumber](
     (m.elementsByRow map (_._3) grouped (m.colCount) map vecn).toIndexedSeq
 
   private def inverse(m: Matrix[N]): Matrix[N] = {
-    val inv = m.inv
+    val inv = m.inverse
     assert(inv.elementsByRow map (_._3) forall (_.isIntegral))
     inv
   }

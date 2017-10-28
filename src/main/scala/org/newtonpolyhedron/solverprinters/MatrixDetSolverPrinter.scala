@@ -2,16 +2,15 @@ package org.newtonpolyhedron.solverprinters
 
 import java.io.PrintWriter
 
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.matrix.Matrix
-import spire.math.Rational
 
-class MatrixDetSolverPrinter(
-  val baseMatrix: Matrix[Rational],
+class MatrixDetSolverPrinter[N <: MPNumber](
+  val baseMatrix: Matrix[N],
   val skipRow:    Int,
   val skipCol:    Int,
   override val output:         PrintWriter
-)
+)(implicit mp: MathProcessor[N])
     extends SolverPrinter[Void](null, output) {
 
   override def solveFor(

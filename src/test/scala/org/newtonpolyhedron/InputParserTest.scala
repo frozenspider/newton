@@ -5,7 +5,6 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.NewtonImports._
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
 @RunWith(classOf[JUnitRunner])
@@ -246,17 +245,17 @@ class InputParserTest
       """
       4
       9 0 0 1
-      0 8 0 2
+      0 8/2 0 2
       0 0 7 3
       3 2 1 4
       """
-    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[Rational], parseFrac).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[N], parseNum).get
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 4)
-    assert(matrix === matrFrac(
+    assert(matrix === matrNum(
       s(
         s(9, 0, 0, 1),
-        s(0, 8, 0, 2),
+        s(0, 4, 0, 2),
         s(0, 0, 7, 3),
         s(3, 2, 1, 4)
       )
@@ -271,11 +270,11 @@ class InputParserTest
       0 8 0
       0 0 7
       """
-    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[BigInt], parseInt).get
+    val matrix = InputParser.parseMatrixFromLines(toLines(str))(Matrix.apply[N], parseNum).get
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 3)
     assert(matrix.colCount === 3)
-    assert(matrix === matrInt(
+    assert(matrix === matrNum(
       s(
         s(9, 0, 0),
         s(0, 8, 0),
@@ -295,13 +294,13 @@ class InputParserTest
       @
       Comment!
       """
-    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(Matrix.apply[BigInt], parseInt).get
+    val (matrix, r, c) = InputParser.parseMatrixWithSkipFromLines(toLines(str))(Matrix.apply[N], parseNum).get
     assert(r === 1)
     assert(c === 2)
     assert(matrix.isSquare === true)
     assert(matrix.rowCount === 3)
     assert(matrix.colCount === 3)
-    assert(matrix === matrInt(
+    assert(matrix === matrNum(
       s(
         s(9, 0, 0),
         s(0, 8, 0),

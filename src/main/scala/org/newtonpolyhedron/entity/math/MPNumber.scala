@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.math
+package org.newtonpolyhedron.entity.math
 
 /**
  * Marker trait for internal number representation user by associated `MathProcessor`

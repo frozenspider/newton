@@ -2,7 +2,7 @@ package org.newtonpolyhedron.math.internal
 
 import scala.annotation.tailrec
 import org.apache.commons.math3.linear.MatrixUtils
-import org.newtonpolyhedron.entity.matrix.internal.FieldElementSupport._
+import org.newtonpolyhedron.math.internal.FieldElementSupport._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 import spire.math.Rational
 import org.newtonpolyhedron.math.MathImports._
@@ -16,6 +16,11 @@ object MatrixToDiagonalForm {
   private case object ROWS extends Orientation
   private case object COLS extends Orientation
 
+  private type AM = ApacheMatrix[Rational]
+  private val AM = ApacheMatrix
+  private type MatrixTriple[N] = (Matrix[N], Matrix[N], Matrix[N])
+  private type AMTriple[N] = (AM, AM, AM)
+
   /**
    * Converts the matrix to diagonal form.
    * <p>
@@ -23,13 +28,14 @@ object MatrixToDiagonalForm {
    */
   def toDiagonal(mt: Matrix[Rational]): MatrixTriple[Rational] = {
     require(mt.isSquare, "Non-square matrix")
-    val iden = Matrix.idenitiy[Rational](mt.rowCount)
-    val rowOnes = new Matrix(iden.contentCopy)(RationalFieldWrapper)
-    val colOnes = new Matrix(iden.contentCopy)(RationalFieldWrapper)
-    FunctionalMatrixCompanion.toDiagonalTriple((mt, rowOnes, colOnes))
+    val iden = AM.from(Matrix.idenitiy[Rational](mt.rowCount))
+    val rowOnes = new AM(iden.contentCopy)(RationalFieldWrapper)
+    val colOnes = new AM(iden.contentCopy)(RationalFieldWrapper)
+    val amTriple = FunctionalMatrixCompanion.toDiagonalTriple((AM.from(mt), rowOnes, colOnes))
+    (AM.to(amTriple._1), AM.to(amTriple._2), AM.to(amTriple._3))
   }
 
-  private implicit class FunctionalMatrix(val mt: Matrix[Rational]) {
+  private implicit class FunctionalApacheMatrix(val mt: AM) {
 
     def getCornerRelative(orientation: Orientation, cornerIdx: Int, colIdx: Int): Rational =
       orientation match {
@@ -37,57 +43,57 @@ object MatrixToDiagonalForm {
         case COLS => mt(colIdx, cornerIdx)
       }
 
-    def swapInverse(i: Int, j: Int, orientation: Orientation): Matrix[Rational] = orientation match {
+    def swapInverse(i: Int, j: Int, orientation: Orientation): AM = orientation match {
       case ROWS => mt.swapCols(i, j).inverseCol(j)
       case COLS => mt.swapRows(i, j).inverseRow(j)
     }
 
-    def swapRows(i: Int, j: Int): Matrix[Rational] = {
+    def swapRows(i: Int, j: Int): AM = {
       mt.transpose.swapCols(i, j).transpose
     }
 
-    def swapCols(i: Int, j: Int): Matrix[Rational] = {
+    def swapCols(i: Int, j: Int): AM = {
       val copy = mt.contentCopy
       val col1 = copy.getColumnVector(i)
       val col2 = copy.getColumnVector(j)
       copy.setColumnVector(i, col2)
       copy.setColumnVector(j, col1)
-      new Matrix(copy)(RationalFieldWrapper)
+      new AM(copy)(RationalFieldWrapper)
     }
 
     def fieldRowOfZeros(size: Int) =
       MatrixUtils.createFieldMatrix(mt.field, size, 1).getColumnVector(0)
 
-    def inverseRow(i: Int): Matrix[Rational] = {
+    def inverseRow(i: Int): AM = {
       mt.transpose.inverseCol(i).transpose
     }
 
-    def inverseCol(i: Int): Matrix[Rational] = {
+    def inverseCol(i: Int): AM = {
       val copy = mt.contentCopy
       val vec = copy.getColumnVector(i)
       val zeros = fieldRowOfZeros(vec.getDimension)
       copy.setColumnVector(i, zeros subtract vec)
-      new Matrix(copy)(RationalFieldWrapper)
+      new AM(copy)(RationalFieldWrapper)
     }
 
-    def subtractMultiplied(from: Int, to: Int, quotient: Rational, orientation: Orientation): Matrix[Rational] =
+    def subtractMultiplied(from: Int, to: Int, quotient: Rational, orientation: Orientation): AM =
       orientation match {
         case ROWS => mt.subtractMultipliedCol(from, to, quotient)
         case COLS => mt.subtractMultipliedRow(from, to, quotient)
       }
 
-    def subtractMultipliedRow(from: Int, to: Int, quotient: Rational): Matrix[Rational] = {
+    def subtractMultipliedRow(from: Int, to: Int, quotient: Rational): AM = {
       mt.transpose.subtractMultipliedCol(from, to, quotient).transpose
     }
 
-    def subtractMultipliedCol(from: Int, to: Int, quotient: Rational): Matrix[Rational] = {
+    def subtractMultipliedCol(from: Int, to: Int, quotient: Rational): AM = {
       val copy = mt.contentCopy
       val srcCol = copy.getColumnVector(from)
       val dstCol = copy.getColumnVector(to)
       val srcColMul = srcCol mapMultiply RationalFieldWrapper(quotient)
       val dstColSub = dstCol subtract srcColMul
       copy.setColumnVector(to, dstColSub)
-      new Matrix(copy)(RationalFieldWrapper)
+      new AM(copy)(RationalFieldWrapper)
     }
   }
 
@@ -95,10 +101,10 @@ object MatrixToDiagonalForm {
   //
   //
 
-  private implicit class FunctionalMatrixTriple(val mt: MatrixTriple[Rational]) {
+  private implicit class FunctionalMatrixTriple(val mt: AMTriple[Rational]) {
     val (main, rowOnes, colOnes) = mt
 
-    def transpose: MatrixTriple[Rational] = {
+    def transpose: AMTriple[Rational] = {
       (
         main.transpose,
         colOnes.transpose,
@@ -106,11 +112,11 @@ object MatrixToDiagonalForm {
       )
     }
 
-    def map[R](f: Matrix[Rational] => R): (R, R, R) = {
+    def map[R](f: AM => R): (R, R, R) = {
       (f(main), f(rowOnes), f(colOnes))
     }
 
-    def swapInverse(i: Int, j: Int, orientation: Orientation): MatrixTriple[Rational] = {
+    def swapInverse(i: Int, j: Int, orientation: Orientation): AMTriple[Rational] = {
       val distance = math.abs(i - j)
       orientation match {
         case ROWS => mt.swapCols(i, j).inverseCol(j)
@@ -118,7 +124,7 @@ object MatrixToDiagonalForm {
       }
     }
 
-    def swapRows(i: Int, j: Int): MatrixTriple[Rational] = {
+    def swapRows(i: Int, j: Int): AMTriple[Rational] = {
       (
         main.swapRows(i, j),
         rowOnes.swapRows(i, j),
@@ -126,7 +132,7 @@ object MatrixToDiagonalForm {
       )
     }
 
-    def swapCols(i: Int, j: Int): MatrixTriple[Rational] = {
+    def swapCols(i: Int, j: Int): AMTriple[Rational] = {
       (
         main.swapCols(i, j),
         rowOnes,
@@ -134,7 +140,7 @@ object MatrixToDiagonalForm {
       )
     }
 
-    def inverseRow(i: Int): MatrixTriple[Rational] = {
+    def inverseRow(i: Int): AMTriple[Rational] = {
       (
         main.inverseRow(i),
         rowOnes.inverseRow(i),
@@ -142,7 +148,7 @@ object MatrixToDiagonalForm {
       )
     }
 
-    def inverseCol(i: Int): MatrixTriple[Rational] = {
+    def inverseCol(i: Int): AMTriple[Rational] = {
       (
         main.inverseCol(i),
         rowOnes,
@@ -150,14 +156,14 @@ object MatrixToDiagonalForm {
       )
     }
 
-    def subtractMultiplied(from: Int, to: Int, quotient: Rational, orientation: Orientation): MatrixTriple[Rational] = {
+    def subtractMultiplied(from: Int, to: Int, quotient: Rational, orientation: Orientation): AMTriple[Rational] = {
       orientation match {
         case ROWS => mt.subtractMultipliedCol(from, to, quotient)
         case COLS => mt.subtractMultipliedRow(from, to, quotient)
       }
     }
 
-    def subtractMultipliedRow(from: Int, to: Int, quotient: Rational): MatrixTriple[Rational] = {
+    def subtractMultipliedRow(from: Int, to: Int, quotient: Rational): AMTriple[Rational] = {
       (
         main.subtractMultipliedRow(from, to, quotient),
         rowOnes.subtractMultipliedRow(from, to, quotient),
@@ -165,7 +171,7 @@ object MatrixToDiagonalForm {
       )
     }
 
-    def subtractMultipliedCol(from: Int, to: Int, quotient: Rational): MatrixTriple[Rational] = {
+    def subtractMultipliedCol(from: Int, to: Int, quotient: Rational): AMTriple[Rational] = {
       (
         main.subtractMultipliedCol(from, to, quotient),
         rowOnes,
@@ -179,11 +185,11 @@ object MatrixToDiagonalForm {
   //
 
   private object FunctionalMatrixCompanion {
-    def toDiagonalTriple(mts: MatrixTriple[Rational]): MatrixTriple[Rational] = {
+    def toDiagonalTriple(mts: AMTriple[Rational]): AMTriple[Rational] = {
       toDiagonalTriple(mts, 0)
     }
 
-    def toDiagonalTriple(mts: MatrixTriple[Rational], cornerIdx: Int): MatrixTriple[Rational] = {
+    def toDiagonalTriple(mts: AMTriple[Rational], cornerIdx: Int): AMTriple[Rational] = {
       val dim = mts.main.rowCount
       if (cornerIdx == dim - 1) mts
       else {
@@ -213,7 +219,7 @@ object MatrixToDiagonalForm {
       }
     }
 
-    def processUntilCornerIsGCD(mts: MatrixTriple[Rational], cornerIdx: Int): MatrixTriple[Rational] = {
+    def processUntilCornerIsGCD(mts: AMTriple[Rational], cornerIdx: Int): AMTriple[Rational] = {
       val (resRows, rowsHadRem) = tryPutGCDIntoCorner(mts, ROWS, cornerIdx)
       val (resCols, colsHadRem) = tryPutGCDIntoCorner(resRows, COLS, cornerIdx)
       if (rowsHadRem || colsHadRem)
@@ -223,10 +229,10 @@ object MatrixToDiagonalForm {
     }
 
     def tryPutGCDIntoCorner(
-        mts:         MatrixTriple[Rational],
+        mts:         AMTriple[Rational],
         orientation: Orientation,
         cornerIdx:   Int
-    ): (MatrixTriple[Rational], Boolean) = {
+    ): (AMTriple[Rational], Boolean) = {
       val dim = mts.main.rowCount
       if (cornerIdx == dim - 1) {
         (mts, false)
@@ -238,9 +244,9 @@ object MatrixToDiagonalForm {
     def tryPutGCDIntoCornerFrom(
         orientation: Orientation,
         cornerIdx:   Int
-    )(mts: MatrixTriple[Rational], currIdx: Int, hadRemainder: Boolean): (MatrixTriple[Rational], Boolean) = {
+    )(mts: AMTriple[Rational], currIdx: Int, hadRemainder: Boolean): (AMTriple[Rational], Boolean) = {
       @tailrec
-      def recurse(mts: MatrixTriple[Rational], currIdx: Int, hadRemainder: Boolean): (MatrixTriple[Rational], Boolean) = {
+      def recurse(mts: AMTriple[Rational], currIdx: Int, hadRemainder: Boolean): (AMTriple[Rational], Boolean) = {
         val dim = mts.main.rowCount
         val corner = mts.main(cornerIdx, cornerIdx)
         if (currIdx == dim) {

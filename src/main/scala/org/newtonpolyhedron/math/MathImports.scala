@@ -6,18 +6,17 @@ package org.newtonpolyhedron.math
  * @author FS
  */
 trait MathImports {
-  type MPNumber = org.newtonpolyhedron.math.MPNumber
-  type MathProcessor[N <: MPNumber] = org.newtonpolyhedron.math.MathProcessor[N]
+  type MPNumber = org.newtonpolyhedron.entity.math.MPNumber
+  type MathProcessor[N <: MPNumber] = org.newtonpolyhedron.entity.math.MathProcessor[N]
+  type MatrixMathProcessor[N <: MPNumber] = org.newtonpolyhedron.entity.math.MatrixMathProcessor[N]
 
-  type Matrix[N] = org.newtonpolyhedron.entity.matrix.Matrix[N]
-  val Matrix = org.newtonpolyhedron.entity.matrix.Matrix
-
-  type MatrixTriple[N] = (Matrix[N], Matrix[N], Matrix[N])
+  type Matrix[A] = org.newtonpolyhedron.entity.math.Matrix[A]
+  val Matrix = org.newtonpolyhedron.entity.math.Matrix
 
   type Rational = spire.math.Rational
   val Rational = spire.math.Rational
 
-  implicit class RichMPNumber[A, N <: MPNumber](x: A)(implicit mp: MathProcessor[N], conv: A => N) extends Ordered[N] {
+  implicit class RichMPNumber[N <: MPNumber](x: N)(implicit mp: MathProcessor[N]) extends Ordered[N] {
     def isZero: Boolean = mp.isZero(x)
     def isIntegral: Boolean = mp.isIntegral(x)
     def isRational: Boolean = mp.isRational(x)
@@ -51,6 +50,32 @@ trait MathImports {
     def toDouble: Double = mp.toDouble(x)
     def toRational: Rational = mp.toRational(x)
     def toLatexString: String = mp.toLatexString(x)
+  }
+
+  implicit class RichMPMatrix[N <: MPNumber](m: Matrix[N])(implicit mp: MathProcessor[N]) {
+    private type M = Matrix[N]
+
+    def +(that: M): M = mp.matrix.add(m, that)
+    def -(that: M): M = mp.matrix.subtract(m, that)
+    def *(that: M): M = mp.matrix.multiply(m, that)
+    def negate: M = mp.matrix.negate(m)
+
+    def inverse: M = mp.matrix.inverse(m)
+
+    def minor(skipRow: Int, skipCol: Int): N = mp.matrix.minor(m, skipRow, skipCol)
+    def minorMatrix(skipRow: Int, skipCol: Int): M = mp.matrix.minorMatrix(m, skipRow, skipCol)
+
+    def det: N = mp.matrix.det(m)
+    def rank: Int = mp.matrix.rank(m)
+
+    def map[B](f: N => B) = mp.matrix.map(m, f)
+
+    def exists(cond: N => Boolean): Boolean = mp.matrix.exists(m, cond)
+    def forall(cond: N => Boolean): Boolean = mp.matrix.forall(m, cond)
+    def contains(what: N): Boolean = mp.matrix.contains(m, what)
+
+    def triangleForm: (M, Int) = mp.matrix.triangleForm(m)
+    def diagonalize: (M, M, M) = mp.matrix.diagonalize(m)
   }
 
   implicit def mpNumberSupport[N <: MPNumber](implicit mp: MathProcessor[N]): MPNumberSupport[N] =

@@ -4,7 +4,6 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.entity.matrix.Matrix
 import org.newtonpolyhedron.NewtonImports._
 
 @RunWith(classOf[JUnitRunner])

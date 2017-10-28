@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.test
 
-import org.newtonpolyhedron.math.MathProcessor
+import org.newtonpolyhedron.entity.math.MathProcessor
 import org.newtonpolyhedron.math.internal.InternalMathProcessor
 
 trait InternalMathProcessorMixin {
