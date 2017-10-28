@@ -52,30 +52,33 @@ trait MathImports {
     def toLatexString: String = mp.toLatexString(x)
   }
 
-  implicit class RichMPMatrix[N <: MPNumber](m: Matrix[N])(implicit mp: MathProcessor[N]) {
-    private type M = Matrix[N]
+  implicit class RichMatrix[A, N <: MPNumber](m: Matrix[A])(implicit mp: MathProcessor[N]) {
+    private type MN = Matrix[N]
 
-    def +(that: M): M = mp.matrix.add(m, that)
-    def -(that: M): M = mp.matrix.subtract(m, that)
-    def *(that: M): M = mp.matrix.multiply(m, that)
-    def negate: M = mp.matrix.negate(m)
+    /** Typecast matrix M[A] as M[N <: MPNumber], given proof */
+    private def mn(implicit proof: A =:= N) = m.asInstanceOf[Matrix[N]]
 
-    def inverse: M = mp.matrix.inverse(m)
+    def +(that: MN)(implicit proof: A =:= N): MN = mp.matrix.add(mn, that)
+    def -(that: MN)(implicit proof: A =:= N): MN = mp.matrix.subtract(mn, that)
+    def *(that: MN)(implicit proof: A =:= N): MN = mp.matrix.multiply(mn, that)
+    def negate(implicit proof: A =:= N): MN = mp.matrix.negate(mn)
 
-    def minor(skipRow: Int, skipCol: Int): N = mp.matrix.minor(m, skipRow, skipCol)
-    def minorMatrix(skipRow: Int, skipCol: Int): M = mp.matrix.minorMatrix(m, skipRow, skipCol)
+    def inverse(implicit proof: A =:= N): MN = mp.matrix.inverse(mn)
 
-    def det: N = mp.matrix.det(m)
-    def rank: Int = mp.matrix.rank(m)
+    def minor(skipRow: Int, skipCol: Int)(implicit proof: A =:= N): N = mp.matrix.minor(mn, skipRow, skipCol)
+    def minorMatrix(skipRow: Int, skipCol: Int)(implicit proof: A =:= N): MN = mp.matrix.minorMatrix(mn, skipRow, skipCol)
 
-    def map[B](f: N => B) = mp.matrix.map(m, f)
+    def det(implicit proof: A =:= N): N = mp.matrix.det(mn)
+    def rank(implicit proof: A =:= N): Int = mp.matrix.rank(mn)
 
-    def exists(cond: N => Boolean): Boolean = mp.matrix.exists(m, cond)
-    def forall(cond: N => Boolean): Boolean = mp.matrix.forall(m, cond)
-    def contains(what: N): Boolean = mp.matrix.contains(m, what)
+    def map[B](f: A => B) = mp.matrix.map(m, f)
 
-    def triangleForm: (M, Int) = mp.matrix.triangleForm(m)
-    def diagonalize: (M, M, M) = mp.matrix.diagonalize(m)
+    def exists(cond: N => Boolean)(implicit proof: A =:= N): Boolean = mp.matrix.exists(mn, cond)
+    def forall(cond: N => Boolean)(implicit proof: A =:= N): Boolean = mp.matrix.forall(mn, cond)
+    def contains(what: N)(implicit proof: A =:= N): Boolean = mp.matrix.contains(mn, what)
+
+    def triangleForm(implicit proof: A =:= N): (MN, Int) = mp.matrix.triangleForm(mn)
+    def diagonalize(implicit proof: A =:= N): (MN, MN, MN) = mp.matrix.diagonalize(mn)
   }
 
   implicit def mpNumberSupport[N <: MPNumber](implicit mp: MathProcessor[N]): MPNumberSupport[N] =
