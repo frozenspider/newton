@@ -7,15 +7,15 @@ import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import org.newtonpolyhedron.utils.StringUtils
 
-class UnimodularMatrixMakerPrinter[N <: MPNumber, M <: MPMatrix](
-  override val solver: UnimodularMatrixMaker[N, M],
-  val baseMatrix:      M,
+class UnimodularMatrixMakerPrinter[N <: MPNumber](
+  override val solver: UnimodularMatrixMaker[N],
+  val baseMatrix:      Matrix[N],
   override val output: PrintWriter
-)(implicit mp: MathProcessor[N, M])
-    extends SolverPrinter[UnimodularMatrixMaker[N, M]](solver, output) {
+)(implicit mp: MathProcessor[N])
+    extends SolverPrinter[UnimodularMatrixMaker[N]](solver, output) {
 
   override def solveFor(
-      solver: UnimodularMatrixMaker[N, M],
+      solver: UnimodularMatrixMaker[N],
       output: PrintWriter
   ) = {
     val alpha = solver.unimodularFrom(baseMatrix)

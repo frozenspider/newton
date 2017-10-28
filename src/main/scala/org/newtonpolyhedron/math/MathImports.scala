@@ -7,14 +7,16 @@ package org.newtonpolyhedron.math
  */
 trait MathImports {
   type MPNumber = org.newtonpolyhedron.entity.math.MPNumber
-  type MPMatrix = org.newtonpolyhedron.entity.math.MPMatrix
-  type MathProcessor[N <: MPNumber, M <: MPMatrix] = org.newtonpolyhedron.entity.math.MathProcessor[N, M]
-  type MatrixMathProcessor[N <: MPNumber, M <: MPMatrix] = org.newtonpolyhedron.entity.math.MatrixMathProcessor[N, M]
+  type MathProcessor[N <: MPNumber] = org.newtonpolyhedron.entity.math.MathProcessor[N]
+  type MatrixMathProcessor[N <: MPNumber] = org.newtonpolyhedron.entity.math.MatrixMathProcessor[N]
+
+  type Matrix[A] = org.newtonpolyhedron.entity.math.Matrix[A]
+  val Matrix = org.newtonpolyhedron.entity.math.Matrix
 
   type Rational = spire.math.Rational
   val Rational = spire.math.Rational
 
-  implicit class RichMPNumber[N <: MPNumber](x: N)(implicit mp: MathProcessor[N, _]) extends Ordered[N] {
+  implicit class RichMPNumber[N <: MPNumber](x: N)(implicit mp: MathProcessor[N]) extends Ordered[N] {
     def isZero: Boolean = mp.isZero(x)
     def isIntegral: Boolean = mp.isIntegral(x)
     def isRational: Boolean = mp.isRational(x)
@@ -50,8 +52,8 @@ trait MathImports {
     def toLatexString: String = mp.toLatexString(x)
   }
 
-  implicit class RichMPMatrix[M <: MPMatrix, N <: MPNumber](m: M)(implicit mp: MathProcessor[N, M]) {
-    def apply(row: Int, col: Int): N = mp.matrix.get(m, row, col)
+  implicit class RichMPMatrix[N <: MPNumber](m: Matrix[N])(implicit mp: MathProcessor[N]) {
+    private type M = Matrix[N]
 
     def +(that: M): M = mp.matrix.add(m, that)
     def -(that: M): M = mp.matrix.subtract(m, that)
@@ -59,7 +61,6 @@ trait MathImports {
     def negate: M = mp.matrix.negate(m)
 
     def inverse: M = mp.matrix.inverse(m)
-    def transpose: M = mp.matrix.transpose(m)
 
     def minor(skipRow: Int, skipCol: Int): N = mp.matrix.minor(m, skipRow, skipCol)
     def minorMatrix(skipRow: Int, skipCol: Int): M = mp.matrix.minorMatrix(m, skipRow, skipCol)
@@ -67,26 +68,17 @@ trait MathImports {
     def det: N = mp.matrix.det(m)
     def rank: Int = mp.matrix.rank(m)
 
-    def map(f: N => N) = mp.matrix.map(m, f)
+    def map[B](f: N => B) = mp.matrix.map(m, f)
 
     def exists(cond: N => Boolean): Boolean = mp.matrix.exists(m, cond)
     def forall(cond: N => Boolean): Boolean = mp.matrix.forall(m, cond)
     def contains(what: N): Boolean = mp.matrix.contains(m, what)
 
-    /** @return stream of (row, col, element) */
-    def elementsByRow: Stream[(Int, Int, N)] = mp.matrix.elementsByRow(m)
-
-    def rows: IndexedSeq[IndexedSeq[N]] = mp.matrix.rows(m)
-    def cols: IndexedSeq[IndexedSeq[N]] = mp.matrix.cols(m)
-
-    def addRow(row: Traversable[N]) = mp.matrix.addRow(m, row)
-    def addCol(col: Traversable[N]) = mp.matrix.addCol(m, col)
-
     def triangleForm: (M, Int) = mp.matrix.triangleForm(m)
     def diagonalize: (M, M, M) = mp.matrix.diagonalize(m)
   }
 
-  implicit def mpNumberSupport[N <: MPNumber](implicit mp: MathProcessor[N, _]): MPNumberSupport[N] =
+  implicit def mpNumberSupport[N <: MPNumber](implicit mp: MathProcessor[N]): MPNumberSupport[N] =
     new MPNumberSupport
 
   /**
@@ -94,7 +86,7 @@ trait MathImports {
    *
    * Note that most conversion methods force any non-rational Spire number to be converted to Double.
    */
-  class MPNumberSupport[N <: MPNumber](implicit mp: MathProcessor[N, _])
+  class MPNumberSupport[N <: MPNumber](implicit mp: MathProcessor[N])
       extends spire.math.Numeric[N]
       with spire.algebra.CRing[N]
       with spire.algebra.Order[N] {

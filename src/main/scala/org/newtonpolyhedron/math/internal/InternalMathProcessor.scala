@@ -8,9 +8,9 @@ import spire.math.Rational
 /**
  * @author FS
  */
-class InternalMathProcessor extends MathProcessor[Product, InternalMatrix[Product]] {
+class InternalMathProcessor extends MathProcessor[Product] {
   private type N = Product
-  private type M = InternalMatrix[Product]
+  private type M = ApacheMatrix[Product]
 
   private implicit val mp = this
 
@@ -170,7 +170,7 @@ class InternalMathProcessor extends MathProcessor[Product, InternalMatrix[Produc
     }
   }
 
-  override val matrix: MatrixMathProcessor[N, M] = new InternalMatrixMathProcessor()(this)
+  override val matrix: MatrixMathProcessor[N] = new InternalMatrixMathProcessor()(this)
 }
 
 object InternalMathProcessor {

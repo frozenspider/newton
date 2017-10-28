@@ -8,7 +8,7 @@ import spire.math.Rational
  *
  * @author FS
  */
-trait MathProcessor[N <: MPNumber, M <: MPMatrix] {
+trait MathProcessor[N <: MPNumber] {
   def zero: N
 
   def one: N
@@ -68,5 +68,5 @@ trait MathProcessor[N <: MPNumber, M <: MPMatrix] {
   // Matrix operations
   //
 
-  def matrix: MatrixMathProcessor[N, M]
+  def matrix: MatrixMathProcessor[N]
 }

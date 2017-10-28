@@ -19,7 +19,7 @@ class EqSystemRenderingPanel extends BorderPanel {
 
   def fontSize_=(f: Float): Unit = renderer.fontSize = f
 
-  def render[N <: MPNumber](eqs: Equations[N], varName1: String, varName2: String = "Var")(implicit mp: MathProcessor[N, _]) = {
+  def render[N <: MPNumber](eqs: Equations[N], varName1: String, varName2: String = "Var")(implicit mp: MathProcessor[N]) = {
     renderer.content = LatexConversion.equationsToLatex(eqs, varName1, varName2)
   }
 }

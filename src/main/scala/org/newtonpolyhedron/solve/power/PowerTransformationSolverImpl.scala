@@ -5,11 +5,11 @@ import org.newtonpolyhedron.solve.eqsys.EqSystemSolver
 import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMaker
 import spire.math.Rational
 
-class PowerTransformationSolverImpl[N <: MPNumber, M <: MPMatrix](
-  val umm:         UnimodularMatrixMaker[N, M],
+class PowerTransformationSolverImpl[N <: MPNumber](
+  val umm:         UnimodularMatrixMaker[N],
   val eqSysSolver: EqSystemSolver[N]
-)(implicit mp: MathProcessor[N, M])
-    extends PowerTransformationSolver[N, M] {
+)(implicit mp: MathProcessor[N])
+    extends PowerTransformationSolver[N] {
 
   private type Powers = Seq[NumVec[N]]
   private type Coeffs = Seq[N]
@@ -17,10 +17,10 @@ class PowerTransformationSolverImpl[N <: MPNumber, M <: MPMatrix](
   private def vecn(s: Seq[N]) = NumVec(s: _*)
   private def vecf(s: Seq[Rational]) = NumVec(s.map(mp.fromRational): _*)
 
-  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[NumVec[N]]]): M = {
+  override def generateAlphaFromTerms(powersSeqs: Seq[Seq[NumVec[N]]]): Matrix[N] = {
     // TODO: Make sure this works for more than 2 polys
     val dimension = powersSeqs.size + 1
-    def lastRowMinors(m: M): Seq[N] = {
+    def lastRowMinors(m: Matrix[N]): Seq[N] = {
       (0 until m.colCount) map { c => m.minor(m.rowCount - 1, c) }
     }
     require(
@@ -32,7 +32,7 @@ class PowerTransformationSolverImpl[N <: MPNumber, M <: MPMatrix](
       val matrixBase = (pairs map {
         case (powers1, powers2) => powers1 - powers2
       }) :+ NumVec.zero(dimension)
-      mp.matrix(matrixBase)
+      Matrix(matrixBase)
     }
     if (matrices.isEmpty)
       throw new IllegalArgumentException("Pairs are not provided")
@@ -41,7 +41,7 @@ class PowerTransformationSolverImpl[N <: MPNumber, M <: MPMatrix](
     }
     if (nonZeroMatrices.isEmpty)
       throw new IllegalArgumentException("All pre-alpha matrices have zero minors")
-    val alphasStream: Stream[M] =
+    val alphasStream: Stream[Matrix[N]] =
       nonZeroMatrices map { matrix =>
         val alpha = umm unimodularFrom matrix
         assert(alpha.elementsByRow map (_._3) forall (_.isIntegral))
@@ -77,10 +77,10 @@ class PowerTransformationSolverImpl[N <: MPNumber, M <: MPMatrix](
   // =========================
   //
 
-  private def matrixByRows(m: M): Seq[NumVec[N]] =
+  private def matrixByRows(m: Matrix[N]): Seq[NumVec[N]] =
     (m.elementsByRow map (_._3) grouped (m.colCount) map vecn).toIndexedSeq
 
-  private def inverse(m: M): M = {
+  private def inverse(m: Matrix[N]): Matrix[N] = {
     val inv = m.inverse
     assert(inv.elementsByRow map (_._3) forall (_.isIntegral))
     inv
@@ -89,7 +89,7 @@ class PowerTransformationSolverImpl[N <: MPNumber, M <: MPMatrix](
   private def getLowestPowers(powers: Powers) =
     vecn(powers reduce ((_, _).zipped map (spire.math.min[N])))
 
-  override def substitute(poly: Polynomial[N], alpha: M): Polynomial[N] = {
+  override def substitute(poly: Polynomial[N], alpha: Matrix[N]): Polynomial[N] = {
     require(alpha.isSquare, "Alpha matrix should be square")
     val alphaInvByRows = matrixByRows(inverse(alpha))
     val rawPows: IndexedSeq[NumVec[N]] =

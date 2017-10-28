@@ -9,7 +9,7 @@ object PointUtils {
   def p3d(x: Double, y: Double, z: Double): Point3d = new Point3d(x, y, z)
   def p3d(coord: (Double, Double, Double)): Point3d = p3d(coord._1, coord._2, coord._3)
 
-  def p3d[N <: MPNumber](v: NumVec[N])(implicit mp: MathProcessor[N, _]): Point3d = {
+  def p3d[N <: MPNumber](v: NumVec[N])(implicit mp: MathProcessor[N]): Point3d = {
     require(v.size <= 3, s"${v.size}-dim vector can't be visualized")
     p3d(
       v(0).toDouble,
@@ -31,7 +31,7 @@ object PointUtils {
   def copySubtractPointAsInt[N <: MPNumber](
       points:    Seq[NumVec[N]],
       idxToSubs: Int
-  )(implicit mp: MathProcessor[N, _]): Seq[IntVec] = {
+  )(implicit mp: MathProcessor[N]): Seq[IntVec] = {
     require(points.size > idxToSubs, "Index to big for a collection: " + idxToSubs + " in " + points)
     val toSub = points(idxToSubs)
     val result = for {

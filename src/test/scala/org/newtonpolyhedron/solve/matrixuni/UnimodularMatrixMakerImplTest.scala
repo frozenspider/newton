@@ -15,7 +15,7 @@ class UnimodularMatrixMakerImplTest
 
   test("non-square") {
     intercept[IllegalArgumentException] {
-      maker.unimodularFrom(mp.matrix.zero(1, 2))
+      maker.unimodularFrom(Matrix.zero[N](1, 2))
     }
   }
 

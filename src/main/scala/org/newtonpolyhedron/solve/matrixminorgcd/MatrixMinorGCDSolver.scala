@@ -2,7 +2,7 @@ package org.newtonpolyhedron.solve.matrixminorgcd
 
 import org.newtonpolyhedron.NewtonImports._
 
-trait MatrixMinorGCDSolver[N <: MPNumber, M <: MPMatrix] {
+trait MatrixMinorGCDSolver[N <: MPNumber] {
   /**
    * Get the GCD of matrix minors for the last row.
    *
@@ -12,5 +12,5 @@ trait MatrixMinorGCDSolver[N <: MPNumber, M <: MPMatrix] {
    * @throws SingularMatrixException
    *             if matrix is singular
    */
-  def lastRowGcd(matrix: M): (BigInt, Seq[BigInt])
+  def lastRowGcd(matrix: Matrix[N]): (BigInt, Seq[BigInt])
 }

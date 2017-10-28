@@ -9,19 +9,19 @@ import org.newtonpolyhedron.solve.power.PowerTransformationSolver
 
 import spire.compat._
 
-class PowerTransformationSolverPrinter[N <: MPNumber, M <: MPMatrix](
-  override val solver:        PowerTransformationSolver[N, M],
+class PowerTransformationSolverPrinter[N <: MPNumber](
+  override val solver:        PowerTransformationSolver[N],
   val varChanger:             ChangerOfVariables[N],
   val polys:                  Polys[N],
   val intersectionPtsIndices: Seq[Seq[Int]],
   override val output:        PrintWriter
-)(implicit mp: MathProcessor[N, _])
-    extends SolverPrinter[PowerTransformationSolver[N, M]](solver, output) {
+)(implicit mp: MathProcessor[N])
+    extends SolverPrinter[PowerTransformationSolver[N]](solver, output) {
 
   private def s = IndexedSeq
 
   override def solveFor(
-      solver: PowerTransformationSolver[N, M],
+      solver: PowerTransformationSolver[N],
       output: PrintWriter
   ) = {
     output.println(title("Power transformation"))

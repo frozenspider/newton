@@ -7,7 +7,6 @@ import scala.collection.immutable.SortedSet
 import org.fs.utility.collection.table._
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.Surface
-import org.newtonpolyhedron.math.internal.InternalMatrix
 
 /**
  * Contains test shortcuts
@@ -15,29 +14,29 @@ import org.newtonpolyhedron.math.internal.InternalMatrix
 package object test {
   type DoubleConvertible = Any { def toDouble: Double }
 
-  def matrFrac(content: Seq[Seq[Int]]): InternalMatrix[Rational] = {
-    InternalMatrix(content map (_.toIndexedSeq map Rational.apply))
+  def matrFrac(content: Seq[Seq[Int]]): Matrix[Rational] = {
+    Matrix(content map (_.toIndexedSeq map Rational.apply))
   }
 
-  def matrNum[N <: MPNumber, M <: MPMatrix](content: Seq[Seq[Int]])(implicit mp: MathProcessor[N, M]): M = {
-    mp.matrix(content map (_.toIndexedSeq map mp.fromInt))
+  def matrNum[N <: MPNumber](content: Seq[Seq[Int]])(implicit mp: MathProcessor[N]): Matrix[N] = {
+    Matrix(content map (_.toIndexedSeq map mp.fromInt))
   }
 
   def s[T](values: T*): IndexedSeq[T] = IndexedSeq(values: _*)
 
   def iv(ints: Int*): IntVec = IntVec((ints map BigInt.apply): _*)
-  def nv[N <: MPNumber](ints: Int*)(implicit mp: MathProcessor[N, _]): NumVec[N] =
+  def nv[N <: MPNumber](ints: Int*)(implicit mp: MathProcessor[N]): NumVec[N] =
     NumVec[N]((ints map mp.fromInt): _*)
-  def nv2[N <: MPNumber](fracs: Rational*)(implicit mp: MathProcessor[N, _]): NumVec[N] =
+  def nv2[N <: MPNumber](fracs: Rational*)(implicit mp: MathProcessor[N]): NumVec[N] =
     NumVec[N]((fracs map mp.fromRational): _*)
 
-  def n[N <: MPNumber](i: Int)(implicit mp: MathProcessor[N, _]): N = mp.fromInt(i)
-  def n[N <: MPNumber](n: Int, d: Int)(implicit mp: MathProcessor[N, _]): N = mp.fromRational(frac(n, d))
+  def n[N <: MPNumber](i: Int)(implicit mp: MathProcessor[N]): N = mp.fromInt(i)
+  def n[N <: MPNumber](n: Int, d: Int)(implicit mp: MathProcessor[N]): N = mp.fromRational(frac(n, d))
 
   def frac(n: Int) = Rational(n, 1)
   def frac(n: Int, d: Int) = Rational(n, d)
 
-  def makePoly[N <: MPNumber](components: (Int, Seq[Int])*)(implicit mp: MathProcessor[N, _]): Polynomial[N] =
+  def makePoly[N <: MPNumber](components: (Int, Seq[Int])*)(implicit mp: MathProcessor[N]): Polynomial[N] =
     components map { case (coeff, pows) => Term(mp.fromInt(coeff), nv(pows: _*)) } toIndexedSeq
 
   def markedTable(colsCount: Int, expectedVecs: Seq[IntVec], marked: IndexedSeq[IndexedSeq[Int]]): KeyTable[IntVec, Int, Boolean] = {

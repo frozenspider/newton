@@ -10,7 +10,7 @@ import spire.math.Rational
  * <p>
  * "Simple" here means that each equation should be a polynomial consisting of exactly two terms.
  */
-class SimpleEqSystemSolverImpl[N <: MPNumber](implicit mp: MathProcessor[N, _]) extends EqSystemSolver[N] {
+class SimpleEqSystemSolverImpl[N <: MPNumber](implicit mp: MathProcessor[N]) extends EqSystemSolver[N] {
 
   private type Replacement = Map[Int, N]
 

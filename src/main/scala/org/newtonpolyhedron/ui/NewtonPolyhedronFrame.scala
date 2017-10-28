@@ -15,7 +15,7 @@ import org.newtonpolyhedron.WorkingMode
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.math.MathImports._
 
-class NewtonPolyhedronFrame[N <: MPNumber](logic: NewtonLogic[N, _]) extends SimpleSwingApplication {
+class NewtonPolyhedronFrame[N <: MPNumber](logic: NewtonLogic[N]) extends SimpleSwingApplication {
 
   val printWriter = new PrintWriter(new NewtonTextAreaOutput)
   var workingThread: Option[Thread] = None

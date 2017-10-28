@@ -13,13 +13,13 @@ trait PolynomialUtils {
   type Polys[N <: MPNumber] = IndexedSeq[Polynomial[N]]
   type Equations[N <: MPNumber] = IndexedSeq[Equation[N]]
 
-  def zeroPoly[N <: MPNumber](dim: Int)(implicit mp: MathProcessor[N, _]): Polynomial[N] =
+  def zeroPoly[N <: MPNumber](dim: Int)(implicit mp: MathProcessor[N]): Polynomial[N] =
     IndexedSeq(Term(mp.zero, IndexedSeq.fill[N](dim)(mp.zero)))
 
   /**
    * Contains some basic polynomial-related operations - multiplication, raising to powers, etc.
    */
-  implicit class RichPolynomial[N <: MPNumber](poly: Polynomial[N])(implicit mp: MathProcessor[N, _]) {
+  implicit class RichPolynomial[N <: MPNumber](poly: Polynomial[N])(implicit mp: MathProcessor[N]) {
 
     def **(pow: Int): Polynomial[N] = {
       require(pow >= 0, "Can't raise polynomial to negative power")
@@ -63,7 +63,7 @@ trait PolynomialUtils {
     }
   }
 
-  implicit class SubstitutionPolynomial[N <: MPNumber](p: Polynomial[N])(implicit mp: MathProcessor[N, _]) {
+  implicit class SubstitutionPolynomial[N <: MPNumber](p: Polynomial[N])(implicit mp: MathProcessor[N]) {
     /** Substitute variables in all terms with the given values */
     def withValues(vs: Seq[N]): Seq[N] = {
       val substitutedTerms = p map { term =>
@@ -94,7 +94,7 @@ trait PolynomialUtils {
     }
   }
 
-  private def isSummable[N <: MPNumber](p1: N, p2: N)(implicit mp: MathProcessor[N, _]): Boolean =
+  private def isSummable[N <: MPNumber](p1: N, p2: N)(implicit mp: MathProcessor[N]): Boolean =
     try {
       p1 + p2
       true
@@ -102,7 +102,7 @@ trait PolynomialUtils {
       case ex: IllegalArgumentException => false
     }
 
-  private def reduceSum[N <: MPNumber](sum: Seq[N])(implicit mp: MathProcessor[N, _]): Seq[N] = {
+  private def reduceSum[N <: MPNumber](sum: Seq[N])(implicit mp: MathProcessor[N]): Seq[N] = {
     def reduceSumInner(accUnreducible: Seq[N], remainings: Seq[N]): Seq[N] =
       remainings match {
         case e if e.isEmpty =>

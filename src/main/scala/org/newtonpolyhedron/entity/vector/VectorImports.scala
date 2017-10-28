@@ -17,11 +17,11 @@ trait VectorImports extends SeqVectorSupport {
 
     def zero(dimension: Int) = IndexedSeq.fill[BigInt](dimension)(0)
 
-    def fromNumVec[N <: MPNumber](ns: NumVec[N])(implicit mp: MathProcessor[N, _]) = {
+    def fromNumVec[N <: MPNumber](ns: NumVec[N])(implicit mp: MathProcessor[N]) = {
       fromNum(ns: _*)
     }
 
-    def fromNum[N <: MPNumber](ns: N*)(implicit mp: MathProcessor[N, _]) = {
+    def fromNum[N <: MPNumber](ns: N*)(implicit mp: MathProcessor[N]) = {
       val rs = ns map (_.toRational)
       val multiplier = rs.foldLeft(SafeLong.one)((m, el) => {
         if (m % el.denominator == 0) m else m * el.denominator
@@ -34,13 +34,13 @@ trait VectorImports extends SeqVectorSupport {
   object NumVec {
     def apply[N <: MPNumber](vs: N*) = IndexedSeq.apply[N](vs: _*)
 
-    def zero[N <: MPNumber](dimension: Int)(implicit mp: MathProcessor[N, _]) = IndexedSeq.fill[N](dimension)(mp.zero)
+    def zero[N <: MPNumber](dimension: Int)(implicit mp: MathProcessor[N]) = IndexedSeq.fill[N](dimension)(mp.zero)
   }
 
   implicit lazy val intVecOrdering: Ordering[IntVec] =
     Ordering.Implicits.seqDerivedOrdering[IndexedSeq, BigInt](Ordering.BigInt)
 
-  implicit def numVecOrdering[N <: MPNumber](implicit mp: MathProcessor[N, _]): Ordering[NumVec[N]] = {
+  implicit def numVecOrdering[N <: MPNumber](implicit mp: MathProcessor[N]): Ordering[NumVec[N]] = {
     val ordering = spire.compat.ordering(mpNumberSupport)
     Ordering.Implicits.seqDerivedOrdering[IndexedSeq, N](ordering)
   }
@@ -55,7 +55,7 @@ trait VectorImports extends SeqVectorSupport {
         seq map (_ / gcd)
     }
 
-    def toNumVec[N <: MPNumber](implicit mp: MathProcessor[N, _]): NumVec[N] =
+    def toNumVec[N <: MPNumber](implicit mp: MathProcessor[N]): NumVec[N] =
       seq map mp.fromBigInt
 
     def toTupleString: String =
@@ -63,7 +63,7 @@ trait VectorImports extends SeqVectorSupport {
   }
 
   implicit class RichNumVec[N <: MPNumber](val x: NumVec[N]) {
-    def compare(y: NumVec[N])(implicit mp: MathProcessor[N, _]): Int =
+    def compare(y: NumVec[N])(implicit mp: MathProcessor[N]): Int =
       (x lengthCompare y.length) match {
         case 0 => (x zip y).toStream map (mp.compare) find (_ != 0) getOrElse 0
         case x => x

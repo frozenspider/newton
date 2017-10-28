@@ -1,11 +1,10 @@
 package org.newtonpolyhedron.solve.matrixuni
 
-import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
+import org.newtonpolyhedron.NewtonImports._
+import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.utils.StringUtils
-import spire.math.Rational
 
 @RunWith(classOf[JUnitRunner])
 class AlphaMatrixTest
@@ -14,11 +13,11 @@ class AlphaMatrixTest
 
   val maker = new UnimodularMatrixMakerImpl
 
-  private def matrixFromDraft(draft: Seq[Seq[Int]]): M = {
+  private def matrixFromDraft(draft: Seq[Seq[Int]]): Matrix[N] = {
     matrNum(draft :+ Seq.fill(draft.size + 1)(0))
   }
 
-  private def performTheTest(source: Seq[Seq[Int]], expected: M): Unit = {
+  private def performTheTest(source: Seq[Seq[Int]], expected: Matrix[N]): Unit = {
     val alpha = maker.unimodularFrom(matrixFromDraft(source))
     assert(alpha === expected)
   }

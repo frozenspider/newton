@@ -22,7 +22,7 @@ object FieldElementSupport {
   // Main wrappers
   val BigIntFieldWrapper: FieldElementWrapper[BigInt] = new FieldElementWrapper
   val RationalFieldWrapper: FieldElementWrapper[Rational] = new FieldElementWrapper
-  def mpNumberFieldWrapper[N <: MPNumber](implicit mp: MathProcessor[N, _]): FieldElementWrapper[N] = new FieldElementWrapper[N]
+  def mpNumberFieldWrapper[N <: MPNumber](implicit mp: MathProcessor[N]): FieldElementWrapper[N] = new FieldElementWrapper[N]
 
   // Wrapping
   def wrap[T: Numeric] = new FieldElementWrapper[T]

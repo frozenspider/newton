@@ -6,15 +6,15 @@ import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.solve.matrixminorgcd.MatrixMinorGCDSolver
 
-class MatrixMinorGCDSolverPrinter[N <: MPNumber, M <: MPMatrix](
-  override val solver: MatrixMinorGCDSolver[N, M],
-  val baseMatrix:      M,
+class MatrixMinorGCDSolverPrinter[N <: MPNumber](
+  override val solver: MatrixMinorGCDSolver[N],
+  val baseMatrix:      Matrix[N],
   override val output: PrintWriter
 )
-    extends SolverPrinter[MatrixMinorGCDSolver[N, M]](solver, output) {
+    extends SolverPrinter[MatrixMinorGCDSolver[N]](solver, output) {
 
   override def solveFor(
-      solver: MatrixMinorGCDSolver[N, M],
+      solver: MatrixMinorGCDSolver[N],
       output: PrintWriter
   ) = {
     output.println(title("Matrix GCD"))

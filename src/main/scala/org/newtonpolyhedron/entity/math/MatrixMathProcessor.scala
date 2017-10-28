@@ -1,58 +1,35 @@
 package org.newtonpolyhedron.entity.math
 
-trait MatrixMathProcessor[N <: MPNumber, M <: MPMatrix] {
-  // Construction
-
-  def apply(elements: Iterable[Iterable[N]]): M
-  def idenitiy(dim: Int): M
-  def zero(dim: Int): M
-  def zero(rowCount: Int, colCount: Int): M
-  def empty: M
-
+trait MatrixMathProcessor[N <: MPNumber] {
   // Processing
 
-  def get(m: M, row: Int, col: Int): N
+  def add(m1: Matrix[N], m2: Matrix[N]): Matrix[N]
 
-  def add(m1: M, m2: M): M
+  def subtract(m1: Matrix[N], m2: Matrix[N]): Matrix[N]
 
-  def subtract(m1: M, m2: M): M
+  def multiply(m1: Matrix[N], m2: Matrix[N]): Matrix[N]
 
-  def multiply(m1: M, m2: M): M
-
-  def negate(m: M): M
+  def negate(m: Matrix[N]): Matrix[N]
 
   // TODO: Use pseudo-inverse?
   /** Inverse */
-  def inverse(m: M): M
+  def inverse(m: Matrix[N]): Matrix[N]
 
-  def transpose(m: M): M
+  def minor(m: Matrix[N], skipRow: Int, skipCol: Int): N
 
-  def minor(m: M, skipRow: Int, skipCol: Int): N
+  def minorMatrix(m: Matrix[N], skipRow: Int, skipCol: Int): Matrix[N]
 
-  def minorMatrix(m: M, skipRow: Int, skipCol: Int): M
+  def det(m: Matrix[N]): N
 
-  def det(m: M): N
+  def rank(m: Matrix[N]): Int
 
-  def rank(m: M): Int
+  def map[A, B](m: Matrix[A], f: A => B): Matrix[B]
 
-  def map(m: M, f: N => N): M
+  def exists(m: Matrix[N], cond: N => Boolean): Boolean = m.elementsByRow exists (e => cond(e._3))
 
-  def exists(m: M, cond: N => Boolean): Boolean = elementsByRow(m) exists (e => cond(e._3))
+  def forall(m: Matrix[N], cond: N => Boolean): Boolean = m.elementsByRow forall (e => cond(e._3))
 
-  def forall(m: M, cond: N => Boolean): Boolean = elementsByRow(m) forall (e => cond(e._3))
-
-  def contains(m: M, what: N): Boolean = elementsByRow(m) exists (_._3 == what)
-
-  /** @return stream of (row, col, element) */
-  def elementsByRow(m: M): Stream[(Int, Int, N)]
-
-  def rows(m: M): IndexedSeq[IndexedSeq[N]]
-
-  def cols(m: M): IndexedSeq[IndexedSeq[N]]
-
-  def addRow(m: M, row: Traversable[N]): M
-
-  def addCol(m: M, col: Traversable[N]): M
+  def contains(m: Matrix[N], what: N): Boolean = m.elementsByRow exists (_._3 == what)
 
   //
   // Advanced operations
@@ -79,7 +56,7 @@ trait MatrixMathProcessor[N <: MPNumber, M <: MPMatrix] {
    *
    * @return matrix and {@code 1} or {@code -1} depending on whether or not determinant sign was reversed
    */
-  def triangleForm(m: M): (M, Int)
+  def triangleForm(m: Matrix[N]): (Matrix[N], Int)
 
   /**
    * Converts the matrix to diagonal form.
@@ -87,5 +64,5 @@ trait MatrixMathProcessor[N <: MPNumber, M <: MPMatrix] {
    * Returns diagonal matrix alongside with row and column transformation matrices
    * @return (`DiagonalMatrix`, `RowTransformationsMatrix`, `ColumnTransformationsMatrix`)
    */
-  def diagonalize(m: M): (M, M, M)
+  def diagonalize(m: Matrix[N]): (Matrix[N], Matrix[N], Matrix[N])
 }

@@ -5,12 +5,12 @@ import java.io.PrintWriter
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
 
-class MatrixDetSolverPrinter[N <: MPNumber, M <: MPMatrix](
-  val baseMatrix: M,
+class MatrixDetSolverPrinter[N <: MPNumber](
+  val baseMatrix: Matrix[N],
   val skipRow:    Int,
   val skipCol:    Int,
   override val output:         PrintWriter
-)(implicit mp: MathProcessor[N, M])
+)(implicit mp: MathProcessor[N])
     extends SolverPrinter[Void](null, output) {
 
   override def solveFor(

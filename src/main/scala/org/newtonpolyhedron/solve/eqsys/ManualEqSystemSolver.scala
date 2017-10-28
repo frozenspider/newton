@@ -8,7 +8,7 @@ import org.newtonpolyhedron.utils.parsing.ParseFormats._
 /**
  * Allows you to solve system of equations manually
  */
-class ManualEqSystemSolver[N <: MPNumber](solverInput: EqSystemSolutionInput[N])(implicit mp: MathProcessor[N, _])
+class ManualEqSystemSolver[N <: MPNumber](solverInput: EqSystemSolutionInput[N])(implicit mp: MathProcessor[N])
     extends EqSystemSolver[N] {
 
   override def whyCantSolve(system: Polys[N]): Option[String] = None

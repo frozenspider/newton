@@ -4,9 +4,9 @@ import org.newtonpolyhedron.NewtonImports._
 
 import spire.math.Rational
 
-class UnimodularMatrixMakerImpl[N <: MPNumber, M <: MPMatrix](implicit mp: MathProcessor[N, M]) extends UnimodularMatrixMaker[N, M] {
+class UnimodularMatrixMakerImpl[N <: MPNumber](implicit mp: MathProcessor[N]) extends UnimodularMatrixMaker[N] {
 
-  override def unimodularFrom(matrix: M): M = {
+  override def unimodularFrom(matrix: Matrix[N]): Matrix[N] = {
     require(matrix.isSquare, "Non-square matrix")
 
     val (matrixDiag, rowOnes, colOnes) = matrix.diagonalize
