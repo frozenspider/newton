@@ -19,7 +19,7 @@ trait PolyhedronSolver[N <: MPNumber] {
    *            common equations, added to system of equations for each point
    * @param wishfulBasisOption
    *            a basis for solving systems of equations
-   * @return `KeyTable[NormalVectors, PointIndex, Correspondence]`
+   * @return lookup table `KeyTable[NormalVectors, PointIndex, Correspondence]`
    */
   def solve(
       points:             Seq[NumVec[N]],
