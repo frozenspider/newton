@@ -17,7 +17,7 @@ import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
 import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
 import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
-import org.newtonpolyhedron.solve.surface._
+import org.newtonpolyhedron.solve.face._
 import org.newtonpolyhedron.solverprinters._
 import org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
@@ -83,8 +83,8 @@ class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
   ): SolverPrinter[_] = {
     val (pointList, commonLimitsOption, basisOption) = InputParser.parsePolyFromFile(file)(parseNum)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
-    val surfaceBuilder = new SurfaceBuilderImpl
-    new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimitsOption, basisOption, illustrate, writer)
+    val faceBuilder = new FaceBuilderImpl
+    new PolyhedronSolverPrinter(polySolver, faceBuilder, pointList, commonLimitsOption, basisOption, illustrate, writer)
   }
 
   private def launchIntersection(

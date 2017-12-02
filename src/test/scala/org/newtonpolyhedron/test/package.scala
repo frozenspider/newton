@@ -6,7 +6,7 @@ import scala.collection.immutable.SortedSet
 
 import org.fs.utility.collection.table._
 import org.newtonpolyhedron.NewtonImports._
-import org.newtonpolyhedron.entity.Surface
+import org.newtonpolyhedron.entity.Face
 
 /**
  * Contains test shortcuts
@@ -57,16 +57,16 @@ package object test {
    * @param points sequence of [sequence of (pointIndices, upperLvlIndices)], one per dimension,
    *         in order of descending dimensinon. Last sequence will get the dimension of 0
    */
-  def chainSurfaces(points: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]): Map[Int, SortedSet[Surface]] = {
+  def chainFaces(points: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]): Map[Int, SortedSet[Face]] = {
     def addToMap(
-        acc:       Map[Int, SortedSet[Surface]],
+        acc:       Map[Int, SortedSet[Face]],
         dim:       Int,
         current:   IndexedSeq[(Seq[Int], Seq[Int])],
         remaining: Seq[IndexedSeq[(Seq[Int], Seq[Int])]]
-    ): Map[Int, SortedSet[Surface]] = {
+    ): Map[Int, SortedSet[Face]] = {
       val upperLevel = (acc getOrElse (dim + 1, IndexedSeq())).toIndexedSeq
-      val currentSurfaces = current map { s => new Surface(s._1, s._2 map upperLevel) }
-      val newAcc = acc + (dim -> SortedSet(currentSurfaces: _*))
+      val currentFaces = current map { s => new Face(s._1, s._2 map upperLevel) }
+      val newAcc = acc + (dim -> SortedSet(currentFaces: _*))
       assert(remaining.isEmpty ^ (dim != 0))
       if (remaining.isEmpty)
         newAcc

@@ -7,9 +7,9 @@ import java.text.MessageFormat
 import org.fs.utility.collection.table.KeyTable
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.Surface
+import org.newtonpolyhedron.entity.Face
 import org.newtonpolyhedron.solve.poly.PolyhedronSolver
-import org.newtonpolyhedron.solve.surface.SurfaceBuilder
+import org.newtonpolyhedron.solve.face.FaceBuilder
 import org.newtonpolyhedron.ui.render3d.PolyRenderer
 import org.newtonpolyhedron.utils.PointUtils
 
@@ -19,7 +19,7 @@ import javax.vecmath.Point3d
 
 class PolyhedronSolverPrinter[N <: MPNumber](
   solver:                 PolyhedronSolver[N],
-  val surfaceBuilder:     SurfaceBuilder,
+  val faceBuilder:        FaceBuilder,
   val points:             IndexedSeq[NumVec[N]],
   val commonLimitsOption: Option[IndexedSeq[IntVec]],
   val basisOption:        Option[IndexedSeq[IntVec]],
@@ -53,20 +53,20 @@ class PolyhedronSolverPrinter[N <: MPNumber](
     val lookupTable = solver.solve(points, commonLimitsOption, basisOption)
     printLookupTable(lookupTable, output)
 
-    val surfacesMap = surfaceBuilder.surfaces(lookupTable, dimension)
+    val facesMap = faceBuilder.faces(lookupTable, dimension)
 
-    var upperDimSurfaces = IndexedSeq.empty[Surface]
-    for ((surfaceDim, currDimSurfaces) <- surfacesMap) {
-      val currDimSurfacesList = currDimSurfaces.toIndexedSeq.sorted
-      output.println(subheader("Surface Dimension: " + surfaceDim))
-      currDimSurfacesList.foreachWithIndex { (surface, idx) =>
-        output.println(MessageFormat.format("  {0})\t{1}", int2Integer(idx), surface.makeString(upperDimSurfaces)))
+    var upperDimFaces = IndexedSeq.empty[Face]
+    for ((faceDim, currDimFaces) <- facesMap) {
+      val currDimFacesList = currDimFaces.toIndexedSeq.sorted
+      output.println(subheader("Face Dimension: " + faceDim))
+      currDimFacesList.foreachWithIndex { (face, idx) =>
+        output.println(MessageFormat.format("  {0})\t{1}", int2Integer(idx), face.makeString(upperDimFaces)))
       }
-      upperDimSurfaces = currDimSurfacesList
+      upperDimFaces = currDimFacesList
     }
 
     if (dimension <= 3 && illustrate) {
-      illustrate(dimension, points, surfacesMap, 85)
+      illustrate(dimension, points, facesMap, 85)
     }
   }
 
@@ -94,13 +94,13 @@ class PolyhedronSolverPrinter[N <: MPNumber](
   }
 
   private def illustrate(
-      dim:         Int,
-      points:      Seq[NumVec[N]],
-      surfacesMap: Map[Int, Set[Surface]],
-      freq:        Int
+      dim:      Int,
+      points:   Seq[NumVec[N]],
+      facesMap: Map[Int, Set[Face]],
+      freq:     Int
   ) = {
     val points3d = points map (p => PointUtils.p3d(p))
-    val lines = collectLineCorners(surfacesMap(1), points)
+    val lines = collectLineCorners(facesMap(1), points)
     val borderEdgesAlt = (lines map (_.pointIndices map points3d)).flatten
     val illustrFrames = Seq(
       doDrawFrame("All-Vs-All", points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
@@ -134,16 +134,16 @@ class PolyhedronSolverPrinter[N <: MPNumber](
     frame
   }
 
-  private def collectLineCorners(surfaces: Iterable[Surface], points: Seq[NumVec[N]]): Seq[Surface] = {
-    surfaces.map(s => if (s.size == 2) s else getLineCorners(s, points)).toSeq
+  private def collectLineCorners(faces: Iterable[Face], points: Seq[NumVec[N]]): Seq[Face] = {
+    faces.map(s => if (s.size == 2) s else getLineCorners(s, points)).toSeq
   }
 
-  private def getLineCorners(surface: Surface, points: Seq[NumVec[N]]): Surface = {
+  private def getLineCorners(face: Face, points: Seq[NumVec[N]]): Face = {
     def getLesserAndGreaterPoints(
-        surfacePtsIndices: List[Int],
-        currDim:           Int, lesserPtIdx: Int, greaterPtIdx: Int
+        facePtsIndices: List[Int],
+        currDim:        Int, lesserPtIdx: Int, greaterPtIdx: Int
     ): (Int, Int) =
-      surfacePtsIndices match {
+      facePtsIndices match {
         case Nil => (lesserPtIdx, greaterPtIdx)
         case x :: xs => {
           val newLesser =
@@ -155,14 +155,14 @@ class PolyhedronSolverPrinter[N <: MPNumber](
           getLesserAndGreaterPoints(xs, currDim, newLesser, newGreater)
         }
       }
-    val surfacePtsIndices = surface.pointIndices.toIndexedSeq
+    val facePtsIndices = face.pointIndices.toIndexedSeq
     val dimension = points(0).size
     for (t <- 0 until dimension) {
-      val (lesserPtIdx, greaterPtIdx) = getLesserAndGreaterPoints(surfacePtsIndices.toList, t, surfacePtsIndices(0), surfacePtsIndices(0))
+      val (lesserPtIdx, greaterPtIdx) = getLesserAndGreaterPoints(facePtsIndices.toList, t, facePtsIndices(0), facePtsIndices(0))
       if (lesserPtIdx != greaterPtIdx)
-        return new Surface(Seq(lesserPtIdx, greaterPtIdx)).addUpperSurfaces(surface.upperSurfaces)
+        return new Face(Seq(lesserPtIdx, greaterPtIdx)).addUpperFaces(face.upperFaces)
     }
     // If this is the case - all points are same
-    return new Surface(Seq(surfacePtsIndices.head)).addUpperSurfaces(surface.upperSurfaces)
+    return new Face(Seq(facePtsIndices.head)).addUpperFaces(face.upperFaces)
   }
 }

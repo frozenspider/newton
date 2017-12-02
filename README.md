@@ -8,7 +8,7 @@ Currently does the following:
 * Computes a fundamental solution of a linear inequations system
   * Uses Motzkin-Burger algorithm
 * Computes minimal convex hull (referred as Newton polyhedron, but can work with fractions) for the given polynomial
-  * Computes all surfaces and normal cones for highest-dimension surfaces
+  * Computes all N-faces and normal cones for highest-dimension faces
   * Generates the lookup table between polynomial terms (polyhedron vertices) and normal vectors
   * Can visualize 2D and 3D polys
 * Has utility calculation methods
