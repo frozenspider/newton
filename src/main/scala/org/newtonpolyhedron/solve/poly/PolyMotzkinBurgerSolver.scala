@@ -14,18 +14,16 @@ class PolyMotzkinBurgerSolver[N <: MPNumber](val coneSolver: ConeSolver)(implici
   override def solve(
       points:             Seq[NumVec[N]],
       commonLimitsOption: Option[Seq[IntVec]],
-      wishfulBasisOption: Option[Seq[IntVec]],
-      output:             PrintWriter
+      wishfulBasisOption: Option[Seq[IntVec]]
   ): KeyTable[IntVec, Int, Boolean] = {
-    val allSolutions = solveForEachPoint(points, commonLimitsOption, wishfulBasisOption, output)
+    val allSolutions = solveForEachPoint(points, commonLimitsOption, wishfulBasisOption)
     fillTableWith(allSolutions)
   }
 
   def solveForEachPoint(
       points:             Seq[NumVec[N]],
       commonLimitsOption: Option[Seq[IntVec]],
-      wishfulBasisOption: Option[Seq[IntVec]],
-      output:             PrintWriter
+      wishfulBasisOption: Option[Seq[IntVec]]
   ): Seq[Seq[IntVec]] = {
     val dim = points.head.size
     val allSolutions = for (currPtIdx <- 0 until points.size) yield {

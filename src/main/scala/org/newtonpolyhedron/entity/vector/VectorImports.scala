@@ -1,12 +1,16 @@
 package org.newtonpolyhedron.entity.vector
 
+import org.newtonpolyhedron.entity.vector.internal.SeqVectorSupport
 import org.newtonpolyhedron.math.MathImports._
 import org.newtonpolyhedron.utils.LanguageImplicits._
 
-import org.newtonpolyhedron.entity.vector.internal.SeqVectorSupport
-
 import spire.math.SafeLong
 
+/**
+ * Helpers, aliases and shortcuts for vector operations.
+ *
+ * @author FS
+ */
 trait VectorImports extends SeqVectorSupport {
 
   type IntVec = IndexedSeq[BigInt]

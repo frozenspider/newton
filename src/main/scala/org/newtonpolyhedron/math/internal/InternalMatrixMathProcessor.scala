@@ -131,7 +131,7 @@ class InternalMatrixMathProcessor(implicit mp: MathProcessor[Product])
   }
 
   override def diagonalize(m: M): (M, M, M) = {
-    val (a, b, c) = MatrixToDiagonalForm.toDiagonal(map(m, { (x: Product) => x.toRational }))
+    val (a, b, c) = MatrixDiagonalizer.diagonalize(map(m, { (x: Product) => x.toRational }))
     val toProduct = (x: Rational) => Product(x)
     (map(a, toProduct), map(b, toProduct), map(c, toProduct))
   }

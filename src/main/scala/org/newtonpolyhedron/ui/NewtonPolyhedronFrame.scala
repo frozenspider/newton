@@ -10,12 +10,17 @@ import scala.swing._
 import scala.swing.event.ButtonClicked
 
 import org.newtonpolyhedron.BuildInfo
-import org.newtonpolyhedron.NewtonLogic
+import org.newtonpolyhedron.WorkerLauncher
 import org.newtonpolyhedron.WorkingMode
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.math.MathImports._
 
-class NewtonPolyhedronFrame[N <: MPNumber](logic: NewtonLogic[N]) extends SimpleSwingApplication {
+/**
+ * GUI for this project.
+ *
+ * @author FS
+ */
+class NewtonPolyhedronFrame[N <: MPNumber](workerLauncher: WorkerLauncher[N]) extends SimpleSwingApplication {
 
   val printWriter = new PrintWriter(new NewtonTextAreaOutput)
   var workingThread: Option[Thread] = None
@@ -67,7 +72,7 @@ class NewtonPolyhedronFrame[N <: MPNumber](logic: NewtonLogic[N]) extends Simple
           val illustrate = chckbxIllustrate.selected
           val mode = cbMode.selection.item
           if (selectedIdx != -1) {
-            workingThread = Some(logic.makeThread(path, mode, illustrate, printWriter))
+            workingThread = Some(workerLauncher.makeThread(path, mode, illustrate, printWriter))
             workingThread map (_.start)
             startBtn.text = "Stop"
           }

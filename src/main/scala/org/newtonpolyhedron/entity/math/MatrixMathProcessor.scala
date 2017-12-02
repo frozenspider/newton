@@ -1,5 +1,10 @@
 package org.newtonpolyhedron.entity.math
 
+/**
+ * Mathematical processor subcomponent which performs operations on matrices.
+ *
+ * @author FS
+ */
 trait MatrixMathProcessor[N <: MPNumber] {
   // Processing
 
@@ -37,12 +42,12 @@ trait MatrixMathProcessor[N <: MPNumber] {
 
   /**
    * Converges the matrix to a triangle form, where all elements below main diagonal are zeros.
-   * <p>
+   *
    * This operation doesn't change determinant value, but it may change it's sign.
-   * <p>
+   *
    * Example of a triangle matrix (empty cells = zeros):
    *
-   * <pre>
+   * {{{
    * +--+--+--+--+
    * | 1| 2| 3| 4|
    * +--+--+--+--+
@@ -52,17 +57,21 @@ trait MatrixMathProcessor[N <: MPNumber] {
    * +--+--+--+--+
    * |  |  |  | 4|
    * +--+--+--+--+
-   * </pre>
+   * }}}
    *
-   * @return matrix and {@code 1} or {@code -1} depending on whether or not determinant sign was reversed
+   * @return matrix and `1` or `-1` depending on whether or not determinant sign was reversed
    */
   def triangleForm(m: Matrix[N]): (Matrix[N], Int)
 
   /**
    * Converts the matrix to diagonal form.
-   * <p>
-   * Returns diagonal matrix alongside with row and column transformation matrices
-   * @return (`DiagonalMatrix`, `RowTransformationsMatrix`, `ColumnTransformationsMatrix`)
+   *
+   * Returns diagonal matrix alongside with row and column transformation matrices.
+   *
+   * Needed for unimodular matrices maker via Euler (or whatever is its name, not sure yet) algorithm.
+   *
+   * @return diagonal matrix alongside with row and column transformation matrices
+   * in form (`DiagonalMatrix`, `RowTransformationsMatrix`, `ColumnTransformationsMatrix`)
    */
   def diagonalize(m: Matrix[N]): (Matrix[N], Matrix[N], Matrix[N])
 }

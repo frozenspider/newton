@@ -5,10 +5,8 @@ import java.io.FileNotFoundException
 import java.io.PrintWriter
 
 import org.newtonpolyhedron.NewtonImports._
-import org.newtonpolyhedron.entity.ExecutorRunnable
 import org.newtonpolyhedron.entity.SolverPrinter
 import org.newtonpolyhedron.ex.WrongFormatException
-import org.newtonpolyhedron.math.internal.InternalMathProcessor
 import org.newtonpolyhedron.solve.changevars.ChangerOfVariablesImpl
 import org.newtonpolyhedron.solve.cone._
 import org.newtonpolyhedron.solve.eqsys.EqSystemChainSolver
@@ -19,13 +17,17 @@ import org.newtonpolyhedron.solve.matrixuni.UnimodularMatrixMakerImpl
 import org.newtonpolyhedron.solve.poly._
 import org.newtonpolyhedron.solve.polyinter._
 import org.newtonpolyhedron.solve.power.PowerTransformationSolverImpl
-import org.newtonpolyhedron.solve.surface._
+import org.newtonpolyhedron.solve.face._
 import org.newtonpolyhedron.solverprinters._
 import org.newtonpolyhedron.ui.eqsys.EqSystemSolutionDialogInput
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
-import spire.math.Rational
 
-class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
+/**
+ * Serves for launching worker threads for specific working modes, used from GUI.
+ *
+ * @author FS
+ */
+class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
 
   lazy val systemOfEqSolverChain =
     new EqSystemChainSolver(Seq(
@@ -74,18 +76,18 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     return new Thread(new ExecutorRunnable(solver, writer), "MainSolver")
   }
 
-  def launchPolyMotzkinBurger(
+  private def launchPolyMotzkinBurger(
       file:       File,
       illustrate: Boolean,
       writer:     PrintWriter
   ): SolverPrinter[_] = {
     val (pointList, commonLimitsOption, basisOption) = InputParser.parsePolyFromFile(file)(parseNum)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
-    val surfaceBuilder = new SurfaceBuilderImpl
-    new PolyhedronSolverPrinter(polySolver, surfaceBuilder, pointList, commonLimitsOption, basisOption, illustrate, writer)
+    val faceBuilder = new FaceBuilderImpl
+    new PolyhedronSolverPrinter(polySolver, faceBuilder, pointList, commonLimitsOption, basisOption, illustrate, writer)
   }
 
-  def launchIntersection(
+  private def launchIntersection(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -94,7 +96,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new PolyIntersectionSolverPrinter(polySolver, polys, dim, writer)
   }
 
-  def launchCone(
+  private def launchCone(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -102,7 +104,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new ConeSolverPrinter(coneSolver, pointList, basisOption, writer)
   }
 
-  def launchMatrixDet(
+  private def launchMatrixDet(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -110,7 +112,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
-  def launchMatrixInverse(
+  private def launchMatrixInverse(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -118,7 +120,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new MatrixInverseSolverPrinter(matrix, writer)
   }
 
-  def launchMatrixUniAlpha(
+  private def launchMatrixUniAlpha(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -133,7 +135,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new UnimodularMatrixMakerPrinter[N](uniMatrixMaker, matrix, writer)
   }
 
-  def launchMatrixMinorGCD(
+  private def launchMatrixMinorGCD(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -142,7 +144,7 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new MatrixMinorGCDSolverPrinter(gcdMatrixSolver, matrix, writer)
   }
 
-  def launchPowerTransformation(
+  private def launchPowerTransformation(
       file:   File,
       writer: PrintWriter
   ): SolverPrinter[_] = {
@@ -154,5 +156,15 @@ class NewtonLogic[N <: MPNumber](implicit mp: MathProcessor[N]) {
     new PowerTransformationSolverPrinter(
       powTransfSolver, new ChangerOfVariablesImpl, polys, pts, writer
     )
+  }
+
+  private class ExecutorRunnable(solver: SolverPrinter[_], output: PrintWriter) extends Runnable {
+
+    override def run: Unit =
+      try
+        solver.solveAndPrint
+      catch {
+        case th: Throwable => th.printStackTrace(output)
+      }
   }
 }

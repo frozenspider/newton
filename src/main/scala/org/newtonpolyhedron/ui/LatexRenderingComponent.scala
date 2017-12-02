@@ -8,6 +8,13 @@ import org.scilab.forge.jlatexmath.TeXFormula
 
 import javax.swing.JLabel
 
+/**
+ * Component for rendering LaTeX-formatter content.
+ *
+ * Relies on `JLaTeXMath` for the actual rendering.
+ *
+ * @author FS
+ */
 class LatexRenderingComponent extends Component {
 
   override lazy val peer = new JLabel

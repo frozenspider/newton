@@ -1,17 +1,17 @@
-package org.newtonpolyhedron.solve.surface
+package org.newtonpolyhedron.solve.face
 
 import org.fs.utility.collection.table.KeyTable
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.test._
-import org.newtonpolyhedron.entity.Surface
+import org.newtonpolyhedron.entity.Face
 import org.newtonpolyhedron.entity.vector.VectorImports._
 
 @RunWith(classOf[JUnitRunner])
-class SurfaceBuilderImplTest extends FunSuite {
+class FaceBuilderImplTest extends FunSuite {
 
-  val surfaceBuilder = new SurfaceBuilderImpl()
+  val faceBuilder = new FaceBuilderImpl()
 
   test("medium test case") {
     /*-
@@ -38,7 +38,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(5, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 2
       s(
         (s(0, 1, 2, 3), s()),
@@ -70,8 +70,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 3)
+    assert(actualFaces === expectedFaces)
   }
 
   test("large test case") {
@@ -126,7 +126,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(25, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 2
       s(
         (s(0, 2, 4), s()),
@@ -192,8 +192,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 3)
+    assert(actualFaces === expectedFaces)
   }
 
   test("penleve") {
@@ -218,7 +218,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(10, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 1
       s(
         (s(0, 1, 2, 3, 4, 5), s()),
@@ -236,8 +236,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 2)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 2)
+    assert(actualFaces === expectedFaces)
   }
 
   test("half-cube diagonal") {
@@ -265,7 +265,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(5, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 2
       s(
         (s(0, 1, 2, 4), s()),
@@ -299,8 +299,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 3)
+    assert(actualFaces === expectedFaces)
   }
 
   test("Bruno, pages 19 to 30") {
@@ -325,7 +325,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(5, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 2
       s(
         (s(0, 1, 2), s()),
@@ -353,8 +353,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 3)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 3)
+    assert(actualFaces === expectedFaces)
   }
 
   test("Bruno, page 18, ex. 1") {
@@ -412,7 +412,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(12, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 3
       s(
         (s(0, 1, 2, 8, 9, 10, 11), s())
@@ -445,8 +445,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 4)
+    assert(actualFaces === expectedFaces)
   }
 
   test("Bruno, page 35, ex. 2") {
@@ -507,7 +507,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(12, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 3
       s(
         (s(0, 1, 2, 8, 9, 10, 11), s()),
@@ -605,8 +605,8 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 4)
+    assert(actualFaces === expectedFaces)
   }
 
   test("Bruno, unknown ex.") {
@@ -633,7 +633,7 @@ class SurfaceBuilderImplTest extends FunSuite {
     )
     val lookupTable = markedTable(20, vecs, marked)
 
-    val expectedSurfaces = chainSurfaces(s(
+    val expectedFaces = chainFaces(s(
       // Dimension: 3
       s(
         (s(1, 2, 3, 8, 9, 10, 11, 16, 17, 18, 19), s()),
@@ -731,36 +731,36 @@ class SurfaceBuilderImplTest extends FunSuite {
       )
     ))
 
-    val actualSurfaces = surfaceBuilder.surfaces(lookupTable, 4)
-    assert(actualSurfaces === expectedSurfaces)
+    val actualFaces = faceBuilder.faces(lookupTable, 4)
+    assert(actualFaces === expectedFaces)
   }
 
   test("illegal cases") {
-    val surfaces = Set.empty[Surface]
+    val faces = Set.empty[Face]
     val lookupTableData = Seq.empty[Seq[Int]]
 
     // Poly dimension < 2
     intercept[IllegalArgumentException] {
-      surfaceBuilder.findCommonSurfaces(1, 1, surfaces, lookupTableData)
+      faceBuilder.findCommonFaces(1, 1, faces, lookupTableData)
     }
 
     // Negative target dimension
     intercept[IllegalArgumentException] {
-      surfaceBuilder.findCommonSurfaces(3, -1, surfaces, lookupTableData)
+      faceBuilder.findCommonFaces(3, -1, faces, lookupTableData)
     }
 
     // Target dimension > Poly dimension
     intercept[IllegalArgumentException] {
-      surfaceBuilder.findCommonSurfaces(3, 4, surfaces, lookupTableData)
+      faceBuilder.findCommonFaces(3, 4, faces, lookupTableData)
     }
 
     // Target dimension = Poly dimension
     intercept[IllegalArgumentException] {
-      surfaceBuilder.findCommonSurfaces(3, 3, surfaces, lookupTableData)
+      faceBuilder.findCommonFaces(3, 3, faces, lookupTableData)
     }
 
     // Target dimension < Poly dimension
     // (no exception)
-    surfaceBuilder.findCommonSurfaces(3, 2, surfaces, lookupTableData)
+    faceBuilder.findCommonFaces(3, 2, faces, lookupTableData)
   }
 }

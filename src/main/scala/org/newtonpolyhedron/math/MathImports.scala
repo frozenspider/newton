@@ -1,6 +1,8 @@
 package org.newtonpolyhedron.math
 
 /**
+ * Helpers, aliases and shortcuts for various mathematical operations.
+ *
  * Use `import spire.compat._` to provide implicit converstion to Scala `Ordering` and `Numeric`
  *
  * @author FS

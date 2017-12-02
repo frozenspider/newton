@@ -2,11 +2,16 @@ package org.newtonpolyhedron.entity
 
 import java.io.PrintWriter
 
+/**
+ * Launches the given solver, pretty-printing its output to a given writer.
+ *
+ * @author FS
+ */
 abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
 
   def solveAndPrint: Unit = solveFor(solver, output)
 
-  def solveFor(
+  protected def solveFor(
       solver: T,
       output: PrintWriter
   ): Unit
@@ -15,15 +20,15 @@ abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
   // Print helpers
   //
 
-  def title(title: String): String = {
+  protected def title(title: String): String = {
     val bordered = "== " + title + " =="
     val line = "=" * bordered.length
     "\n\n\n" + line + "\n" + bordered + "\n" + line
   }
 
-  def header(header: String): String =
+  protected def header(header: String): String =
     "\n=== " + header + " ==="
 
-  def subheader(subheader: String): String =
+  protected def subheader(subheader: String): String =
     "\n" + subheader + ""
 }
