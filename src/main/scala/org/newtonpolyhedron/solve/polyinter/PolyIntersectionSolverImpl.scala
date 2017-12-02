@@ -3,16 +3,17 @@ package org.newtonpolyhedron.solve.polyinter
 import scala.collection.immutable.SortedSet
 
 import org.fs.utility.collection.table.KeyTable
-import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.solve.cone.ConeSolver
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PointUtils
 
-class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyIntersectionSolver {
+class PolyIntersectionSolverImpl[N <: MPNumber](val coneSolver: ConeSolver)(implicit mp: MathProcessor[N])
+    extends PolyIntersectionSolver[N] {
 
-  override def solve(polyhedrons: Seq[IndexedSeq[FracVec]],
-                     dim: Int): KeyTable[Int, IntVec, SortedSet[Int]] = {
+  override def solve(
+      polyhedrons: Seq[IndexedSeq[NumVec[N]]],
+      dim:         Int
+  ): KeyTable[Int, IntVec, SortedSet[Int]] = {
     require(dim >= 3, "No intersections are possible below 3-dimension")
     require(polyhedrons.size >= dim - 1, "Not enough polyhedrons for intersecting at dimension " + dim)
     val polySizes = polyhedrons.map(_.size).toIndexedSeq
@@ -24,11 +25,15 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
   }
 
   /** @return { vector : [ point indices list per polyhedron ] } */
-  def fillPtsForVectorsMap(indicesSeq: Seq[IndexedSeq[Int]],
-                           polyhedrons: Seq[IndexedSeq[FracVec]],
-                           dim: Int): Map[IntVec, Seq[IndexedSeq[Int]]] = {
-    def fillMapRecursive(indicesSeq: Seq[IndexedSeq[Int]],
-                         prevMap: Map[IntVec, Seq[IndexedSeq[Int]]]): Map[IntVec, Seq[IndexedSeq[Int]]] =
+  def fillPtsForVectorsMap(
+      indicesSeq:  Seq[IndexedSeq[Int]],
+      polyhedrons: Seq[IndexedSeq[NumVec[N]]],
+      dim:         Int
+  ): Map[IntVec, Seq[IndexedSeq[Int]]] = {
+    def fillMapRecursive(
+        indicesSeq: Seq[IndexedSeq[Int]],
+        prevMap:    Map[IntVec, Seq[IndexedSeq[Int]]]
+    ): Map[IntVec, Seq[IndexedSeq[Int]]] =
       if (indicesSeq.isEmpty) prevMap
       else {
         val indices = indicesSeq.head
@@ -47,9 +52,11 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
     fillMapRecursive(indicesSeq, Map.empty)
   }
 
-  def withSoluionsToIndices(prevMap: Map[IntVec, Seq[IndexedSeq[Int]]],
-                            solutions: Seq[IntVec],
-                            indices: IndexedSeq[Int]): Map[IntVec, Seq[IndexedSeq[Int]]] =
+  def withSoluionsToIndices(
+      prevMap:   Map[IntVec, Seq[IndexedSeq[Int]]],
+      solutions: Seq[IntVec],
+      indices:   IndexedSeq[Int]
+  ): Map[IntVec, Seq[IndexedSeq[Int]]] =
     solutions.headOption match {
       case None => prevMap
       case Some(sol) => {
@@ -61,11 +68,15 @@ class PolyIntersectionSolverImpl(val coneSolver: ConeSolver) extends PolyInterse
       }
     }
 
-  def indicesStream(curr: IndexedSeq[Int],
-                    maximums: IndexedSeq[Int]): Stream[IndexedSeq[Int]] = {
-    def calcNextRec(idx: Int,
-                    curr: IndexedSeq[Int],
-                    maximums: IndexedSeq[Int]): IndexedSeq[Int] = {
+  def indicesStream(
+      curr:     IndexedSeq[Int],
+      maximums: IndexedSeq[Int]
+  ): Stream[IndexedSeq[Int]] = {
+    def calcNextRec(
+        idx:      Int,
+        curr:     IndexedSeq[Int],
+        maximums: IndexedSeq[Int]
+    ): IndexedSeq[Int] = {
       val prev = idx - 1
       if (idx == 0 || curr(idx) < maximums(idx)) curr
       else calcNextRec(idx - 1, curr.updated(idx, 0).updated(prev, curr(prev) + 1), maximums)

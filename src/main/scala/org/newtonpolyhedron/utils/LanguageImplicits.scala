@@ -5,7 +5,10 @@ import scala.collection.IterableLike
 import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable.SortedSet
 
-object LanguageImplicits {
+import spire.math.Rational
+import spire.math.SafeLong
+
+trait LanguageImplicits {
   // Mapping helpers
   implicit def funOfTwo2funOfMonad[A1, A2, T](f: (A1, A2) => T): ((A1, A2)) => T =
     p => f(p._1, p._2)
@@ -17,7 +20,7 @@ object LanguageImplicits {
     SortedSet.empty[T] ++ t
   }
 
-  implicit class ExtBigInt(val n: BigInt) extends AnyVal {
+  implicit class ExtBigInt(val n: BigInt) {
     def factorial: BigInt = {
       if (n == 0) BigInt(1)
       else if (n == 1) BigInt(1)
@@ -26,7 +29,7 @@ object LanguageImplicits {
     }
   }
 
-  implicit class ExtInt(val n: Int) extends AnyVal {
+  implicit class ExtInt(val n: Int) {
     def factorial: Int = {
       val res = BigInt(n).factorial
       if (!res.isValidInt) throw new IllegalArgumentException(s"${n}! is too large")
@@ -45,6 +48,16 @@ object LanguageImplicits {
         if (!res.isValidInt) throw new IllegalArgumentException(s"($n $k) is too large")
         res.toInt
       }
+  }
+
+  implicit class ExtRational(val r: Rational) {
+    def quotient: SafeLong = {
+      r.numerator / r.denominator
+    }
+
+    def remainder: SafeLong = {
+      r.numerator % r.denominator
+    }
   }
 
   implicit class SuperSeq[T](trav: Seq[T]) {
@@ -72,24 +85,6 @@ object LanguageImplicits {
       splitByRec(trav, IndexedSeq.empty, IndexedSeq.empty)
     }
   }
-
-  implicit class SuperIterable[A, Repr](iter: IterableLike[A, Repr]) {
-    def mapWithIndex[B, Repr2 <: GenTraversableLike[(A, Int), Repr2], That2](f: (A, Int) => B)(
-      implicit bf1: CanBuildFrom[Repr, (A, Int), Repr2], bf2: CanBuildFrom[Repr2, B, That2]): That2 =
-      {
-        iter.zipWithIndex map (x => f(x._1, x._2))
-      }
-
-    def eachWithIndex[U, That <: GenTraversableLike[(A, Int), _]](f: (A, Int) => U)(
-      implicit bf1: CanBuildFrom[Repr, (A, Int), That]): Unit =
-      {
-        iter.zipWithIndex foreach (x => f(x._1, x._2))
-      }
-  }
-
-  implicit class OptionsIterable[A, Repr](iter: IterableLike[Option[A], Repr]) {
-    def yieldDefined[Repr2 <: IterableLike[A, Repr2]](implicit bf: CanBuildFrom[Repr, A, Repr2]): Repr2 = {
-      for (o <- iter if o.isDefined) yield o.get
-    }
-  }
 }
+
+object LanguageImplicits extends LanguageImplicits

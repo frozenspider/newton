@@ -1,6 +1,7 @@
 package org.newtonpolyhedron.entity.vector.internal
 
-import org.newtonpolyhedron.entity.BigFrac
+import spire.implicits._
+import spire.math.Numeric
 
 private[vector] trait SeqVectorSupport {
 
@@ -9,7 +10,6 @@ private[vector] trait SeqVectorSupport {
    * to effectively use them to representing vectors in the application.
    */
   implicit class MathSeqVector[T](val seq: IndexedSeq[T])(implicit numeric: Numeric[T]) {
-    import numeric._
 
     def +(that: Seq[T]): IndexedSeq[T] = {
       require(seq.size == that.size, "Dimension of other vector was different")
@@ -34,6 +34,10 @@ private[vector] trait SeqVectorSupport {
       seq map (_ * that)
     }
 
+    def /(that: T): IndexedSeq[T] = {
+      seq map (_ / that)
+    }
+
     //    def *(that: T): IndexedSeq[T] = {
     //      require(seq.size == that.size, "Dimension of other vector was different")
     //      (seq zip that) map { case (a, b) => numeric.times(a, b) }
@@ -42,11 +46,11 @@ private[vector] trait SeqVectorSupport {
     /** Dot-product */
     def *+(that: Seq[T]) = {
       require(seq.size == that.size, "Dimension of other vector was different")
-      (this * that).sum
+      (this * that).sum(spire.compat.numeric[T])
     }
 
     def isZero: Boolean = {
-      seq forall (_ == zero)
+      seq forall (_ == numeric.zero)
     }
 
     /** Serves as "updated" method, but doesn't screw types and allows implicits to work */

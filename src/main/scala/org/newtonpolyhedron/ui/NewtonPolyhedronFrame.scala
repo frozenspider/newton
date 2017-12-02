@@ -9,24 +9,29 @@ import java.io.Writer
 import scala.swing._
 import scala.swing.event.ButtonClicked
 
-import org.newtonpolyhedron.NewtonLogic
+import org.newtonpolyhedron.BuildInfo
+import org.newtonpolyhedron.WorkerLauncher
 import org.newtonpolyhedron.WorkingMode
 import org.newtonpolyhedron.ex.WrongFormatException
-import org.newtonpolyhedron.BuildInfo
+import org.newtonpolyhedron.math.MathImports._
 
-class NewtonPolyhedronFrame extends SimpleSwingApplication {
+/**
+ * GUI for this project.
+ *
+ * @author FS
+ */
+class NewtonPolyhedronFrame[N <: MPNumber](workerLauncher: WorkerLauncher[N]) extends SimpleSwingApplication {
 
   val printWriter = new PrintWriter(new NewtonTextAreaOutput)
-  val logic = new NewtonLogic
   var workingThread: Option[Thread] = None
 
-  def top = new MainFrame {
-    title = s"Newton ${BuildInfo.version}"
+  override def top = new MainFrame {
+    title = s"Newton ${BuildInfo.version}b${BuildInfo.buildInfoBuildNumber}"
     contents = ui
   }
 
   val ui = new BorderPanel {
-    import BorderPanel.Position._
+    import scala.swing.BorderPanel.Position._
     val browseBtn = new Button("Browse")
     listenTo(startBtn, browseBtn)
 
@@ -67,7 +72,7 @@ class NewtonPolyhedronFrame extends SimpleSwingApplication {
           val illustrate = chckbxIllustrate.selected
           val mode = cbMode.selection.item
           if (selectedIdx != -1) {
-            workingThread = Some(logic.makeThread(path, mode, illustrate, printWriter))
+            workingThread = Some(workerLauncher.makeThread(path, mode, illustrate, printWriter))
             workingThread map (_.start)
             startBtn.text = "Stop"
           }

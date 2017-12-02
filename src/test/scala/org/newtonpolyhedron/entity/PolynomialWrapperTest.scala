@@ -9,13 +9,15 @@ import org.newtonpolyhedron.utils.LanguageImplicits._
 import org.newtonpolyhedron.utils.PolynomialUtils._
 
 @RunWith(classOf[JUnitRunner])
-class PolynomialWrapperTest extends FunSuite {
+class PolynomialWrapperTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   test("powers") {
     val `x + y` = makePoly((1, s(1, 0)), (1, s(0, 1)))
-    val `(x + y)^0` = `x + y` pow 0
-    val `(x + y)^1` = `x + y` pow 1
-    val `(x + y)^2` = `x + y` pow 2
+    val `(x + y)^0` = `x + y` ** 0
+    val `(x + y)^1` = `x + y` ** 1
+    val `(x + y)^2` = `x + y` ** 2
     val `1` = makePoly((1, s(0, 0)))
     val `x^2 + 2xy + y^2` = makePoly((1, s(2, 0)), (2, s(1, 1)), (1, s(0, 2)))
     assert(`(x + y)^1`.toSet === `x + y`.toSet)

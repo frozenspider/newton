@@ -1,22 +1,22 @@
 package org.newtonpolyhedron.solve.matrixuni
 
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.matrix.Matrix
-import org.newtonpolyhedron.entity.matrix.MatrixToDiagonalImplicits._
+import org.newtonpolyhedron.NewtonImports._
 
-class UnimodularMatrixMakerImpl extends UnimodularMatrixMaker {
+import spire.math.Rational
 
-  override def unimodularFrom(matrix: Matrix[BigFrac]): Matrix[BigFrac] = {
+class UnimodularMatrixMakerImpl[N <: MPNumber](implicit mp: MathProcessor[N]) extends UnimodularMatrixMaker[N] {
+
+  override def unimodularFrom(matrix: Matrix[N]): Matrix[N] = {
     require(matrix.isSquare, "Non-square matrix")
 
-    val (matrixDiag, rowOnes, colOnes) = matrix.toDiagonal
+    val (matrixDiag, rowOnes, colOnes) = matrix.diagonalize
 
-    val rowOnesInv = rowOnes.inv
-    val colOnesInv = colOnes.inv
+    val rowOnesInv = rowOnes.inverse
+    val colOnesInv = colOnes.inverse
 
     // Sanity check
     assert(matrix == rowOnesInv * matrixDiag * colOnesInv)
 
     rowOnesInv * colOnesInv
-  } ensuring (_.det == 1)
+  } //ensuring (_.det == mp.one)
 }

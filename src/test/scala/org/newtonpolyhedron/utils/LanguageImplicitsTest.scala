@@ -14,6 +14,7 @@ class LanguageImplicitsTest extends FunSuite {
   //
   // Parse vectors
   //
+
   test("n choose k") {
     assert((0 choose 0) === 1)
     assert((1 choose 0) === 1)

@@ -4,30 +4,28 @@ import scala.swing.BorderPanel
 import scala.swing.Button
 import scala.swing.Dialog
 import scala.swing.FlowPanel
-import scala.swing.Label
 import scala.swing.Panel
 import scala.swing.TextField
 import scala.swing.event.ButtonClicked
 
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.equation.Equation
-import org.newtonpolyhedron.entity.equation.EquationSign
+import org.newtonpolyhedron.entity.equation.RelationalSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
 
-class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
-  import BorderPanel.Position._
-  import org.newtonpolyhedron.conversion.latex._
+class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N]) extends EqSystemSolutionInput[N] {
+  import org.newtonpolyhedron.utils.LatexConversion._
+  import scala.swing.BorderPanel.Position._
 
   override val varName = "x"
 
   //
   // UI
   //
+
   private lazy val inputDialog = new Dialog {
-    def resetDialog(headerText: LatexString, inputPanels: Seq[Panel], eqSys: Equations) = {
+    def resetDialog(headerText: LatexString, inputPanels: Seq[Panel], eqSys: Equations[N]) = {
       ok = false
       header.content = headerText
       inputsContainer.contents.clear()
@@ -86,11 +84,13 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
       (inputField, panel)
     }).unzip
 
-  private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial, EquationSign.Equals, zeroPoly(dim))
+  private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial[N], RelationalSign.Equals, zeroPoly(dim))
 
-  override def getInputFor(system: Polys,
-                           initialValuesOption: Option[Seq[String]],
-                           headerTextOption: Option[LatexString]): Option[Seq[String]] = {
+  override def getInputFor(
+      system:              Polys[N],
+      initialValuesOption: Option[Seq[String]],
+      headerTextOption:    Option[LatexString]
+  ): Option[Seq[String]] = {
     val dim = system collectFirst {
       case poly if !poly.isEmpty => poly.head.powers.length
     } getOrElse (throw new IllegalArgumentException("Can't get dimension of polys"))
@@ -103,9 +103,9 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
     }
 
     inputDialog.resetDialog(
-      headerText = headerTextOption getOrElse latex(textToLatex(s"Please solve for ") + varName + ":"),
+      headerText  = headerTextOption getOrElse latex(textToLatex(s"Please solve for ") + varName + ":"),
       inputPanels = inputPanels,
-      eqSys = system map asEqualsZeroEquation(dim)
+      eqSys       = system map asEqualsZeroEquation(dim)
     )
     inputDialog.visible = true
     inputDialog.dispose
@@ -117,30 +117,4 @@ class EqSystemSolutionDialogInput extends EqSystemSolutionInput {
     }
   }
 
-}
-
-object EqSystemSolutionDialogInput extends App {
-  import org.newtonpolyhedron.entity._
-  import org.newtonpolyhedron.entity.vector._
-  import org.newtonpolyhedron.entity.equation._
-  import org.newtonpolyhedron.utils.LanguageImplicits._
-  import org.newtonpolyhedron.utils.PolynomialUtils._
-
-  val s = new EqSystemSolutionDialogInput
-
-  val tricky = EqSystemRenderingPanel.tricky
-
-  val eqs: Polys = IndexedSeq[Polynomial](
-    IndexedSeq(
-      new Term(Product(1), FracVec(1, 2, 3)),
-      new Term(tricky, FracVec(1, 2, 3)),
-      new Term(Product(4), FracVec(0, 0, 0))
-    ),
-    IndexedSeq(
-      new Term(Product(BigFrac(-1, 2)), FracVec(BigFrac(-1, 2), BigFrac.ZERO, BigFrac(-333, 667))),
-      new Term(Product(-2), FracVec(0, 0, 3))
-    )
-  )
-
-  println(s.getInputFor(eqs, None, None))
 }

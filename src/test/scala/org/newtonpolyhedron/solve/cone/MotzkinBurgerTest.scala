@@ -29,13 +29,15 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, 2, -1, 1),
       (2, -1, -2, 1),
       (-3, 1, -1, 6),
-      (1, 1, -3, 2)) map tupleToVec
+      (1, 1, -3, 2)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (15, 11, 12, 5),
       (13, 9, 12, 7),
       (5, 5, 8, 3),
-      (1, -1, 2, 1)) map tupleToVec).toSet)
+      (1, -1, 2, 1)
+    ) map tupleToVec).toSet)
   }
 
   test("chernyakov degenerated 4d") {
@@ -44,11 +46,13 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, 2, -1, 0),
       (2, -1, -2, 0),
       (-3, 1, -1, 0),
-      (1, 1, -3, 0)) map tupleToVec
+      (1, 1, -3, 0)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, 0, 1),
-      (0, 0, 0, -1)) map tupleToVec).toSet)
+      (0, 0, 0, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("chernyakov 5d (degenerated), with added zero") {
@@ -57,11 +61,13 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, 2, -1, 1, 0),
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, 0),
-      (1, 1, -3, 2, 0)) map tupleToVec
+      (1, 1, -3, 2, 0)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 5)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, 0, 0, 1),
-      (0, 0, 0, 0, -1)) map tupleToVec).toSet)
+      (0, 0, 0, 0, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("chernyakov 5d, with added number and negative indentity vectors") {
@@ -75,7 +81,8 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, 2, -1, 1, -1),
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, -3),
-      (1, 1, -3, 2, -1)) map tupleToVec
+      (1, 1, -3, 2, -1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 5)
     assert(solution.toSet === (IndexedSeq(
       (15, 11, 12, 5, 0),
@@ -85,7 +92,8 @@ class MotzkinBurgerTest extends FunSuite {
       (13, 9, 12, 7, 0),
       (11, 0, 15, 8, 0),
       (2, 0, 3, 2, 1),
-      (5, 0, 9, 4, 0)) map tupleToVec).toSet)
+      (5, 0, 9, 4, 0)
+    ) map tupleToVec).toSet)
   }
 
   test("chernyakov degenerated 5d 2") {
@@ -94,11 +102,13 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, 2, -1, 1, -1),
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, -3),
-      (1, 1, -3, 2, -1)) map tupleToVec
+      (1, 1, -3, 2, -1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 5)
     assert(solution.toSet === (IndexedSeq(
       (1, 1, 1, 1, 1),
-      (-1, -1, -1, -1, -1)) map tupleToVec).toSet)
+      (-1, -1, -1, -1, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("chernyakov 5d octant") {
@@ -112,7 +122,8 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, 2, -1, 1, -1),
       (2, -1, -2, 1, 0),
       (-3, 1, -1, 6, -3),
-      (1, 1, -3, 2, -1)) map tupleToVec
+      (1, 1, -3, 2, -1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 5)
     assert(solution.toSet === (IndexedSeq(
       (13, 0, 17, 8, 0),
@@ -122,23 +133,27 @@ class MotzkinBurgerTest extends FunSuite {
       (11, 0, 15, 8, 0),
       (5, 5, 8, 3, 0),
       (13, 9, 12, 7, 0),
-      (1, 1, 1, 1, 1)) map tupleToVec).toSet)
+      (1, 1, 1, 1, 1)
+    ) map tupleToVec).toSet)
   }
 
   //
   //
   //
+
   test("bruno 3d test case") {
     def eqSys = IndexedSeq(
       (3, -1, -1),
       (-1, 3, -1),
       (-1, -1, 3),
-      (1, -1, 1)) map tupleToVec
+      (1, -1, 1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-1, -2, -1),
       (-1, -1, -2),
-      (-2, -1, -1)) map tupleToVec).toSet)
+      (-2, -1, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("bruno 3d test case 2") {
@@ -146,18 +161,21 @@ class MotzkinBurgerTest extends FunSuite {
       (3, -1, -1),
       (-1, 3, -1),
       (3, -1, 2),
-      (-1, 3, 2)) map tupleToVec
+      (-1, 3, 2)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, -2),
       (-1, -3, 0),
       (-3, -1, 0),
-      (-1, -1, 1)) map tupleToVec).toSet)
+      (-1, -1, 1)
+    ) map tupleToVec).toSet)
   }
 
   //
   //
   //
+
   test("bruno 4d, q4") {
     def eqSys = IndexedSeq(
       (-5, -1, -1, -1),
@@ -170,7 +188,8 @@ class MotzkinBurgerTest extends FunSuite {
       (-8, 0, 0, 0),
       (-4, -4, 0, 0),
       (-4, 0, -4, 0),
-      (-4, 0, 0, -4)) map tupleToVec
+      (-4, 0, 0, -4)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (1, -1, -1, -1),
@@ -180,7 +199,8 @@ class MotzkinBurgerTest extends FunSuite {
       (1, 1, -1, 1),
       (1, -1, -1, 1),
       (1, 1, 1, -1),
-      (1, -1, 1, -1)) map tupleToVec).toSet)
+      (1, -1, 1, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("bruno 4d, page 9") {
@@ -195,7 +215,8 @@ class MotzkinBurgerTest extends FunSuite {
       (4, 0, 0, 4),
       (4, -4, 0, 0),
       (4, 0, -4, 0),
-      (4, 0, 0, -4)) map tupleToVec
+      (4, 0, 0, -4)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, 1, 1),
@@ -205,7 +226,8 @@ class MotzkinBurgerTest extends FunSuite {
       (-1, -1, -1, 1),
       (-1, 1, 1, 1),
       (-1, 1, -1, -1),
-      (-1, -1, 1, -1)) map tupleToVec).toSet)
+      (-1, -1, 1, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("bruno 4d, problematic case") {
@@ -214,19 +236,22 @@ class MotzkinBurgerTest extends FunSuite {
       (2, 1, 0, 0),
       (2, 1, 1, 1),
       (2, 2, 1, 1),
-      (2, 1, 2, 1)) map tupleToVec
+      (2, 1, 2, 1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (0, 0, -1, 1),
       (0, 0, 1, -2),
       (0, -1, 0, 1),
       (-1, 2, 2, -4),
-      (-1, 0, 0, 2)) map tupleToVec).toSet)
+      (-1, 0, 0, 2)
+    ) map tupleToVec).toSet)
   }
 
   //
   //
   //
+
   test("solodovnikov 4d, artificial") {
     def eqSys = IndexedSeq(
       (3, 4, -5, 6),
@@ -234,76 +259,91 @@ class MotzkinBurgerTest extends FunSuite {
       (1, 0, 0, 0),
       (0, 1, 0, 0),
       (0, 0, 1, 0),
-      (0, 0, 0, 1)) map tupleToVec
+      (0, 0, 0, 1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 4)
     assert(solution.toSet === (IndexedSeq(
       (0, -13, -14, -3),
       (-13, 0, -9, -1),
       (0, 0, -6, -5),
-      (0, 0, -1, -3)) map tupleToVec).toSet)
+      (0, 0, -1, -3)
+    ) map tupleToVec).toSet)
   }
 
   //
   //
   //
+
   test("simple 2d") {
     def eqSys = IndexedSeq(
       (1, -4),
-      (-2, -1)) map tupleToVec
+      (-2, -1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (4, 1),
-      (-1, 2)) map tupleToVec).toSet)
+      (-1, 2)
+    ) map tupleToVec).toSet)
   }
 
   test("simple 2d - 2") {
     def eqSys = IndexedSeq(
       (-1, 2),
-      (2, -1)) map tupleToVec
+      (2, -1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (-2, -1),
-      (-1, -2)) map tupleToVec).toSet)
+      (-1, -2)
+    ) map tupleToVec).toSet)
   }
 
   test("simple 2d - 3") {
     def eqSys = IndexedSeq(
       (-1, 2),
-      (3, -3)) map tupleToVec
+      (3, -3)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (-2, -1),
-      (-1, -1)) map tupleToVec).toSet)
+      (-1, -1)
+    ) map tupleToVec).toSet)
   }
 
   test("simple 2d - 4") {
     def eqSys = IndexedSeq(
       (-2, 1),
-      (-3, 3)) map tupleToVec
+      (-3, 3)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 2)
     assert(solution.toSet === (IndexedSeq(
       (-1, -2),
-      (1, 1)) map tupleToVec).toSet)
+      (1, 1)
+    ) map tupleToVec).toSet)
   }
 
   //
   //
   //
+
   test("simple 3d") {
     def eqSys = IndexedSeq(
       (-3, 1, 1),
       (-1, 1, 0),
-      (-1, 0, 1)) map tupleToVec
+      (-1, 0, 1)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-1, -1, -2),
       (-1, -2, -1),
-      (1, 1, 1)) map tupleToVec).toSet)
+      (1, 1, 1)
+    ) map tupleToVec).toSet)
   }
 
   //
   //
   //
+
   test("random case") {
     def eqSys = IndexedSeq(
       (-9, 8, 0),
@@ -311,7 +351,8 @@ class MotzkinBurgerTest extends FunSuite {
       (-6, 2, 1),
       (-3, 4, 0),
       (-3, 0, 5),
-      (-2, 2, 2)) map tupleToVec
+      (-2, 2, 2)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-8, -9, -30),
@@ -319,7 +360,8 @@ class MotzkinBurgerTest extends FunSuite {
       (0, 0, -1),
       (0, -1, 0),
       (4, 3, 1),
-      (5, 2, 3)) map tupleToVec).toSet)
+      (5, 2, 3)
+    ) map tupleToVec).toSet)
   }
 
   test("random case 2") {
@@ -329,7 +371,8 @@ class MotzkinBurgerTest extends FunSuite {
       (3, -6, 1),
       (3, -4, 0),
       (0, -4, 5),
-      (1, -2, 2)) map tupleToVec
+      (1, -2, 2)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (-34, -21, -24),
@@ -337,7 +380,8 @@ class MotzkinBurgerTest extends FunSuite {
       (-4, -3, -6),
       (-1, 0, 0),
       (8, 9, 5),
-      (2, 5, 4)) map tupleToVec).toSet)
+      (2, 5, 4)
+    ) map tupleToVec).toSet)
   }
 
   test("random case 3") {
@@ -347,13 +391,15 @@ class MotzkinBurgerTest extends FunSuite {
       (3, 2, -6),
       (3, 0, -5),
       (0, 4, -5),
-      (1, 2, -3)) map tupleToVec
+      (1, 2, -3)
+    ) map tupleToVec
     val solution = coneSolver.solve(eqSys, None, 3)
     assert(solution.toSet === (IndexedSeq(
       (56, 63, 72),
       (0, -1, 0),
       (-1, 0, 0),
-      (-20, -15, -12)) map tupleToVec).toSet)
+      (-20, -15, -12)
+    ) map tupleToVec).toSet)
   }
 
   test("1d case") {

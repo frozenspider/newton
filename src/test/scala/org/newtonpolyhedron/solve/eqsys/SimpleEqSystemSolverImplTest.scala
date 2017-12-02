@@ -9,7 +9,9 @@ import org.newtonpolyhedron.utils.NullPrintWriter
 import org.newtonpolyhedron.utils.PolynomialUtils._
 
 @RunWith(classOf[JUnitRunner])
-class SimpleEqSystemSolverImplTest extends FunSuite {
+class SimpleEqSystemSolverImplTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   val solver = new SimpleEqSystemSolverImpl
 
@@ -17,14 +19,16 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val eqSys = s(
       makePoly(
         (+1, s(-1, +0)),
-        (-1, s(+0, +0))),
+        (-1, s(+0, +0))
+      ),
       makePoly(
         (-1, s(+0, +0)),
-        (-1, s(+0, +1)))
+        (-1, s(+0, +1))
+      )
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(1, -1) map bf
+    val expected = s(1, -1) map mp.fromInt
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)
@@ -34,14 +38,16 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val eqSys = s(
       makePoly(
         (+1, s(+1, +0)),
-        (-1, s(+0, +0))),
+        (-1, s(+0, +0))
+      ),
       makePoly(
         (-1, s(+0, +0)),
-        (-1, s(+4, +1)))
+        (-1, s(+4, +1))
+      )
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(1, -1) map bf
+    val expected = s(1, -1) map mp.fromInt
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)
@@ -51,14 +57,16 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val eqSys = s(
       makePoly(
         (+1, s(+1, +0)),
-        (-2, s(+0, +0))),
+        (-2, s(+0, +0))
+      ),
       makePoly(
         (-1, s(+0, +0)),
-        (-1, s(+4, +1)))
+        (-1, s(+4, +1))
+      )
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(bf(2), bf(-1, 16))
+    val expected = nv2(frac(2), frac(-1, 16))
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)
@@ -72,17 +80,20 @@ class SimpleEqSystemSolverImplTest extends FunSuite {
     val eqSys = s(
       makePoly(
         (+3, s(+0, +0, +1)),
-        (+2, s(+1, +1, +0))),
+        (+2, s(+1, +1, +0))
+      ),
       makePoly(
         (+1, s(+1, +1, +2)),
-        (-6, s(+1, +0, +1))),
+        (-6, s(+1, +0, +1))
+      ),
       makePoly(
         (+3, s(-1, +0, +0)),
-        (+1, s(+0, +1, +0)))
+        (+1, s(+0, +1, +0))
+      )
     )
     val actual = solver.solve(eqSys)
 
-    val expected = s(-1, 3, 2) map bf
+    val expected = s(-1, 3, 2) map mp.fromInt
 
     assert(actual.tail.isEmpty)
     assert(expected === actual.head)

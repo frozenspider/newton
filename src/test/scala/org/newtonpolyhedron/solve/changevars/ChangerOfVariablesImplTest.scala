@@ -6,7 +6,9 @@ import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
-class ChangerOfVariablesImplTest extends FunSuite {
+class ChangerOfVariablesImplTest
+    extends FunSuite
+    with InternalMathProcessorMixin {
 
   val changer = new ChangerOfVariablesImpl
 
@@ -14,20 +16,25 @@ class ChangerOfVariablesImplTest extends FunSuite {
     // Verified via Wolfram Alpha
     val poly = makePoly(
       (+2, s(3, 2, 0, 0)),
-      (+3, s(0, 0, 2, 2)))
+      (+3, s(0, 0, 2, 2))
+    )
     val substs = s(
       makePoly(
         (+1, s(1, 0)),
-        (+1, s(0, 2))),
+        (+1, s(0, 2))
+      ),
       makePoly(
         (+1, s(2, 0)),
-        (-1, s(0, 1))),
+        (-1, s(0, 1))
+      ),
       makePoly(
         (+1, s(3, 0)),
-        (+1, s(1, 1))),
+        (+1, s(1, 1))
+      ),
       makePoly(
         (+1, s(1, 0)),
-        (-2, s(0, 3)))
+        (-2, s(0, 3))
+      )
     )
     val actual = changer.changeVars(poly, substs)
 
@@ -53,7 +60,8 @@ class ChangerOfVariablesImplTest extends FunSuite {
       (2, s(4, 6)),
       (12, s(2, 8)),
       (24, s(4, 7)),
-      (12, s(6, 6)))
+      (12, s(6, 6))
+    )
     assert(expected === actual, s"\n Not found:  ${expected diff actual}\nUnexpected: ${actual diff expected}")
   }
 }

@@ -13,10 +13,10 @@ trait ConeSolver {
    * @param spaceDimension
    *            target space dimension
    * @return a fundamental solution for an linear inequation system
-   * @throws InterruptedException
-   *             if execution was interrupted
    */
-  def solve(inequations: Seq[IntVec],
-            basisOption: Option[Seq[IntVec]],
-            spaceDimension: Int): Seq[IntVec]
+  def solve(
+      inequations:    Seq[IntVec],
+      basisOption:    Option[Seq[IntVec]],
+      spaceDimension: Int
+  ): Seq[IntVec]
 }

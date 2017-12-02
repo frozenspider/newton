@@ -1,25 +1,14 @@
-License terms of used libraries:
+Some of the used third-party libraries require their legal notice to be included in software using them.
+Here they are, grouped by a license type:
 
 
 
 ===========================
 === Apache Commons Math ===
 === Apache Commons Lang ===
+=== scalatest           ===
+=== scalactic           ===
 ===========================
-(http://commons.apache.org/math/)
-(http://commons.apache.org/lang/)
-
-Apache Commons Collections
-Copyright 2001-2008 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-     
-License full text:
-
 
                                  Apache License
                            Version 2.0, January 2004
@@ -532,29 +521,96 @@ California 95054 if you have questions.
 
 
 
-=======================
-=== fs-common-utils ===
-=======================
 
-The MIT License (MIT)
 
-Copyright (c) 2002-2017 Alex Abdugafarov
+===================
+=== JLaTeXMath ====
+===================
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+JLaTeXMath Library - Displays LaTeX commands 
+JLateXMath is an fork of JMathTeX with a lot of modifications to support 
+many more LaTeX commands, drop of the jdom dependency and easy evolution 
+capabilities.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Copyright (C) 2009-2011 DENIZET Calixte
+Copyright (C) Kris Coolsaet
+Copyright (C) Nico Van Cleemput
+Copyright (C) Kurt Vermeulen
+Copyright 2004-2007 Universiteit Gent
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
 
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; see the file COPYING. If not, write to the
+Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+MA 02110-1301, USA.
+
+Linking this library statically or dynamically with other modules 
+is making a combined work based on this library. Thus, the terms 
+and conditions of the GNU General Public License cover the whole 
+combination.
+
+As a special exception, the copyright holders of this library give you 
+permission to link this library with independent modules to produce 
+an executable, regardless of the license terms of these independent 
+modules, and to copy and distribute the resulting executable under terms 
+of your choice, provided that you also meet, for each linked independent 
+module, the terms and conditions of the license of that module. 
+An independent module is a module which is not derived from or based 
+on this library. If you modify this library, you may extend this exception 
+to your version of the library, but you are not obliged to do so. 
+If you do not wish to do so, delete this exception statement from your 
+version.
+
+
+
+The archive contains several fonts :
+1) the fonts eufb10.ttf, eufm10.ttf, msam10.ttf and msbm10.ttf are under OFL (Open Font License);
+
+2) the font dsrom10.ttf is under a free license;
+
+3) the font stmary10.ttf and rsfs10.ttf are in PD (Public Domain);
+
+4) the fonts cmbsy10.ttf, cmbx10.ttf, cmbxti10.ttf, cmex10.ttf, cmmi10.ttf, cmr10.ttf, cmss10.ttf, cmssbx10.ttf, cmsy10.ttf and cmtt10.ttf are under Knuth License.
+
+5) the greek fonts fcmbipg.ttf, fcmripg.tff, fcmrpg.ttf, fcsropg.ttf, fcmbpg.ttf, fcsbpg.ttf, fctrpg.ttf, fcsrpg.ttf are under GNU GPL version 2.
+
+6) the cyrillic fonts wnbx10.ttf, wnss10.ttf, wnti10.ttf, wnr10.ttf, wnssi10.ttf, wnbxti10.ttf, wnssbx10.ttf, wntt10.ttf are under Knuth License.
+
+You can find a copy of these licenses in org/scilab/forge/jlatexmath/fonts/licences.
+
+
+
+
+
+====================
+=== scala-swing ====
+====================
+
+Copyright (c) 2002-2013 EPFL
+
+Copyright (c) 2011-2013 Typesafe, Inc.
+
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+* Neither the name of the EPFL nor the names of its contributors
+  may be used to endorse or promote products derived from this software
+  without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.

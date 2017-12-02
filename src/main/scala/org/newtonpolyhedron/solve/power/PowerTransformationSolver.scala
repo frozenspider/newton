@@ -1,23 +1,21 @@
 package org.newtonpolyhedron.solve.power
 
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.matrix.Matrix
-import org.newtonpolyhedron.entity.vector.VectorImports._
-import org.newtonpolyhedron.utils.PolynomialUtils._
+import org.newtonpolyhedron.NewtonImports._
+import spire.math.Rational
 
-trait PowerTransformationSolver {
+trait PowerTransformationSolver[N <: MPNumber] {
 
   /**
    * Generate alpha-matrix given polyhedron intersection
    *
    * @param powersSeq one border per polyhedron
    */
-  def generateAlphaFromTerms(powersSeqs: Seq[Seq[FracVec]]): Matrix[BigFrac]
+  def generateAlphaFromTerms(powersSeqs: Seq[Seq[NumVec[N]]]): Matrix[N]
 
-  def substitute(poly: Polynomial, alpha: Matrix[BigFrac]): Polynomial
+  def substitute(poly: Polynomial[N], alpha: Matrix[N]): Polynomial[N]
 
-  def solveShortSubstitutesSystem(substitutesSys: Polys): FracVec
+  def solveShortSubstitutesSystem(substitutesSys: Polys[N]): NumVec[N]
 
   /** Used for transformation of variable (y to z) using solution for y */
-  def varChangeFromShortSubsSolution(shortSubsSysSol: FracVec): Polys
+  def varChangeFromShortSubsSolution(shortSubsSysSol: NumVec[N]): Polys[N]
 }

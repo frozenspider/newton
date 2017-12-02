@@ -1,12 +1,14 @@
 package org.newtonpolyhedron.solve.eqsys
 
-import org.newtonpolyhedron.utils.PolynomialUtils.Polys
-import org.newtonpolyhedron.conversion.latex.LatexString
+import org.newtonpolyhedron.NewtonImports._
+import org.newtonpolyhedron.utils.LatexConversion.LatexString
 
-trait EqSystemSolutionInput {
+trait EqSystemSolutionInput[N <: MPNumber] {
   def varName: String
 
-  def getInputFor(system: Polys,
-                  initialValuesOption: Option[Seq[String]],
-                  headerTextOption: Option[LatexString]): Option[Seq[String]]
+  def getInputFor(
+      system:              Polys[N],
+      initialValuesOption: Option[Seq[String]],
+      headerTextOption:    Option[LatexString]
+  ): Option[Seq[String]]
 }

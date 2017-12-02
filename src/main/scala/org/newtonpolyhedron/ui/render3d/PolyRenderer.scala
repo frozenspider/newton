@@ -32,9 +32,10 @@ import javax.vecmath.Point3d
  *            whether or not this image should be 2d
  */
 class PolyRenderer(
-    pts: Seq[Point3d],
-    mode: Int,
-    is2d: Boolean) extends JApplet {
+  pts:  Seq[Point3d],
+  mode: Int,
+  is2d: Boolean
+) extends JApplet {
   private val config = SimpleUniverse.getPreferredConfiguration
   private val canvas3D = new Canvas3D(config)
   setLayout(new BorderLayout)
@@ -48,9 +49,11 @@ class PolyRenderer(
   universe.addBranchGraph(scene)
 
   /** Create scene graph branch group */
-  def createSceneGraph(pts: Seq[Point3d],
-                       mode: Int,
-                       is2d: Boolean): BranchGroup = {
+  def createSceneGraph(
+      pts:  Seq[Point3d],
+      mode: Int,
+      is2d: Boolean
+  ): BranchGroup = {
     val objRoot = new BranchGroup
     // Create the transform group node and initialize it to the identity.
     // Enable the TRANSFORM_WRITE capability so that our behavior code can modify it at runtime.
@@ -111,7 +114,8 @@ object PolyRenderer {
       p3d(5, 0, 0),
       p3d(0, 3.5, -3.5),
       p3d(5, 0, 0),
-      p3d(0, -3.5, -3.5))
+      p3d(0, -3.5, -3.5)
+    )
     //
     val is2d = false
     val frame = new MainFrame(new PolyRenderer(points, TRIANGLES, is2d), 512, 512)

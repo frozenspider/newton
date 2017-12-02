@@ -1,9 +1,8 @@
 package org.newtonpolyhedron.solve.matrixminorgcd
 
-import org.newtonpolyhedron.entity.BigFrac
-import org.newtonpolyhedron.entity.matrix.Matrix
+import org.newtonpolyhedron.NewtonImports._
 
-trait MatrixMinorGCDSolver {
+trait MatrixMinorGCDSolver[N <: MPNumber] {
   /**
    * Get the GCD of matrix minors for the last row.
    *
@@ -13,5 +12,5 @@ trait MatrixMinorGCDSolver {
    * @throws SingularMatrixException
    *             if matrix is singular
    */
-  def lastRowGcd(matrix: Matrix[BigFrac]): (BigInt, Seq[BigInt])
+  def lastRowGcd(matrix: Matrix[N]): (BigInt, Seq[BigInt])
 }

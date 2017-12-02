@@ -2,18 +2,22 @@ package org.newtonpolyhedron.solverprinters
 
 import java.io.PrintWriter
 
-import org.newtonpolyhedron.entity.BigFrac
+import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.SolverPrinter
-import org.newtonpolyhedron.entity.matrix.Matrix
 
-class MatrixDetSolverPrinter(val baseMatrix: Matrix[BigFrac],
-                             val skipRow: Int,
-                             val skipCol: Int,
-                             output: PrintWriter)
+class MatrixDetSolverPrinter[N <: MPNumber](
+  val baseMatrix: Matrix[N],
+  val skipRow:    Int,
+  val skipCol:    Int,
+  override val output:         PrintWriter
+)(implicit mp: MathProcessor[N])
     extends SolverPrinter[Void](null, output) {
 
-  override def solveFor(nothing: Void,
-                        output: PrintWriter) = {
+  override def solveFor(
+      nothing: Void,
+      output:  PrintWriter
+  ) = {
+    output.println(title("Matrix determinant"))
     val det = baseMatrix.minor(skipRow, skipCol)
     output.println(subheader("Base matrix:"))
     output.println(baseMatrix)
@@ -25,6 +29,6 @@ class MatrixDetSolverPrinter(val baseMatrix: Matrix[BigFrac],
         case (r, c)   => output.println("(Skipping row " + skipRow + ", col " + skipCol + ")")
       }
     }
-    output.println("Matrix determinant: " + det)
+    output.println("Determinant: " + det)
   }
 }

@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.solve.cone
 
-import org.newtonpolyhedron.entity.vector.VectorImports._
+import org.newtonpolyhedron.NewtonImports._
 
 /**
  * Motzkin-Burger implementation of cone solver.
@@ -18,25 +18,29 @@ class MotzkinBurger extends ConeSolver {
   /** Fundamental Solutions */
   private type V = Seq[IntVec]
 
-  override def solve(ineqs: L,
-                     basisOption: Option[U],
-                     dimension: Int): V = {
+  override def solve(
+      ineqs:       L,
+      basisOption: Option[U],
+      dimension:   Int
+  ): V = {
     require(ineqs forall (_.size == dimension), "Inequation vector with incorrect dimension")
     // E.g. we got one vector in 3d space - we can handle 2 vectors here (simple degenerated case),
     // but with this few points the solution is undefined
     require(ineqs.size >= dimension - 1, s"Not enough equations given, need at least ${dimension - 1}."
       + " This case is too degenerated to have any solutions.")
-    val basis = basisOption getOrElse (
+    val basis: U = basisOption getOrElse (
       // Default basis
-      (0 until dimension) map (IntVec.zero(dimension).upd(_, 1))
+      Matrix.idenitiy[BigInt](dimension).rows
     )
     require(basis forall (_.size == dimension), "Basis vector with incorrect dimension")
     solve(ineqs, basis, dimension)
   }
 
-  private def solve(ineqs: L,
-                    basis: U,
-                    dimension: Int): V = {
+  private def solve(
+      ineqs:     L,
+      basis:     U,
+      dimension: Int
+  ): V = {
     val lInitial: Seq[IntVec] = Seq(IndexedSeq.fill(dimension)(0))
     val (us, vs) = recurse(lInitial, ineqs)(basis, Seq.empty)
     if (us.isEmpty) {
@@ -51,8 +55,16 @@ class MotzkinBurger extends ConeSolver {
     }
   }
 
-  private def recurse(ls: L, lrem: L)(us: U, vs: V): (U, V) = lrem match {
-    case _ if lrem.isEmpty =>
+  /**
+   * Solve inequations recursively via Motzkin-Burger algorithm
+   *
+   * @param ls all linear inequations in system
+   * @param lRem linear inequations which aren't recursed over yet
+   * @param us basis of current step
+   * @param vs solutions of current step
+   */
+  private def recurse(ls: L, lRem: L)(us: U, vs: V): (U, V) = lRem match {
+    case nil if nil.isEmpty =>
       (us, vs)
     case l +: lRest if us exists (_ *+ l != 0) =>
       val (us2, vs2) = solveWithBasisVec(l)(us, vs)
@@ -62,8 +74,15 @@ class MotzkinBurger extends ConeSolver {
       recurse(ls :+ l, lRest)(us, vs2)
   }
 
+  /**
+   * Motzkin-Burger step - general case
+   *
+   * @param l linear inequation currently being recursed over
+   * @param us basis of current step
+   * @param vs solutions of current step
+   */
   private def solveWithBasisVec(l: IntVec)(us: U, vs: V): (U, V) = {
-    // Inversing the signs of positive-conforming basis vectors 
+    // Inversing the signs of positive-conforming basis vectors
     val bs = us map (u => if (u *+ l <= 0) u else -u)
     val Some(bSel) = bs find (_ *+ l != 0)
     val lbSel = l *+ bSel
@@ -81,6 +100,13 @@ class MotzkinBurger extends ConeSolver {
     (us2.distinct, (bSel +: vs2).distinct)
   }
 
+  /**
+   * Motzkin-Burger step - degenerate case
+   *
+   * @param l linear inequation currently being recursed over
+   * @param ls all linear inequations in system
+   * @param vs solutions of current step
+   */
   private def solveWithoutBasisVec(l: IntVec, ls: L)(vs: V): V = {
     val `vs-` = vs filter (_ *+ l < 0)
     val `vs0` = vs filter (_ *+ l == 0)
@@ -103,15 +129,19 @@ class MotzkinBurger extends ConeSolver {
     (`vs-` ++ `vs0` ++ `vs±`).distinct
   }
 
+  /**
+   * Whether or not the given pair of solutions should be combined in Motzkin-Burger degenerate case step
+   *
+   * @param ls all linear inequations in system
+   * @param vs solutions of current step
+   */
   private def shouldCombine(ls: L, vs: V)(v1: IntVec, v2: IntVec): Boolean = {
     // Inequations yielding zeros for both vectors
     val `ls*` = ls filter (l => (l *+ v1 == 0) && (l *+ v2 == 0))
-    // Vectors excluding two selected ones
+    // Vectors excluding given pair
     val `vs*` = vs filter (v => (v != v1) && (v != v2))
     `vs*` forall (v =>
       `ls*` exists (l =>
-        l *+ v != 0
-      )
-    )
+        l *+ v != 0))
   }
 }
