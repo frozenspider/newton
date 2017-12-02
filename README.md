@@ -1,7 +1,7 @@
 newton
 ======
 
-Project developed to assist in simplification and searching for approximate solution of power equations systems.
+Project developed to assist with simplification and search for approximate solution of polynomial equation systems.
 
 Currently does the following:
 
