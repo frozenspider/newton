@@ -128,11 +128,11 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
    * Checks, whether the list already contains a supersurface, which is superior to the given
    * surface (in other words, contains the given surface as a subsurface). If <code>true</code>,
    * child surface should not be added to a list (as it is indirectly there).
-   * <p>
+   *
    * Example:
-   * <p>
+   *
    * Surface <code>A = {1,2,4,6}</code> is superior to the surface <code>B = {1,4,6}</code>, as
-   * {@code A} contains all points of {@code B}
+   * `A` contains all points of `B`
    *
    * @param upperLevelSurfaces
    *            list of known surfaces
@@ -147,7 +147,7 @@ class SurfaceBuilderImpl extends SurfaceBuilder {
   /**
    * Gather surfaces superior to the given surface. For more information, see
    * {@link #surfacesConatinsGiven(List, Surface)}.
-   * <p>
+   *
    * The only difference is a result - this method returns a list of superior surface indices
    * rather than just a boolean.
    *

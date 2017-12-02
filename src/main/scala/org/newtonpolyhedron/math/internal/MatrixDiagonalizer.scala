@@ -8,10 +8,10 @@ import spire.math.Rational
 import org.newtonpolyhedron.math.MathImports._
 
 /**
- * Provides implicit "toDiagonal" method on Rational matrices, which is needed for unimodular matrices maker
- * via Euler (or whatever is its name, not sure yet) algorithm.
+ * @see MatrixMathProcessor.diagonalize
+ * @author FS
  */
-object MatrixToDiagonalForm {
+object MatrixDiagonalizer {
   private sealed trait Orientation
   private case object ROWS extends Orientation
   private case object COLS extends Orientation
@@ -21,12 +21,7 @@ object MatrixToDiagonalForm {
   private type MatrixTriple[N] = (Matrix[N], Matrix[N], Matrix[N])
   private type AMTriple[N] = (AM, AM, AM)
 
-  /**
-   * Converts the matrix to diagonal form.
-   * <p>
-   * Returns diagonal matrix alongside with row and column transformation matrices
-   */
-  def toDiagonal(mt: Matrix[Rational]): MatrixTriple[Rational] = {
+  def diagonalize(mt: Matrix[Rational]): MatrixTriple[Rational] = {
     require(mt.isSquare, "Non-square matrix")
     val iden = AM.from(Matrix.idenitiy[Rational](mt.rowCount))
     val rowOnes = new AM(iden.contentCopy)(RationalFieldWrapper)

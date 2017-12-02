@@ -6,6 +6,11 @@ import org.newtonpolyhedron.utils.LatexConversion
 import spire.math.Rational
 
 /**
+ * Default/internal implementation of math processor. Operates with `Product`,
+ * relies on Spire and Apache Commons Math.
+ *
+ * Has some limitations (e.g. is sometimes suboptimal, can't operate with complex values).
+ *
  * @author FS
  */
 class InternalMathProcessor extends MathProcessor[Product] {

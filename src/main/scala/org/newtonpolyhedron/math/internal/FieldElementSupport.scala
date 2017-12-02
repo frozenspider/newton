@@ -10,8 +10,9 @@ import spire.math.Rational
 
 /**
  * Support for Apache Commons Math3's approach to fields, but using type classes instead.
- * This allows us to use FieldElement for types which weren't implementing FieldElement initially.
- * This was necessary because e.g. standard BigInt will can't implement FieldElement, not without reflection.
+ * This allows using `FieldElement` for types which weren't implementing `FieldElement` initially.
+ * This was necessary because e.g. standard `BigInt` will can't implement `FieldElement`
+ * without hacking the typesystem.
  *
  * @author FS
  */

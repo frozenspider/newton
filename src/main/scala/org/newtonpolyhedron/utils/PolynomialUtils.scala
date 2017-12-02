@@ -9,8 +9,11 @@ import spire.compat._
 
 // TODO: Move, rename to PolynomialImports
 trait PolynomialUtils {
+  /** Polynominal - a sum of terms */
   type Polynomial[N <: MPNumber] = IndexedSeq[Term[N]]
+  /** List of polynominals */
   type Polys[N <: MPNumber] = IndexedSeq[Polynomial[N]]
+  /** List of equations */
   type Equations[N <: MPNumber] = IndexedSeq[Equation[N]]
 
   def zeroPoly[N <: MPNumber](dim: Int)(implicit mp: MathProcessor[N]): Polynomial[N] =

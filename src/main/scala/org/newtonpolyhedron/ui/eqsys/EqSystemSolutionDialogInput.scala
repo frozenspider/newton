@@ -10,7 +10,7 @@ import scala.swing.event.ButtonClicked
 
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.entity.equation.Equation
-import org.newtonpolyhedron.entity.equation.EquationSign
+import org.newtonpolyhedron.entity.equation.RelationalSign
 import org.newtonpolyhedron.solve.eqsys.EqSystemSolutionInput
 import org.newtonpolyhedron.ui.LatexRenderingComponent
 
@@ -84,7 +84,7 @@ class EqSystemSolutionDialogInput[N <: MPNumber](implicit mp: MathProcessor[N]) 
       (inputField, panel)
     }).unzip
 
-  private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial[N], EquationSign.Equals, zeroPoly(dim))
+  private def asEqualsZeroEquation(dim: Int) = Equation(_: Polynomial[N], RelationalSign.Equals, zeroPoly(dim))
 
   override def getInputFor(
       system:              Polys[N],

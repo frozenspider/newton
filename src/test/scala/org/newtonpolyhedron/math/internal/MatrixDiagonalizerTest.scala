@@ -1,6 +1,6 @@
 package org.newtonpolyhedron.math.internal
 
-import MatrixToDiagonalForm._
+import MatrixDiagonalizer._
 import org.junit.runner.RunWith
 import org.newtonpolyhedron.test._
 import org.scalatest.FunSuite
@@ -15,7 +15,7 @@ class MatrixToDiagonalFormTest extends FunSuite {
       s(2, -3, 0),
       s(0, 0, 0)
     ))
-    val (actual, rowOnes, colOnes) = toDiagonal(source)
+    val (actual, rowOnes, colOnes) = diagonalize(source)
     assert(actual
       === matrFrac(s(
         s(1, 0, 0),
@@ -42,7 +42,7 @@ class MatrixToDiagonalFormTest extends FunSuite {
       s(5, 6, 12),
       s(2, 8, 16)
     ))
-    val (actual, rowOnes, colOnes) = toDiagonal(source)
+    val (actual, rowOnes, colOnes) = diagonalize(source)
     assert(actual
       === matrFrac(s(
         s(1, 0, 0),

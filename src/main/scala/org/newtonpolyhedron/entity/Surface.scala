@@ -3,6 +3,11 @@ package org.newtonpolyhedron.entity
 import scala.collection.immutable.SortedSet
 import scala.math.Ordered
 
+/**
+ * Represents N-dimensional face.
+ *
+ * @author FS
+ */
 class Surface(val pointIndices: SortedSet[Int], val upperSurfaces: IndexedSeq[Surface])
     extends Ordered[Surface] {
   def this(pointIndices: Seq[Int], upperSurfaces: Seq[Surface]) =

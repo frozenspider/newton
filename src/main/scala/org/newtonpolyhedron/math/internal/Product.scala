@@ -10,9 +10,9 @@ import spire.math.Rational
 
 /**
  * Represents a number as a product of powers of its prime factors.
- * <p>
- * E.g. 17 will be represented as 17^1, while 12 would be 2^2 * 3^1.
- * <p>
+ *
+ * E.g. 17 will be represented as 17^1^, while 12 would be 2^2^ * 3^1^.
+ *
  * Only supports multiplication and power operations.
  */
 case class Product(val signum: Int, val underlying: Map[Int, Rational])
@@ -27,7 +27,9 @@ case class Product(val signum: Int, val underlying: Map[Int, Rational])
     // Check that all powers are integers
     underlying forall (_._2.isWhole)
   }
+
   def isWhole = isRational && toRational.isWhole
+
   lazy val toRational =
     if (signum == 0) Rational.zero else {
       if (!isRational) throw new ArithmeticException("Not a valid fraction")

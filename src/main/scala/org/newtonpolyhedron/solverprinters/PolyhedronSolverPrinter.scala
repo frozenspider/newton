@@ -50,7 +50,7 @@ class PolyhedronSolverPrinter[N <: MPNumber](
         output.println(" (none)")
     }
 
-    val lookupTable = solver.solve(points, commonLimitsOption, basisOption, output)
+    val lookupTable = solver.solve(points, commonLimitsOption, basisOption)
     printLookupTable(lookupTable, output)
 
     val surfacesMap = surfaceBuilder.surfaces(lookupTable, dimension)

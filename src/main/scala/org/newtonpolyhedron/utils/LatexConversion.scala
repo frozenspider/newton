@@ -49,12 +49,12 @@ object LatexConversion {
     s"\\sqrt[$rootBaseLatex]{$rootedValueLatex}"
   }
 
-  def signToLatex(sign: EquationSign): LatexString = sign match {
-    case EquationSign.Equals    => "="
-    case EquationSign.Greater   => ">"
-    case EquationSign.GreaterEq => "\\leq"
-    case EquationSign.Less      => "<"
-    case EquationSign.LessEq    => "\\geq"
+  def signToLatex(sign: RelationalSign): LatexString = sign match {
+    case RelationalSign.Equals    => "="
+    case RelationalSign.Greater   => ">"
+    case RelationalSign.GreaterEq => "\\leq"
+    case RelationalSign.Less      => "<"
+    case RelationalSign.LessEq    => "\\geq"
   }
 
   private def powersToLatex[N <: MPNumber](varName: String)(pows: Seq[N])(implicit mp: MathProcessor[N]): LatexString = {

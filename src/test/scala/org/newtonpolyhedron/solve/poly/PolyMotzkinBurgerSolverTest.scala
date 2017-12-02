@@ -22,7 +22,7 @@ class PolyMotzkinBurgerSolverTest
       commonLimitsOption: Option[IndexedSeq[IntVec]],
       basisOption:        Option[IndexedSeq[IntVec]]
   ) =
-    solver.solve(points, commonLimitsOption, basisOption, /* NullPrintWriter.instance */ new PrintWriter(System.out, true))
+    solver.solve(points, commonLimitsOption, basisOption)
 
   test("Bruno, pages 19 to 30") {
     val points = s(

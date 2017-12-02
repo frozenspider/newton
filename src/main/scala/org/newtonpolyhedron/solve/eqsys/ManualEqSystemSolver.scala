@@ -6,7 +6,9 @@ import org.newtonpolyhedron.utils.LatexConversion._
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
 /**
- * Allows you to solve system of equations manually
+ * Allows user to solve system of equations manually.
+ *
+ * @author FS
  */
 class ManualEqSystemSolver[N <: MPNumber](solverInput: EqSystemSolutionInput[N])(implicit mp: MathProcessor[N])
     extends EqSystemSolver[N] {

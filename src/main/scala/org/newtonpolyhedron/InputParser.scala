@@ -8,7 +8,13 @@ import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.ex.WrongFormatException
 import org.newtonpolyhedron.utils.parsing.ParseFormats._
 
+/** Parses various inputs from file */
 object InputParser {
+
+  //
+  // Type aliases for better readability
+  //
+
   private type Lines = Seq[String]
   private type ISeq[E] = IndexedSeq[E]
   private type ISeqSeq[E] = ISeq[ISeq[E]]

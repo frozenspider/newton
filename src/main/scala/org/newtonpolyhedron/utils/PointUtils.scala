@@ -26,7 +26,7 @@ object PointUtils {
    *            source list.
    * @param indexToSubtract
    *            index of point to subtract and exclude.
-   * @return vector list of size {@code n-1}, with {@code i}'th point subtracted from all other.
+   * @return vector list of size `n-1`, with `i`'th point subtracted from all other.
    */
   def copySubtractPointAsInt[N <: MPNumber](
       points:    Seq[NumVec[N]],

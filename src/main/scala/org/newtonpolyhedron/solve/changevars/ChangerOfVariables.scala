@@ -4,6 +4,10 @@ import org.newtonpolyhedron.NewtonImports._
 
 import spire.compat._
 
+/**
+ * @see `changeVars` method description
+ * @author FS
+ */
 abstract class ChangerOfVariables[N <: MPNumber](implicit mp: MathProcessor[N]) {
 
   /**
@@ -23,9 +27,9 @@ abstract class ChangerOfVariables[N <: MPNumber](implicit mp: MathProcessor[N]) 
    * Executes the change-of-variables operations, substituting each variable in each term of original
    * polynomial with corresponding polynomial in substitution polynomials, thus expressing original variables
    * via their polynomial expansion.
-   * <p>
+   *
    * Example:
-   * <pre>
+   * {{{
    * Original:
    * p = k1 * x^2 * y^2  +  k2 * x * z^3
    *
@@ -37,7 +41,8 @@ abstract class ChangerOfVariables[N <: MPNumber](implicit mp: MathProcessor[N]) 
    * Change of Variables Result:
    * Expansion of
    * k1 * (2 * a^2 * b)^2 * (a  +  b)^2  +  k2 * (2 * a^2 * b) * (a ^ 2 - 3 * b)^3
-   * <pre>
+   * }}}
+   *
    * @param poly original polynomial
    * @param substs substitution polynomials
    * @return change of variables result
