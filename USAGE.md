@@ -168,7 +168,7 @@ Power Transformation mode
 (NOTE: So far, only 3D case is supported)
 
 Executes one step of power transformation (computation of approximation)
-for the selected members of the given polynomial equations
+for the selected members of the given power equations
 
 Input format, sequentially:
 
