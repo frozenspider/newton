@@ -26,7 +26,8 @@ class NewtonPolyhedronFrame[N <: MPNumber](workerLauncher: WorkerLauncher[N]) ex
   var workingThread: Option[Thread] = None
 
   override def top = new MainFrame {
-    title = s"Newton ${BuildInfo.version}b${BuildInfo.buildInfoBuildNumber}"
+    import BuildInfo._
+    title = s"$name ${version}b${buildInfoBuildNumber}"
     contents = ui
   }
 
