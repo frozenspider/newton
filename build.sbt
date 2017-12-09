@@ -1,5 +1,5 @@
 name         := "newton"
-version      := "2.3"
+version      := "2.3.1"
 scalaVersion := "2.12.3"
 
 sourceManaged            := baseDirectory.value / "src_managed"
