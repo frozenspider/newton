@@ -3,6 +3,7 @@
 .settings
 .classpath
 .project
+.cache
 .cache-*
 
 # sbt
@@ -17,6 +18,7 @@ project/target/
 _assemble.*
 newton-*.jar
 buildinfo.*
+TODO.txt
 
 # Application
 /_inputs
