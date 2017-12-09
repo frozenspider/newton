@@ -6,6 +6,15 @@
 
 
 
+Cone mode
+---------
+
+Solves a system of linear inequations, with RHS being `<= 0`.
+Similar to previous mode, but instead of point coordinates specify variable coefficients.
+Common limits are not used (since system of equations is singular)
+
+
+
 Polyhedron mode
 ---------------
 
@@ -44,17 +53,9 @@ Example 2:
 ```
 
 
-Cone mode
----------
 
-Solves a system of polynomial inequations, with RHS being `<= 0`.
-Similar to previous mode, but instead of point coordinates specify variable coefficients.
-Common limits are not used (since system of equations is singular)
-
-
-
-Polyhedron Intersection mode
---------------------------------
+Polyhedron Cones Intersection mode
+----------------------------------
 
 Searches for intersections between normal cones for several polyhedrons.
 Polyhedrons should have the same dimension (n), and there shouldn't be less than n-1 of them
@@ -167,7 +168,7 @@ Power Transformation mode
 (NOTE: So far, only 3D case is supported)
 
 Executes one step of power transformation (computation of approximation)
-for the selected members of the given polynomial equations
+for the selected members of the given power equations
 
 Input format, sequentially:
 
