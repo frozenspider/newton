@@ -5,8 +5,8 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import org.newtonpolyhedron.utils.LanguageImplicits._
-import org.newtonpolyhedron.utils.PolynomialUtils._
+import org.newtonpolyhedron.math.PolynomialImports._
+import org.newtonpolyhedron.utils.LanguageImports._
 
 @RunWith(classOf[JUnitRunner])
 class PolynomialWrapperTest

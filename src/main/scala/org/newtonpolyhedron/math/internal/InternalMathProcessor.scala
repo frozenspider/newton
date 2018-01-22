@@ -50,7 +50,7 @@ class InternalMathProcessor extends MathProcessor[Product] {
   }
 
   override def inverse(x: N): N =
-    one / x
+    divide(one, x)
 
   override def add(x: N, y: N): N = x match {
     case x: N => y match {

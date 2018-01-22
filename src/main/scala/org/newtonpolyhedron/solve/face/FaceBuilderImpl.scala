@@ -8,8 +8,8 @@ import org.newtonpolyhedron.entity.Face
 
 class FaceBuilderImpl extends FaceBuilder {
   override def faces(
-      lookupTable: KeyTable[IntVec, Int, Boolean],
-      dim:         Int
+    lookupTable: KeyTable[IntVec, Int, Boolean],
+    dim:         Int
   ): Map[Int, SortedSet[Face]] = {
     val lookupData = extactLookupTableData(lookupTable)
     val facesMap = gatherFacesMap(dim, lookupData)
@@ -17,13 +17,13 @@ class FaceBuilderImpl extends FaceBuilder {
   }
 
   private def gatherFacesMap(
-      dim:        Int,
-      lookupData: Seq[Seq[Int]]
+    dim:        Int,
+    lookupData: Seq[Seq[Int]]
   ): Map[Int, SortedSet[Face]] = {
     def recurse(
-        targetDim: Int,
-        result:    Map[Int, SortedSet[Face]],
-        prevFace:  Set[Face]
+      targetDim: Int,
+      result:    Map[Int, SortedSet[Face]],
+      prevFace:  Set[Face]
     ): Map[Int, SortedSet[Face]] = {
       if (targetDim < 0) result
       else {
@@ -56,10 +56,10 @@ class FaceBuilderImpl extends FaceBuilder {
    * @return list of faces of a lower dimension
    */
   def findCommonFaces(
-      polyDim:         Int,
-      targetDim:       Int,
-      upperLevelFaces: Set[Face],
-      lookupTableData: Seq[Seq[Int]]
+    polyDim:         Int,
+    targetDim:       Int,
+    upperLevelFaces: Set[Face],
+    lookupTableData: Seq[Seq[Int]]
   ): SortedSet[Face] = {
     require(polyDim >= 2, "Polyhedron dimension >= 2")
     require(targetDim >= 0, "Target dimension must be nonnegative")
@@ -93,7 +93,7 @@ class FaceBuilderImpl extends FaceBuilder {
     val faces: Set[Face] = facesLists.flatten.toSet
     val faces2 = removeSemiDuplicates(faces)
     val faces3 = gatherHigherLevelFacesInfo(faces2, upperLevelFaces, targetDim, polyDim)
-    faces3
+    setToSorted(faces3)
   }
 
   private def getCommonPoints(pointListCombination: Seq[Seq[Int]]): Seq[Int] =
@@ -109,10 +109,10 @@ class FaceBuilderImpl extends FaceBuilder {
   }
 
   private def gatherHigherLevelFacesInfo(
-      faces:           Set[Face],
-      upperLevelFaces: Set[Face],
-      tagetDim:        Int,
-      polyDim:         Int
+    faces:           Set[Face],
+    upperLevelFaces: Set[Face],
+    tagetDim:        Int,
+    polyDim:         Int
   ): Set[Face] = {
     val faceOpts = faces map { currentFace =>
       val superior = facesContainingGiven(currentFace, upperLevelFaces)

@@ -1,4 +1,4 @@
-package org.newtonpolyhedron.utils
+package org.newtonpolyhedron.math
 
 import org.fs.utility.Imports._
 import org.newtonpolyhedron.entity.Term
@@ -7,8 +7,7 @@ import org.newtonpolyhedron.math.MathImports._
 
 import spire.compat._
 
-// TODO: Move, rename to PolynomialImports
-trait PolynomialUtils {
+trait PolynomialImports {
   /** Polynominal - a sum of terms */
   type Polynomial[N <: MPNumber] = IndexedSeq[Term[N]]
   /** List of polynominals */
@@ -126,4 +125,4 @@ trait PolynomialUtils {
 
 }
 
-object PolynomialUtils extends PolynomialUtils
+object PolynomialImports extends PolynomialImports

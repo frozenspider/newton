@@ -29,7 +29,7 @@ object InputParser {
   //
 
   /** Parses file by given parsers */
-  def genParseFile[R](file: File)(read: Lines => R): R = {
+  private def genParseFile[R](file: File)(read: Lines => R): R = {
     val lines = {
       val src = Source.fromFile(file)
       val lines = src.getLines.toIndexedSeq
@@ -40,7 +40,7 @@ object InputParser {
   }
 
   /** Parsing function envelop, that reads dimension and strips comment */
-  def genParseLines[R](lines: Lines, emptyRes: => R)(read: (Int, Lines) => R): R =
+  private def genParseLines[R](lines: Lines, emptyRes: => R)(read: (Int, Lines) => R): R =
     if (lines.isEmpty)
       emptyRes
     else {
@@ -193,7 +193,7 @@ object InputParser {
     genParseLines(lines, empty)((dim, lines) => parsePowerTransfBaseFromRefLines(dim, lines))
   }
 
-  def parsePowerTransfBaseFromRefLines[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
+  private def parsePowerTransfBaseFromRefLines[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): (Polys[N], ISeqSeq[Int]) = {
     if (dim != 3) throw new WrongFormatException("For now can handle only 3D polys")
     val (polyLines, chosenLines) = {
       val delimIdx = lines.indexOf("#")
@@ -210,7 +210,7 @@ object InputParser {
     (polys, indices)
   }
 
-  def parsePowerTransfBasePoly[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): Polynomial[N] = {
+  private def parsePowerTransfBasePoly[N <: MPNumber](dim: Int, lines: Lines)(implicit mp: MathProcessor[N]): Polynomial[N] = {
     val res = lines map { line =>
       val split = (line split ' ').toVector
       val coeffStr = split.head.trim

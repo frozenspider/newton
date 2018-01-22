@@ -124,7 +124,7 @@ class InternalMatrixMathProcessor(implicit mp: MathProcessor[Product])
           }
         case None => // Curr column contains only zeros
         // Nothing to do here - just continue to next row
-        // Note, that this means, that determinant is zero
+        // Note, that this means that determinant is zero
       }
     }
     (AM.to(new ApacheMatrix(mutableCopy)(wrapper)), sign)

@@ -3,7 +3,7 @@ package org.newtonpolyhedron.math.internal
 import scala.annotation.tailrec
 import org.apache.commons.math3.linear.MatrixUtils
 import org.newtonpolyhedron.math.internal.FieldElementSupport._
-import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.LanguageImports._
 import spire.math.Rational
 import org.newtonpolyhedron.math.MathImports._
 

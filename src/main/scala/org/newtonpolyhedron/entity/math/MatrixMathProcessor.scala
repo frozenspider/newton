@@ -6,7 +6,10 @@ package org.newtonpolyhedron.entity.math
  * @author FS
  */
 trait MatrixMathProcessor[N <: MPNumber] {
+
+  //
   // Processing
+  //
 
   def add(m1: Matrix[N], m2: Matrix[N]): Matrix[N]
 

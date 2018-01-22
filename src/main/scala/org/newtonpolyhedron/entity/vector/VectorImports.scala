@@ -2,7 +2,7 @@ package org.newtonpolyhedron.entity.vector
 
 import org.newtonpolyhedron.entity.vector.internal.SeqVectorSupport
 import org.newtonpolyhedron.math.MathImports._
-import org.newtonpolyhedron.utils.LanguageImplicits._
+import org.newtonpolyhedron.utils.LanguageImports._
 
 import spire.math.SafeLong
 
@@ -69,7 +69,7 @@ trait VectorImports extends SeqVectorSupport {
   implicit class RichNumVec[N <: MPNumber](val x: NumVec[N]) {
     def compare(y: NumVec[N])(implicit mp: MathProcessor[N]): Int =
       (x lengthCompare y.length) match {
-        case 0 => (x zip y).toStream map (mp.compare) find (_ != 0) getOrElse 0
+        case 0 => (x zip y).toStream map ((mp.compare _).tupled) find (_ != 0) getOrElse 0
         case x => x
       }
 

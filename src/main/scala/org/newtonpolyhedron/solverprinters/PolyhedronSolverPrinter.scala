@@ -103,8 +103,8 @@ class PolyhedronSolverPrinter[N <: MPNumber](
     val lines = collectLineCorners(facesMap(1), points)
     val borderEdgesAlt = (lines map (_.pointIndices map points3d)).flatten
     val illustrFrames = Seq(
-      doDrawFrame("All-Vs-All", points3d, PolyRenderer.ALL_VS_ALL, 0, 150, 512, 512, dim == 2),
-      doDrawFrame("Convex Hull", borderEdgesAlt, PolyRenderer.TRIANGLES, 512, 150, 512, 512, dim == 2)
+      doDrawFrame("All-Vs-All", points3d, PolyRenderer.AllVsAll, 0, 150, 512, 512, dim == 2),
+      doDrawFrame("Convex Hull", borderEdgesAlt, PolyRenderer.Triangles, 512, 150, 512, 512, dim == 2)
     )
     try {
       while (!Thread.interrupted()) {

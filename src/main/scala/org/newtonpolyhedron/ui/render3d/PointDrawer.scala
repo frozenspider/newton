@@ -23,8 +23,8 @@ class PointDrawer extends Shape3D {
     this
     setGeometry(createAxisLines(is2d))
     mode match {
-      case PolyRenderer.ALL_VS_ALL => addGeometry(createLinesAllVsAll(pts, null))
-      case PolyRenderer.TRIANGLES  => addGeometry(createTriangles(pts, Color.BLUE))
+      case PolyRenderer.AllVsAll => addGeometry(createLinesAllVsAll(pts, null))
+      case PolyRenderer.Triangles  => addGeometry(createTriangles(pts, Color.BLUE))
     }
     setAppearance(createPointsAppearance)
   }

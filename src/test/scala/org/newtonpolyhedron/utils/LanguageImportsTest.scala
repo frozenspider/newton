@@ -4,10 +4,10 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 import org.newtonpolyhedron.InputParser
-import LanguageImplicits._
 
 @RunWith(classOf[JUnitRunner])
-class LanguageImplicitsTest extends FunSuite {
+class LanguageImportsTest extends FunSuite {
+  import LanguageImports._
 
   def toLines(s: String) = InputParser.refineLines(s.lines.toStream)
 

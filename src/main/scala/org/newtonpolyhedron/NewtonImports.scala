@@ -6,9 +6,9 @@ package org.newtonpolyhedron
  * @author FS
  */
 trait NewtonImports
-    extends org.newtonpolyhedron.utils.PolynomialUtils
-    with org.newtonpolyhedron.utils.LanguageImplicits
+    extends org.newtonpolyhedron.utils.LanguageImports
     with org.newtonpolyhedron.math.MathImports
+    with org.newtonpolyhedron.math.PolynomialImports
     with org.newtonpolyhedron.entity.vector.VectorImports
     with org.fs.utility.Imports {
 

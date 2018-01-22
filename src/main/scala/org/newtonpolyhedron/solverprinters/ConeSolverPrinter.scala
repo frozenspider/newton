@@ -36,7 +36,7 @@ class ConeSolverPrinter[N <: MPNumber](
       testing: Seq[IntVec],
       output:  PrintWriter
   ) = {
-    output.println(header("FINAL SOLUTIONS:"))
+    output.println(header("Final solutions:"))
     testing foreachWithIndex { (currTesting, i) =>
       val str = currTesting.toTupleString
       val len = str.length
@@ -51,7 +51,7 @@ class ConeSolverPrinter[N <: MPNumber](
         output.println()
       }
     }
-    output.println(header("ANSWERS:"))
+    output.println(header("Answers:"))
     testing map (_.toTupleString) foreach (output.println)
   }
 }

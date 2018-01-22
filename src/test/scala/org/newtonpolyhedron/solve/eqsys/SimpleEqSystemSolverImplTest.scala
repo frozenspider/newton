@@ -4,9 +4,9 @@ import org.newtonpolyhedron.test._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+import org.newtonpolyhedron.math.PolynomialImports._
 import org.newtonpolyhedron.entity.vector.VectorImports._
 import org.newtonpolyhedron.utils.NullPrintWriter
-import org.newtonpolyhedron.utils.PolynomialUtils._
 
 @RunWith(classOf[JUnitRunner])
 class SimpleEqSystemSolverImplTest

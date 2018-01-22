@@ -9,7 +9,7 @@ import scala.math.Ordered
  * @author FS
  */
 class Face(val pointIndices: SortedSet[Int], val upperFaces: IndexedSeq[Face])
-    extends Ordered[Face] {
+  extends Ordered[Face] {
   def this(pointIndices: Seq[Int], upperFaces: Seq[Face]) =
     this(SortedSet(pointIndices: _*), upperFaces.toIndexedSeq)
 
@@ -43,13 +43,13 @@ class Face(val pointIndices: SortedSet[Int], val upperFaces: IndexedSeq[Face])
 
   override def equals(that: Any) = that match {
     case that: Face => this.pointIndices == that.pointIndices && this.upperFaces == that.upperFaces
-    case _             => false
+    case _          => false
   }
 
-  override lazy val hashCode: Int =
+  override def hashCode: Int =
     this.pointIndices.hashCode * 17 + this.upperFaces.hashCode
 
-  override lazy val toString =
+  override def toString =
     "{" + pointIndices.mkString(", ") + "}/" + (upperFaces map (_.pointIndices mkString ("(", ", ", ")"))).mkString("[", ", ", "]")
 
   override def compare(that: Face): Int = {

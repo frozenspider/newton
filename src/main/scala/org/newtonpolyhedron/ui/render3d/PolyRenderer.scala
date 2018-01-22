@@ -36,23 +36,30 @@ class PolyRenderer(
   mode: Int,
   is2d: Boolean
 ) extends JApplet {
-  private val config = SimpleUniverse.getPreferredConfiguration
-  private val canvas3D = new Canvas3D(config)
+
+  private val canvas3D = {
+    val config = SimpleUniverse.getPreferredConfiguration
+    new Canvas3D(config)
+  }
   setLayout(new BorderLayout)
   add("Center", canvas3D)
 
   private val scene = createSceneGraph(pts, mode, is2d)
-  // SimpleUniverse is a Convenience Utility class
-  private val universe = new SimpleUniverse(canvas3D)
-  // This will move the ViewPlatform back a bit so the objects in the scene can be viewed.
-  universe.getViewingPlatform.setNominalViewingTransform
-  universe.addBranchGraph(scene)
+
+  /** SimpleUniverse is a convenience utility class */
+  private val universe = {
+    val u = new SimpleUniverse(canvas3D)
+    // This will move the ViewPlatform back a bit so the objects in the scene can be viewed.
+    u.getViewingPlatform.setNominalViewingTransform
+    u.addBranchGraph(scene)
+    u
+  }
 
   /** Create scene graph branch group */
   def createSceneGraph(
-      pts:  Seq[Point3d],
-      mode: Int,
-      is2d: Boolean
+    pts:  Seq[Point3d],
+    mode: Int,
+    is2d: Boolean
   ): BranchGroup = {
     val objRoot = new BranchGroup
     // Create the transform group node and initialize it to the identity.
@@ -102,8 +109,8 @@ class PolyRenderer(
 }
 
 object PolyRenderer {
-  val ALL_VS_ALL = 0
-  val TRIANGLES = 1
+  val AllVsAll = 0
+  val Triangles = 1
 
   def main(args: Array[String]): Unit = {
     val points = Seq(
@@ -118,7 +125,7 @@ object PolyRenderer {
     )
     //
     val is2d = false
-    val frame = new MainFrame(new PolyRenderer(points, TRIANGLES, is2d), 512, 512)
+    val frame = new MainFrame(new PolyRenderer(points, Triangles, is2d), 512, 512)
     frame.setVisible(true)
   }
 }

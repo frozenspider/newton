@@ -8,15 +8,12 @@ import scala.collection.immutable.SortedSet
 import spire.math.Rational
 import spire.math.SafeLong
 
-trait LanguageImplicits {
+trait LanguageImports {
+  //
   // Mapping helpers
-  implicit def funOfTwo2funOfMonad[A1, A2, T](f: (A1, A2) => T): ((A1, A2)) => T =
-    p => f(p._1, p._2)
+  //
 
-  implicit def funOfThree2funOfMonad[A1, A2, A3, T](f: (A1, A2, A3) => T): ((A1, A2, A3)) => T =
-    p => f(p._1, p._2, p._3)
-
-  implicit def set2sorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
+  def setToSorted[T <: Ordered[T]](t: Set[T]): SortedSet[T] = {
     SortedSet.empty[T] ++ t
   }
 
@@ -87,4 +84,4 @@ trait LanguageImplicits {
   }
 }
 
-object LanguageImplicits extends LanguageImplicits
+object LanguageImports extends LanguageImports

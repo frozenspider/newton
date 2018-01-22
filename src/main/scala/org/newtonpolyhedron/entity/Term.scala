@@ -3,7 +3,7 @@ package org.newtonpolyhedron.entity
 import org.newtonpolyhedron.NewtonImports._
 
 /**
- * Polynomial term - coefficient multuplied by variabled raised to powers -
+ * Polynomial term - coefficient multiplied by variables raised to powers -
  * c * x,,1,,^p,,1,,^x,,2,,^p,,2,,^...x,,n,,^p,,n,,^.
  *
  * Represented as a number `coeff` and vector `powers`.

@@ -18,7 +18,7 @@ import spire.math.Rational
 case class Product(val signum: Int, val underlying: Map[Int, Rational])
     extends MPNumber {
   require((-1 to 1) contains signum, "Sign should be -1, 0 or 1")
-  require(if (signum == 0) underlying.isEmpty else true, "For zero product, multipliers should be empty")
+  if (signum == 0) require(underlying.isEmpty, "For zero product, multipliers should be empty")
 
   def isValid: Boolean = true
 

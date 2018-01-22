@@ -57,10 +57,10 @@ class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
   @throws(classOf[FileNotFoundException])
   @throws(classOf[WrongFormatException])
   def makeThread(
-      path:       String,
-      mode:       WorkingMode.Value,
-      illustrate: Boolean,
-      writer:     PrintWriter
+    path:       String,
+    mode:       WorkingMode.Value,
+    illustrate: Boolean,
+    writer:     PrintWriter
   ): Thread = {
     val file = new File(path)
     val solver = mode match {
@@ -77,9 +77,9 @@ class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
   }
 
   private def launchPolyMotzkinBurger(
-      file:       File,
-      illustrate: Boolean,
-      writer:     PrintWriter
+    file:       File,
+    illustrate: Boolean,
+    writer:     PrintWriter
   ): SolverPrinter[_] = {
     val (pointList, commonLimitsOption, basisOption) = InputParser.parsePolyFromFile(file)(parseNum)
     val polySolver = new PolyMotzkinBurgerSolver(coneSolver)
@@ -88,8 +88,8 @@ class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
   }
 
   private def launchIntersection(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val (polys, dim) = InputParser.parsePolysFromFile(file)(parseNum)
     val polySolver = new PolyIntersectionSolverImpl(coneSolver)
@@ -97,47 +97,47 @@ class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
   }
 
   private def launchCone(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val (pointList, _, basisOption) = InputParser.parsePolyFromFile(file)(parseInt)
     new ConeSolverPrinter(coneSolver, pointList, basisOption, writer)
   }
 
   private def launchMatrixDet(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val (matrix, skipRow, skipCol) = InputParser.parseMatrixWithSkipFromFile(file, Matrix.apply[N], parseNum[N])
     new MatrixDetSolverPrinter(matrix, skipRow, skipCol, writer)
   }
 
   private def launchMatrixInverse(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[N], parseNum[N])
     new MatrixInverseSolverPrinter(matrix, writer)
   }
 
   private def launchMatrixUniAlpha(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val matrix = {
       val m = InputParser.parseMatrixFromFile(file, Matrix.apply[N], parseNum[N])
       // Add all-zero row if necessary
       if (m.isSquare) m
-      else if (m.rowCount != m.colCount - 1) throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
-      else m addRow (Seq.fill(m.colCount)(mp.zero))
+      else if (m.rowCount == m.colCount - 1) m addRow (Seq.fill(m.colCount)(mp.zero))
+      else throw new WrongFormatException("Pre-alpha matrix should have either d or d-1 rows")
     }
     val uniMatrixMaker = new UnimodularMatrixMakerImpl[N]
     new UnimodularMatrixMakerPrinter[N](uniMatrixMaker, matrix, writer)
   }
 
   private def launchMatrixMinorGCD(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val matrix = InputParser.parseMatrixFromFile(file, Matrix.apply[N], parseNum[N])
     val gcdMatrixSolver = new MatrixMinorGCDSolverImpl
@@ -145,8 +145,8 @@ class WorkerLauncher[N <: MPNumber](implicit mp: MathProcessor[N]) {
   }
 
   private def launchPowerTransformation(
-      file:   File,
-      writer: PrintWriter
+    file:   File,
+    writer: PrintWriter
   ): SolverPrinter[_] = {
     val (polys, pts) = InputParser.parsePowerTransfBaseFromFile(file)
     val powTransfSolver = new PowerTransformationSolverImpl(

@@ -12,8 +12,8 @@ abstract class SolverPrinter[T](val solver: T, val output: PrintWriter) {
   def solveAndPrint: Unit = solveFor(solver, output)
 
   protected def solveFor(
-      solver: T,
-      output: PrintWriter
+    solver: T,
+    output: PrintWriter
   ): Unit
 
   //

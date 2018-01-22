@@ -5,7 +5,6 @@ import scala.swing.BorderPanel
 import org.newtonpolyhedron.NewtonImports._
 import org.newtonpolyhedron.ui.LatexRenderingComponent
 import org.newtonpolyhedron.utils.LatexConversion
-import org.newtonpolyhedron.utils.PolynomialUtils.Equations
 
 class EqSystemRenderingPanel extends BorderPanel {
   import scala.swing.BorderPanel.Position._
