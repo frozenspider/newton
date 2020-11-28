@@ -21,11 +21,9 @@ Note that theory becomes somewhat vague at this point.
 Building
 --------
 
-Java binary can be assembled via SBT by running `sbt assembly` command (will create a jar-file in `_build` subfolder).
+Java binary can be assembled via SBT by running `sbt buildDistr` command (will create a jar-file in `_build` subfolder and copy Java3D libs there if possible).
 GUI can then be launched via `java -jar newton-<VER>.jar`.
 Main class is `org.newtonpolyhedron.NewtonEntry`.
-
-In order for visualization to work, appropriate `j3dcore-ogl` from Java3D v1.5.1 needs to be manuallly put into classpath.
 
 
 Usage
